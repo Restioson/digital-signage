@@ -20,3 +20,6 @@ test: setup
 
 format:
     dprint fmt
+
+lint:
+    ./venv/bin/flake8 backend
