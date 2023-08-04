@@ -1,0 +1,64 @@
+name: Backend
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-commits:
+    runs-on: ubuntu-latest
+    if: github.event.ref != 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get all commits on current main
+        run: git fetch origin main
+      - name: Log all commits we will analyze
+        run: git log --pretty=format:%s origin/main..HEAD
+      - name: Disallow fixup! commits
+        run: git log --pretty=format:%s origin/main..HEAD | grep -zv fixup!
+      - name: Disallow squash! commits
+        run: git log --pretty=format:%s origin/main..HEAD | grep -zv squash!
+      - name: Disallow drop! commits
+        run: git log --pretty=format:%s origin/main..HEAD | grep -zv drop!
+
+  formatting:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: extractions/setup-just@v1
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - name: Install project
+        run: just setup
+      - uses: dprint/check@v2.2
+
+  backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: extractions/setup-just@v1
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - name: Install project
+        run: just setup
+      - name: Lint with flake8
+        run: |
+          # stop the build if there are Python syntax errors or undefined names
+          ./venv/bin/flake8 backend --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          ./venv/bin/flake8 backend --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Run unit tests
+        run: |
+          just test
