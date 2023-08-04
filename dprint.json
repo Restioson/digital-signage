@@ -13,7 +13,10 @@
     "**/node_modules",
     "**/*-lock.json",
     "venv",
-    ".idea/"
+    ".idea/",
+    "**/build",
+    "**/__pycache__",
+    "**/*.egg-info/"
   ],
   "exec": {
     "commands": [{
