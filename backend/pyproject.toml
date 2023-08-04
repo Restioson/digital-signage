@@ -15,5 +15,6 @@ dependencies = []
 
 [project.optional-dependencies]
 test = [
-  "black",
+  "black~=23.7",
+  "flake8~=6.1",
 ]
