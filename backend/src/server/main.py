@@ -1,19 +1,12 @@
 from flask import Flask
-
-from flask import Blueprint
-
-config_view = Blueprint("config_view", __name__)
+from server import config_view, display_view
 
 
 def create_app():
     app = Flask(__name__)
-    app.register_blueprint(config_view)
+    app.register_blueprint(config_view.blueprint)
+    app.register_blueprint(display_view.blueprint)
     return app
 
 
-@config_view.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
-
-
-global_app = create_app()
+backend_server = create_app()

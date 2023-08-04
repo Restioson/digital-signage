@@ -28,6 +28,11 @@ def runner(app):
     return app.test_cli_runner()
 
 
-def test_index(client):
-    response = client.get("/")
-    assert b"<p>Hello, World!</p>" in response.data
+def test_config_index(client):
+    response = client.get("/config/")
+    assert b"<p>Hello, config view!</p>" in response.data
+
+
+def test_display_index(client):
+    response = client.get("/display/")
+    assert b"<p>Hello, display view!</p>" in response.data
