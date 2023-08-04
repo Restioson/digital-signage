@@ -1,0 +1,19 @@
+[project]
+name = "campusign_server"
+version = "0.1.0"
+description = "My package description"
+
+authors = [
+  { name = "Cael Marquard", email = "mrqcae001@myuct.ac.za" },
+  { name = "Dylan Loram", email = "lrmdyl001@myuct.ac.za" },
+  { name = "Jack Johnson", email = "jhnjac012@myuct.ac.za" },
+]
+
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = []
+
+[project.optional-dependencies]
+test = [
+  "black",
+]
