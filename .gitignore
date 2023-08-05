@@ -4,3 +4,5 @@ venv/
 build/
 __pycache__/
 .pytest_cache/
+.stylelintrc.json
+node_modules/

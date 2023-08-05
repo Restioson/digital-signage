@@ -62,3 +62,20 @@ jobs:
       - name: Run unit tests
         run: |
           just test
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci
+      - name: Lint CSS
+        run: npx stylelint "frontend/**/*.css"
+      - name: Lint JS
+        run: npx standard
+      - name: Lint HTML
+        run: npx html-validate "frontend/**/*.html"
