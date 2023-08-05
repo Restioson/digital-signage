@@ -11,15 +11,18 @@ venv:
     [ -d venv ] || (python3 -m venv --without-pip venv/ && curl https://bootstrap.pypa.io/get-pip.py | {{ python }})
 
 setup: venv
-    {{ pip }} install ./backend[test] --quiet
+    {{ pip }} install -e ./backend[test] --quiet
 
 alias fmt := format
 
-test: setup
-    {{ python }} -m unittest discover --start-directory backend
+test:
+    ./venv/bin/pytest
 
 format:
     dprint fmt
 
 lint:
     ./venv/bin/flake8 backend
+
+server:
+    flask --app server.main run

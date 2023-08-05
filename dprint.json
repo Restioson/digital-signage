@@ -16,7 +16,8 @@
     ".idea/",
     "**/build",
     "**/__pycache__",
-    "**/*.egg-info/"
+    "**/*.egg-info/",
+    ".pytest_cache/"
   ],
   "exec": {
     "commands": [{

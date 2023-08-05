@@ -1,11 +1,38 @@
-import unittest
-from server.main import say_hello
+import pytest
+from server.main import create_app
 
 
-class TestMain(unittest.TestCase):
-    def test_upper(self):
-        self.assertEqual(say_hello(), "Hello, world!")
+@pytest.fixture()
+def app():
+    app = create_app()
+    app.config.update(
+        {
+            "TESTING": True,
+        }
+    )
+
+    # setup goes here
+
+    yield app
+
+    # clean up goes here
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture()
+def client(app):
+    return app.test_client()
+
+
+@pytest.fixture()
+def runner(app):
+    return app.test_cli_runner()
+
+
+def test_config_index(client):
+    response = client.get("/config/")
+    assert b"<p>Hello, config view!</p>" in response.data
+
+
+def test_display_index(client):
+    response = client.get("/display/")
+    assert b"<p>Hello, display view!</p>" in response.data
