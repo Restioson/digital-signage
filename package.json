@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "html-validate": "^8.1.0",
+    "prettier-standard": "^16.4.1",
+    "standard": "^17.1.0",
+    "stylelint": "^15.10.2",
+    "stylelint-config-standard": "^34.0.0"
+  }
+}
