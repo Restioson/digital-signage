@@ -30,7 +30,7 @@
       "fileNames": ["justfile"]
     }, {
       "command": "npx prettier-standard --format --stdin",
-      "exts": ["js"]
+      "exts": ["js", "mjs"]
     }]
   },
   "plugins": [
