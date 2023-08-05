@@ -1,3 +1,3 @@
 export function sayHello () {
-  return 'Hello, Javascript!'
+  return 'Hello, JavaScript!'
 }

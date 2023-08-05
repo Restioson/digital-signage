@@ -18,6 +18,7 @@ alias fmt := format
 
 test:
     ./venv/bin/pytest
+    cd frontend && npx mocha
 
 format:
     dprint fmt

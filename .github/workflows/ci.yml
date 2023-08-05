@@ -79,3 +79,5 @@ jobs:
         run: npx standard
       - name: Lint HTML
         run: npx html-validate "frontend/**/*.html"
+      - name: Test JS
+        run: cd frontend && npx mocha
