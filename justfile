@@ -30,4 +30,4 @@ lint:
     npx html-validate "frontend/**/*.html"
 
 server:
-    flask --app server.main run
+    ./venv/bin/flask --app server.main run
