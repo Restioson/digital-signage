@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { sayHello } from '../src/index.mjs'
+import { sayHello } from '../src/display.mjs'
 
 describe('sayHello()', function () {
   it('should return "Hello, JavaScript!"', function () {
