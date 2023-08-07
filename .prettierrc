@@ -1,0 +1,10 @@
+{
+  "overrides": [
+    {
+      "files": ["*.j2"],
+      "options": {
+        "parser": "jinja-template"
+      }
+    }
+  ]
+}

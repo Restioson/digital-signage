@@ -53,31 +53,23 @@ jobs:
           python-version: "3.10"
       - name: Install project
         run: just setup
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          ./venv/bin/flake8 backend --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          ./venv/bin/flake8 backend --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Run unit tests
-        run: |
-          just test
+      - name: Lint
+        run: just lint-backend
+      - name: Test
+        run: just test-backend
 
   frontend:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+      - uses: extractions/setup-just@v1
       - uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: "npm"
       - run: npm ci
-      - name: Lint CSS
-        run: npx stylelint "frontend/**/*.css"
-      - name: Lint JS
-        run: npx standard
-      - name: Lint HTML
-        run: npx html-validate "frontend/**/*.html"
-      - name: Test JS
-        run: cd frontend && npx mocha
+      - name: Lint
+        run: just lint-frontend
+      - name: Test
+        run: just test-frontend

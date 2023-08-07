@@ -3,11 +3,12 @@ from server import config_view, display_view, index
 
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(
+        __name__,
+        static_folder="../../../frontend/static",
+        template_folder="../../../frontend/templates",
+    )
     app.register_blueprint(config_view.blueprint)
     app.register_blueprint(display_view.blueprint)
     app.register_blueprint(index.blueprint)
     return app
-
-
-backend_server = create_app()
