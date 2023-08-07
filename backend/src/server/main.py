@@ -1,5 +1,5 @@
 from flask import Flask
-from server import config_view, display_view, index
+from server import config_view, display_view, index, api
 
 
 def create_app():
@@ -11,4 +11,5 @@ def create_app():
     app.register_blueprint(config_view.blueprint)
     app.register_blueprint(display_view.blueprint)
     app.register_blueprint(index.blueprint)
+    app.register_blueprint(api.blueprint)
     return app

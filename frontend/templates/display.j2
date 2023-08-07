@@ -14,12 +14,14 @@
   </head>
 
   <body>
-    <script
-      type="module"
-      src="{{ url_for('static', filename='display.mjs') }}"
-    ></script>
+    <script type="module">
+      import { main } from "{{ url_for('static', filename='display.mjs') }}";
+      await main();
+    </script>
 
     <h1>CampuSign</h1>
-    <p>Hello, display view!</p>
+    <h2>Display view</h2>
+
+    <div id="content-container"></div>
   </body>
 </html>
