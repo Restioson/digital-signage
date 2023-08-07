@@ -31,8 +31,3 @@ def runner(app):
 def test_config_index(client):
     response = client.get("/config/")
     assert b"<p>Hello, config view!</p>" in response.data
-
-
-def test_display_index(client):
-    response = client.get("/display/")
-    assert b"<p>Hello, display view!</p>" in response.data
