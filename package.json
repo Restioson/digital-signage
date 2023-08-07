@@ -1,4 +1,6 @@
 {
+  "name": "digital-signage",
+  "version": "0.1.0",
   "devDependencies": {
     "html-validate": "^8.1.0",
     "jsdom": "^22.1.0",
