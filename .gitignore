@@ -6,3 +6,5 @@ __pycache__/
 .pytest_cache/
 .stylelintrc.json
 node_modules/
+campusign.db
+campusign.test.db
