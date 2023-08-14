@@ -2,6 +2,7 @@ import flask
 from flask import Blueprint
 
 from server import free_form_content
+from server.database import DatabaseController
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
@@ -11,9 +12,13 @@ def content():
     if flask.request.method == "GET":
         return {
             "content": [
-                {"title": "Test 1", "body": "This is a test"},
-                {"title": "Test 2", "body": "This is a second test"},
+                post.to_http_json()
+                for post in DatabaseController.get().fetch_all_content()
             ]
         }
     else:
-        return free_form_content.from_form(flask.request.form).to_json()
+        content_id, posted = DatabaseController.get().post_content(
+            free_form_content.from_form(flask.request.form)
+        )
+
+        return {"id": content_id, "posted": posted}
