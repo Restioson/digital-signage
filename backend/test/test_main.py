@@ -31,3 +31,25 @@ def runner(app):
 def test_config_index(client):
     response = client.get("/config/")
     assert b"<p>Hello, config view!</p>" in response.data
+
+
+def test_api_content(client):
+    res = client.get("/api/content")
+    print(res)
+    assert res.json == {
+        "content": [
+            {"title": "Test 1", "body": "This is a test"},
+            {"title": "Test 2", "body": "This is a second test"},
+        ]
+    }
+
+    res = client.post(
+        "/api/content",
+        data={
+            "type": "text",
+            "title": "titleX",
+            "body": "bodyX",
+        },
+    )
+
+    assert res.json == {"id": None, "title": "titleX", "body": "bodyX"}
