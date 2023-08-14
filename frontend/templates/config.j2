@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css?family=Open Sans"
+      rel="stylesheet"
+    />
+
+    <link
+      href="{{ url_for('static', filename='display.css') }}"
+      rel="stylesheet"
+    />
+    <title>CampuSign</title>
+  </head>
+
+  <body>
+    <h1>CampuSign</h1>
+    <h2>Config view</h2>
+
+    <form action="/api/content" method="post">
+      <label for="type">Type of content:</label>
+      <select id="type" name="type">
+        <option value="text">Text</option>
+      </select>
+
+      <label for="title">Title:</label>
+      <input id="title" name="title" type="text" />
+
+      <label for="body">Body:</label>
+      <input id="body" name="body" type="text" />
+
+      <button type="submit">Submit</button>
+    </form>
+  </body>
+</html>

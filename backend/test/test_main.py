@@ -28,11 +28,6 @@ def runner(app):
     return app.test_cli_runner()
 
 
-def test_config_index(client):
-    response = client.get("/config/")
-    assert b"<p>Hello, config view!</p>" in response.data
-
-
 def test_api_content(client):
     res = client.get("/api/content")
     print(res)
