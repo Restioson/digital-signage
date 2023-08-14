@@ -6,5 +6,6 @@ __pycache__/
 .pytest_cache/
 .stylelintrc.json
 node_modules/
+.vscode/launch.json
 campusign.db
 campusign.test.db
