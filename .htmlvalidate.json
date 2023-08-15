@@ -1,8 +1,11 @@
 {
-  "extends": ["html-validate:recommended"],
+  "extends": ["html-validate:recommended", "html-validate:a11y", "html-validate:prettier", "html-validate:standard"],
   "rules": {
     "void-style": ["error", {
       "style": "selfclosing"
-    }]
+    }],
+    "input-missing-label": ["error"],
+    "no-style-tag": ["error"],
+    "no-unknown-elements": ["error"]
   }
 }
