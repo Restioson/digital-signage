@@ -39,4 +39,14 @@ describe('renderFreeForm()', function () {
     assert.equal(img.tagName, 'IMG')
     assert(img.src.endsWith('/api/content/1/blob'))
   })
+
+  it('remote_image should render into a div with img in body', function () {
+    const out = renderFreeForm({ type: 'remote_image', src: 'exampleurl' })
+    assert.equal(out.tagName, 'DIV')
+    assert.equal(out.children.length, 1)
+
+    const img = out.children[0]
+    assert.equal(img.tagName, 'IMG')
+    assert(img.src.endsWith('exampleurl'))
+  })
 })

@@ -58,6 +58,8 @@ def from_dict_and_files(form: dict, files: dict) -> FreeFormContent:
     content_type = form["type"]
     if content_type == "text":
         return Text(form["title"], form["body"])
+    elif content_type == "remote_image":
+        return RemoteImage(form["src"])
     elif content_type == "local_image":
         image_data = files["image_data"].read()
         image = PIL.Image.open(io.BytesIO(image_data))
@@ -84,6 +86,8 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
         return Text(data["title"], data["body"], content_id=content_id, posted=posted)
     elif content_type == "local_image":
         return LocalImage(mime, blob_data, content_id=content_id, posted=posted)
+    elif content_type == "remote_image":
+        return RemoteImage(data["src"], content_id=content_id, posted=posted)
     else:
         raise UnknownContentError("Unknown content type", content_type)
 
@@ -115,6 +119,25 @@ class Text(FreeFormContent):
 
     def to_db_json(self) -> dict:
         return {"title": self.title, "body": self.body}
+
+
+class RemoteImage(FreeFormContent):
+    """An image post with its data stored on a remote server"""
+
+    def __init__(
+        self,
+        src: str,
+        content_id: Optional[int] = None,
+        posted: Optional[datetime] = None,
+    ):
+        super().__init__(content_id, posted)
+        self.src = src
+
+    def type(self) -> str:
+        return "remote_image"
+
+    def to_db_json(self) -> dict:
+        return {"src": self.src}
 
 
 class BinaryContent(FreeFormContent, ABC):

@@ -11,9 +11,13 @@ export function renderFreeForm (content) {
     body.innerText = content.body
 
     container.append(title, body)
-  } else {
+  } else if (content.type === 'local_image') {
     const img = document.createElement('img')
     img.src = `/api/content/${content.id}/blob`
+    container.append(img)
+  } else {
+    const img = document.createElement('img')
+    img.src = content.src
     container.append(img)
   }
 

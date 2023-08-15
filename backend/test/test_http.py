@@ -4,8 +4,8 @@ from pathlib import Path
 data_folder = Path(__file__).parent / "data"
 
 
-def test_post_image(client, test_png_data, test_jpg_data):
-    """Test that images can be posted (both JPG and PNG)"""
+def test_post_local_image(client, test_png_data, test_jpg_data):
+    """Test that local images can be posted (both JPG and PNG)"""
 
     jpg_res = client.post(
         "/api/content",
@@ -52,6 +52,18 @@ def test_post_image(client, test_png_data, test_jpg_data):
     fetched_png = client.get(f"/api/content/{png_res.json['id']}/blob")
     assert fetched_png.data == test_png_data, "Data should match after roundtrip"
     assert fetched_png.content_type == "image/png", "content-type must be correct"
+
+
+def test_post_remote_image(client):
+    res = client.post("/api/content", data={"type": "remote_image", "src": "testurl"})
+    assert res.json["id"] is not None
+    assert res.json["posted"] is not None
+
+    res = client.get("/api/content")
+    content = res.json["content"]
+    assert len(content) == 1
+
+    assert content[0]["src"] == "testurl"
 
 
 def test_post_text(client):

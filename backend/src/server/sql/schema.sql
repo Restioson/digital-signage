@@ -2,7 +2,13 @@ CREATE TABLE IF NOT EXISTS content (
   id INTEGER PRIMARY KEY,
   posted INTEGER NOT NULL,
   content_type TEXT NOT NULL CHECK (
-    content_type IN ('text', 'local_image', 'video', 'link')
+    content_type IN (
+      'text',
+      'local_image',
+      'remote_image',
+      'video',
+      'link'
+    )
   ),
   content_json TEXT NOT NULL,
   blob_mime_type TEXT,
