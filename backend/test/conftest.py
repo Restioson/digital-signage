@@ -8,14 +8,8 @@ from server.main import create_app
 
 @pytest.fixture()
 def app():
-    print("Creating app")
     app = create_app(testing=True)
-    print("App created")
-    # setup goes here
-
     yield app
-
-    # clean up goes here
 
 
 @pytest.fixture()

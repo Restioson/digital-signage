@@ -44,7 +44,6 @@ def test_api_content(client):
     content = res.json["content"]
     assert len(content) == 2
 
-    print(content)
     assert content[0]["type"] == to_post[1]["type"]
     assert content[0]["title"] == to_post[1]["title"]
     assert content[0]["body"] == to_post[1]["body"]
