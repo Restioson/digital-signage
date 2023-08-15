@@ -3,9 +3,16 @@ import json
 import sqlite3
 from abc import abstractmethod, ABC
 from typing import Optional
+import PIL.Image
+import io
 
 
 class FreeFormContent(ABC):
+    """A piece of 'free-form' content posted to a sign. In this case,
+    'free-form' means that the user directly submitted the data for
+    this post to the sign, as opposed to referring to it via an external source,
+    such as through a calendar widget."""
+
     def __init__(self, content_id: Optional[int], posted: Optional[datetime]):
         self.id = content_id
         self.posted = posted
@@ -15,10 +22,6 @@ class FreeFormContent(ABC):
         """Convert this content to JSON in order to be serialized to the database"""
         raise NotImplementedError
 
-    def to_db_blob(self) -> Optional[bytes]:
-        """Retrieve a binary blob of content to store in the database, if applicable"""
-        return None
-
     @abstractmethod
     def type(self) -> str:
         """The type of this content. One of 'link', 'text', 'image', or 'video'"""
@@ -26,6 +29,7 @@ class FreeFormContent(ABC):
 
     def to_http_json(self) -> dict:
         """Convert this content to JSON in order to be sent over HTTP"""
+
         assert self.id is not None, "ID must be present when serializing to HTTP json"
         assert (
             self.posted is not None
@@ -41,11 +45,25 @@ class FreeFormContent(ABC):
         return http_attrs
 
 
-def from_dict(form: dict) -> FreeFormContent:
-    """Deserialize the appropriate content type from the given dictionary.
-    Throws UnknownContentError if the content type is not 'text'"""
-    if form["type"] == "text":
+def from_dict_and_files(form: dict, files: dict) -> FreeFormContent:
+    """Deserialize the appropriate content object from the given dictionary and files.
+    Throws UnknownContentError if the content type is not 'text'.
+
+    The `form` dict might contain data from a web form or the `content_json` column
+    from the `content` table in the database, while the `files` dictionary might
+    contain image or video data.
+
+    The resulting content will not have the post or ID initialised.
+    """
+    content_type = form["type"]
+    if content_type == "text":
         return Text(form["title"], form["body"])
+    elif content_type == "local_image":
+        image_data = files["image_data"].read()
+        image = PIL.Image.open(io.BytesIO(image_data))
+        image.verify()
+        mime = image.get_format_mimetype()
+        return LocalImage(mime, image_data)
     else:
         raise UnknownContentError("Unknown content type", form["type"])
 
@@ -58,17 +76,20 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
     content_id = row["id"]
     posted = datetime.fromtimestamp(row["posted"])
     data = json.loads(row["content_json"])
-    blob_data = row["content_blob"]
+    blob_data = row["content_blob"] if "content_blob" in row.keys() else None
+    mime = row["blob_mime_type"]
 
     if content_type == "text":
         assert blob_data is None, "Text content should not have any blob data"
         return Text(data["title"], data["body"], content_id=content_id, posted=posted)
+    elif content_type == "local_image":
+        return LocalImage(mime, blob_data, content_id=content_id, posted=posted)
     else:
         raise UnknownContentError("Unknown content type", content_type)
 
 
 class UnknownContentError(Exception):
-    """The type of content passed to `from_form` was unknown"""
+    """The type of content passed to `from_dict` was unknown"""
 
     def __init__(self, message, unk_type):
         super().__init__(message)
@@ -76,6 +97,8 @@ class UnknownContentError(Exception):
 
 
 class Text(FreeFormContent):
+    """A text post with a title and body"""
+
     def __init__(
         self,
         title: str,
@@ -92,3 +115,37 @@ class Text(FreeFormContent):
 
     def to_db_json(self) -> dict:
         return {"title": self.title, "body": self.body}
+
+
+class BinaryContent(FreeFormContent, ABC):
+    def __init__(
+        self,
+        mime_type: str,
+        blob: bytes,
+        content_id: Optional[int],
+        posted: Optional[datetime],
+    ):
+        super().__init__(content_id, posted)
+        self.mime_type = mime_type
+        self.blob = blob
+
+
+class LocalImage(BinaryContent):
+    """An image post with its data stored directly in the database"""
+
+    def __init__(
+        self,
+        mime_type: str,
+        image_data: bytes,
+        content_id: Optional[int] = None,
+        posted: Optional[datetime] = None,
+    ):
+        super().__init__(mime_type, image_data, content_id, posted)
+        self.image_data = image_data
+        self.mime_type = mime_type
+
+    def type(self) -> str:
+        return "local_image"
+
+    def to_db_json(self) -> dict:
+        return {}

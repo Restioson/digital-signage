@@ -4,7 +4,7 @@ import time
 from typing import Optional
 import flask
 from server import free_form_content
-from server.free_form_content import FreeFormContent
+from server.free_form_content import FreeFormContent, BinaryContent
 
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
@@ -51,39 +51,59 @@ class DatabaseController:
 
         post_timestamp = int(time.time())
 
+        (mime, blob) = (
+            (content.mime_type, content.blob)
+            if isinstance(content, BinaryContent)
+            else (None, None)
+        )
+
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO content (posted, content_type, content_json, content_blob)"
-                " VALUES (?, ?, ?, ?)",
+                "INSERT INTO content "
+                "(posted, content_type, content_json, blob_mime_type, content_blob)"
+                " VALUES (?, ?, ?, ?, ?)",
                 (
                     post_timestamp,
                     content.type(),
                     json.dumps(content.to_db_json()),
-                    content.to_db_blob(),
+                    mime,
+                    blob,
                 ),
             )
         return cursor.lastrowid, post_timestamp
 
-    def fetch_all_content(self) -> list[FreeFormContent]:
+    def fetch_all_content(self, fetch_blob=False) -> list[FreeFormContent]:
+        """Fetch all content from the database. By default, the blob
+        will not be fetched from the database."""
         cursor = self.db.cursor()
         cursor.row_factory = free_form_content.from_sql
+        with_blob = ", content_blob" if fetch_blob else ""
+
+        # SAFETY: this string substitution is okay since we don't use user data here
         return list(
             cursor.execute(
-                "SELECT"
-                "   id, posted, content_type, content_json, content_blob "
+                "SELECT "
+                f"id, posted, content_type, content_json, blob_mime_type {with_blob} "
                 "FROM content "
                 "ORDER BY posted DESC"
             )
         )
 
-    def fetch_content_by_id(self, content_id: int) -> Optional[FreeFormContent]:
+    def fetch_content_by_id(
+        self, content_id: int, fetch_blob=False
+    ) -> Optional[FreeFormContent]:
+        """Fetch a given piece of content from the database. By default, the blob
+        will not be fetched from the database."""
         cursor = self.db.cursor()
         cursor.row_factory = free_form_content.from_sql
+        with_blob = ", content_blob" if fetch_blob else ""
+
+        # SAFETY: this string substitution is okay since we don't use user data here
         return next(
             cursor.execute(
                 "SELECT "
-                "   id, posted, content_type, content_json, content_blob "
+                f"id, posted, content_type, content_json, blob_mime_type {with_blob} "
                 "FROM content"
                 " WHERE id = ?",
                 (content_id,),

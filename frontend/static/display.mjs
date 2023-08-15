@@ -2,13 +2,21 @@ const REFRESH_INTERVAL_MS = 1000
 
 export function renderFreeForm (content) {
   const container = document.createElement('div')
-  const title = document.createElement('h3')
-  const body = document.createElement('p')
 
-  title.innerText = content.title
-  body.innerText = content.body
+  if (content.type === 'text') {
+    const title = document.createElement('h3')
+    const body = document.createElement('p')
 
-  container.append(title, body)
+    title.innerText = content.title
+    body.innerText = content.body
+
+    container.append(title, body)
+  } else {
+    const img = document.createElement('img')
+    img.src = `/api/content/${content.id}/blob`
+    container.append(img)
+  }
+
   return container
 }
 

@@ -1,9 +1,67 @@
 import json
 import time
 import typing
-
 from server.database import DatabaseController
-from server.free_form_content import Text
+from server.free_form_content import Text, LocalImage
+
+
+def test_post_and_fetch_image(
+    database: DatabaseController, test_jpg_data: bytes, test_png_data: bytes
+):
+    assert (
+        len(database.fetch_all_content()) == 0
+    ), "Database should start with no content"
+
+    # Insert a JPG
+    jpg_to_insert = LocalImage("image/jpeg", test_jpg_data)
+    jpg_id, jpg_posted = database.post_content(jpg_to_insert)
+    assert jpg_id is not None, "post_content should return a content ID"
+
+    # Force PNG to be posted after JPG
+    time.sleep(1)
+
+    # Insert a PNG
+    png_to_insert = LocalImage("image/png", test_png_data)
+    png_id, png_posted = database.post_content(png_to_insert)
+    assert png_id != jpg_id, "IDs must be unique"
+    assert png_posted > jpg_posted, "PNG should be posted after JPG"
+
+    [fetched_png, fetched_jpg] = typing.cast(
+        list[LocalImage], database.fetch_all_content()
+    )
+    assert (
+        fetched_png.image_data is None
+    ), "fetch_all_content with fetch_blob=False should not fetch blob"
+    assert (
+        fetched_jpg.image_data is None
+    ), "fetch_all_content with fetch_blob=False should not fetch blob"
+
+    [fetched_png, fetched_jpg] = typing.cast(
+        list[LocalImage], database.fetch_all_content(fetch_blob=True)
+    )
+    assert (
+        fetched_png.image_data == test_png_data
+    ), "Data should be unchanged after roundtrip"
+    assert (
+        fetched_jpg.image_data == test_jpg_data
+    ), "Data should be unchanged after roundtrip"
+
+    fetched_png = typing.cast(LocalImage, database.fetch_content_by_id(png_id))
+    assert (
+        fetched_png.image_data is None
+    ), "fetch_content_by_id with fetch_blob=False should not fetch blob"
+    assert fetched_png.id == png_id
+
+    fetched_png = typing.cast(
+        LocalImage, database.fetch_content_by_id(png_id, fetch_blob=True)
+    )
+    assert (
+        fetched_png.image_data == test_png_data
+    ), "Data should be unchanged after roundtrip"
+
+
+def test_cant_set_id_or_posted(database: DatabaseController):
+    pass
 
 
 def test_post_and_fetch_text(database: DatabaseController):

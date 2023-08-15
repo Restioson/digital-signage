@@ -1,9 +1,12 @@
 import sqlite3
+from pathlib import Path
 
 import pytest
 
 from server.database import DatabaseController
 from server.main import create_app
+
+data_folder = Path(__file__).parent / "data"
 
 
 @pytest.fixture()
@@ -30,3 +33,17 @@ def database(app):
         db.create_db()
 
     yield db
+
+
+@pytest.fixture()
+def test_png_data():
+    with open(data_folder / "test.png", "rb") as f:
+        data = f.read()
+    return data
+
+
+@pytest.fixture()
+def test_jpg_data():
+    with open(data_folder / "test.jpg", "rb") as f:
+        data = f.read()
+    return data

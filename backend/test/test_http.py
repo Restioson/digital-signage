@@ -1,7 +1,60 @@
 import time
+from pathlib import Path
+
+data_folder = Path(__file__).parent / "data"
 
 
-def test_api_content(client):
+def test_post_image(client, test_png_data, test_jpg_data):
+    """Test that images can be posted (both JPG and PNG)"""
+
+    jpg_res = client.post(
+        "/api/content",
+        data={
+            "type": "local_image",
+            "image_data": open(data_folder / "test.jpg", "rb"),
+        },
+    )
+
+    assert jpg_res.json["id"] is not None, "ID should not be None"
+
+    # Force png to be posted after jpg
+    time.sleep(1)
+
+    png_res = client.post(
+        "/api/content",
+        data={
+            "type": "local_image",
+            "image_data": open(data_folder / "test.png", "rb"),
+        },
+    )
+
+    assert png_res.json["id"] != jpg_res.json["id"], "ID should be unique"
+    assert (
+        png_res.json["posted"] > jpg_res.json["posted"]
+    ), "PNG should be posted after JPG"
+
+    res = client.get("/api/content")
+    content = res.json["content"]
+    assert len(content) == 2
+
+    assert content[0]["type"] == "local_image", "content type should be local_image"
+    assert "image_data" not in content[0], "/api/content should not return blob data"
+    assert content[1]["type"] == "local_image", "content type should be local_image"
+    assert "image_data" not in content[1], "/api/content should not return blob data"
+
+    assert content[0]["id"] != content[1]["id"], "ID should be unique"
+    assert content[0]["posted"] > content[1]["posted"], "PNG should be posted after JPG"
+
+    fetched_jpg = client.get(f"/api/content/{jpg_res.json['id']}/blob")
+    assert fetched_jpg.data == test_jpg_data, "Data should match after roundtrip"
+    assert fetched_jpg.content_type == "image/jpeg", "content-type must be correct"
+
+    fetched_png = client.get(f"/api/content/{png_res.json['id']}/blob")
+    assert fetched_png.data == test_png_data, "Data should match after roundtrip"
+    assert fetched_png.content_type == "image/png", "content-type must be correct"
+
+
+def test_post_text(client):
     """Test that content can be posted over the web API and then
     successfully retrieved"""
     res = client.get("/api/content")
