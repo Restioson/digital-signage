@@ -21,7 +21,6 @@ class DatabaseController:
             db_path = (
                 DATABASE if not flask.current_app.config["TESTING"] else DATABASE_TEST
             )
-            print(db_path)
             db = flask.g._database = DatabaseController(sqlite3.connect(db_path))
         return db
 
@@ -36,7 +35,6 @@ class DatabaseController:
 
         # Wipe tables first if testing to get a clean slate
         if app.config["TESTING"]:
-            print("Dropping tables")
             with app.open_resource("sql/drop_tables.sql", mode="r") as f:
                 self.db.cursor().executescript(f.read())
 
@@ -56,12 +54,13 @@ class DatabaseController:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO content (posted, content_type, content_json)"
-                " VALUES (?, ?, ?)",
+                "INSERT INTO content (posted, content_type, content_json, content_blob)"
+                " VALUES (?, ?, ?, ?)",
                 (
                     post_timestamp,
                     content.type(),
                     json.dumps(content.to_db_json()),
+                    content.to_db_blob(),
                 ),
             )
         return cursor.lastrowid, post_timestamp
@@ -71,7 +70,9 @@ class DatabaseController:
         cursor.row_factory = free_form_content.from_sql
         return list(
             cursor.execute(
-                "SELECT id, posted, content_type, content_json FROM content "
+                "SELECT"
+                "   id, posted, content_type, content_json, content_blob "
+                "FROM content "
                 "ORDER BY posted DESC"
             )
         )
@@ -81,7 +82,9 @@ class DatabaseController:
         cursor.row_factory = free_form_content.from_sql
         return next(
             cursor.execute(
-                "SELECT id, posted, content_type, content_json FROM content"
+                "SELECT "
+                "   id, posted, content_type, content_json, content_blob "
+                "FROM content"
                 " WHERE id = ?",
                 (content_id,),
             ),

@@ -4,5 +4,6 @@ CREATE TABLE IF NOT EXISTS content (
   content_type TEXT NOT NULL CHECK (
     content_type IN ('text', 'image', 'video', 'link')
   ),
-  content_json TEXT NOT NULL
+  content_json TEXT NOT NULL,
+  content_blob BLOB
 );

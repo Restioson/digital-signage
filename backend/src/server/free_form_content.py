@@ -15,19 +15,34 @@ class FreeFormContent(ABC):
         """Convert this content to JSON in order to be serialized to the database"""
         raise NotImplementedError
 
-    @abstractmethod
-    def to_http_json(self) -> dict:
-        """Convert this content to JSON in order to be sent over HTTP"""
-        raise NotImplementedError
+    def to_db_blob(self) -> Optional[bytes]:
+        """Retrieve a binary blob of content to store in the database, if applicable"""
+        return None
 
     @abstractmethod
     def type(self) -> str:
         """The type of this content. One of 'link', 'text', 'image', or 'video'"""
         raise NotImplementedError
 
+    def to_http_json(self) -> dict:
+        """Convert this content to JSON in order to be sent over HTTP"""
+        assert self.id is not None, "ID must be present when serializing to HTTP json"
+        assert (
+            self.posted is not None
+        ), "Post timestamp must be present when serializing to HTTP json"
 
-def from_form(form: dict) -> FreeFormContent:
-    """Parse the given Flask form data and return the appropriate content type.
+        http_attrs = {
+            "type": self.type(),
+            "id": self.id,
+            "posted": int(self.posted.timestamp()),
+        }
+
+        http_attrs.update(self.to_db_json())
+        return http_attrs
+
+
+def from_dict(form: dict) -> FreeFormContent:
+    """Deserialize the appropriate content type from the given dictionary.
     Throws UnknownContentError if the content type is not 'text'"""
     if form["type"] == "text":
         return Text(form["title"], form["body"])
@@ -43,8 +58,10 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
     content_id = row["id"]
     posted = datetime.fromtimestamp(row["posted"])
     data = json.loads(row["content_json"])
+    blob_data = row["content_blob"]
 
     if content_type == "text":
+        assert blob_data is None, "Text content should not have any blob data"
         return Text(data["title"], data["body"], content_id=content_id, posted=posted)
     else:
         raise UnknownContentError("Unknown content type", content_type)
@@ -59,21 +76,6 @@ class UnknownContentError(Exception):
 
 
 class Text(FreeFormContent):
-    def type(self) -> str:
-        return "text"
-
-    def to_db_json(self) -> dict:
-        return {"title": self.title, "body": self.body}
-
-    def to_http_json(self) -> dict:
-        return {
-            "type": self.type(),
-            "id": self.id,
-            "posted": int(self.posted.timestamp()),
-            "title": self.title,
-            "body": self.body,
-        }
-
     def __init__(
         self,
         title: str,
@@ -84,3 +86,9 @@ class Text(FreeFormContent):
         super().__init__(content_id, posted)
         self.title = title
         self.body = body
+
+    def type(self) -> str:
+        return "text"
+
+    def to_db_json(self) -> dict:
+        return {"title": self.title, "body": self.body}

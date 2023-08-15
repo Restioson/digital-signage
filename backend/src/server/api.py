@@ -18,7 +18,7 @@ def content():
         }
     else:
         content_id, posted = DatabaseController.get().post_content(
-            free_form_content.from_form(flask.request.form)
+            free_form_content.from_dict(flask.request.form)
         )
 
         return {"id": content_id, "posted": posted}
