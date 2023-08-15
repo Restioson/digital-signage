@@ -24,3 +24,9 @@ CREATE TABLE IF NOT EXISTS content (
     )
   )
 );
+
+CREATE TABLE IF NOT EXISTS department_info (
+  id INTEGER PRIMARY KEY,
+  posted INTEGER NOT NULL,
+  department_info_json TEXT NOT NULL
+);

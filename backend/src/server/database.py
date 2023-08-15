@@ -4,7 +4,9 @@ import time
 from typing import Optional
 import flask
 from server import free_form_content
+from server import department_info
 from server.free_form_content import FreeFormContent, BinaryContent
+from server.department_info import departmentinfo
 
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
@@ -112,3 +114,51 @@ class DatabaseController:
             ),
             None,
         )
+
+    """ Newly added stuff """
+    """ table - department_info """
+    """ posted,json form{id, name, title, position, office_hours, office_location, email, phone} """
+    def post_department_info(self, department_info: departmentinfo) -> (int, int):
+        """Insert the given departmentinfo and returns the inserted row id"""
+        assert department_info.posted is None, (
+            "departmentinfo.posted should only be set in"
+            "DatabaseController.post_department_info"
+        )
+
+        post_timestamp = int(time.time())
+
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "INSERT INTO department_info (posted , content_json)"
+                " VALUES (?, ?)",
+                (
+                    post_timestamp,
+                    json.dumps(department_info.to_db_json()),
+                ),
+            )
+        return cursor.lastrowid, post_timestamp
+
+    def fetch_all_department_info(self) -> list[departmentinfo]:
+        cursor = self.db.cursor()
+        cursor.row_factory = department_info.from_sql
+        return list(
+            cursor.execute(
+                "SELECT id, posted, department_info_json FROM department_info "
+                "ORDER BY posted DESC"
+            )
+        )
+
+    def fetch_department_info_by_id(self, department_info_id: int) -> Optional[departmentinfo]:
+        cursor = self.db.cursor()
+        cursor.row_factory = department_info.from_sql
+        return next(
+            cursor.execute(
+                "SELECT id, posted, department_info_json FROM department_info"
+                " WHERE id = ?",
+                (department_info_id,),
+            ),
+            None,
+        )
+
+    """ Newly added stuff """

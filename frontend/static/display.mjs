@@ -53,11 +53,30 @@ function renderCaption (caption) {
   return container
 }
 
+export function renderdepartmentinfo (department_info) {
+  const container = document.createElement('div')
+  const title = document.createElement('h3')
+  const body = document.createElement('p')
+
+  title.innerText = department_info.title + " "+ department_info.name 
+  body.innerText = department_info.position + " "+ department_info.office_hours + " "+ department_info.office_location + " "+ department_info.email + " "+ department_info.phone
+
+  container.append(title, body)
+  return container
+}
+
+
 export async function refresh () {
   const update = await fetch('/api/content').then(res => res.json())
+  const update2 = await fetch('/api/department_info').then(res => res.json())
   const contentContainer = document.getElementById('content-container')
+  const department_infoContainer = document.getElementById('department_info-container')
   contentContainer.innerHTML = ''
+  department_infoContainer.innerHTML = ''
 
+  for (const department_info of update2.department_info) {
+    department_infoContainer.appendChild(renderdepartmentinfo (department_info))
+  }
   for (const content of update.content) {
     contentContainer.appendChild(renderFreeForm(content))
   }
