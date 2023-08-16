@@ -78,6 +78,47 @@ def test_post_link(client):
     assert content[0]["url"] == "testurl"
 
 
+def test_post_captioned_link(client):
+    res = client.post(
+        "/api/content",
+        data={"type": "link", "url": "testurl", "caption_body": "Test caption"},
+    )
+    assert res.json["id"] is not None
+    assert res.json["posted"] is not None
+
+    time.sleep(1)
+
+    res = client.post(
+        "/api/content",
+        data={"type": "link", "url": "testurl", "caption_title": "Becomes body"},
+    )
+    assert res.json["id"] is not None
+    assert res.json["posted"] is not None
+
+    time.sleep(1)
+
+    res = client.post(
+        "/api/content",
+        data={
+            "type": "link",
+            "url": "testurl",
+            "caption_title": "Title",
+            "caption_body": "Body",
+        },
+    )
+    assert res.json["id"] is not None
+    assert res.json["posted"] is not None
+
+    res = client.get("/api/content")
+    content = res.json["content"]
+    assert len(content) == 3
+
+    assert content[2]["caption"]["body"] == "Test caption"
+    assert content[1]["caption"]["body"] == "Becomes body"
+    assert content[0]["caption"]["title"] == "Title"
+    assert content[0]["caption"]["body"] == "Body"
+
+
 def test_post_text(client):
     """Test that content can be posted over the web API and then
     successfully retrieved"""

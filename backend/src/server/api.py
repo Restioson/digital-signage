@@ -21,9 +21,7 @@ def content():
         }
     else:
         content_id, posted = DatabaseController.get().post_content(
-            free_form_content.from_dict_and_files(
-                flask.request.form, flask.request.files
-            )
+            free_form_content.from_form(flask.request.form, flask.request.files)
         )
 
         return {"id": content_id, "posted": posted}

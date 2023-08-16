@@ -26,6 +26,30 @@ export function renderFreeForm (content) {
     container.append(a)
   }
 
+  if (content.caption) {
+    container.append(renderCaption(content.caption))
+  }
+
+  return container
+}
+
+function renderCaption (caption) {
+  const container = document.createElement('div')
+  container.className = 'content-caption'
+
+  if (caption.title) {
+    const title = document.createElement('p')
+    title.className = 'caption-title'
+    title.innerText = caption.title
+    container.append(title)
+  }
+
+  const body = document.createElement('p')
+  body.className = 'caption-body'
+  body.innerText = caption.body
+
+  container.append(body)
+
   return container
 }
 

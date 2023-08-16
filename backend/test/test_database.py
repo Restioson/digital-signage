@@ -1,12 +1,17 @@
-import datetime
+from datetime import datetime
 import json
 import time
 import typing
-
 import pytest
-
 from server.database import DatabaseController
-from server.free_form_content import Text, LocalImage
+from server.free_form_content import (
+    Text,
+    LocalImage,
+    Link,
+    CaptionedContent,
+    RemoteImage,
+    Caption,
+)
 
 
 def test_post_and_fetch_image(
@@ -17,7 +22,7 @@ def test_post_and_fetch_image(
     ), "Database should start with no content"
 
     # Insert a JPG
-    jpg_to_insert = LocalImage("image/jpeg", test_jpg_data)
+    jpg_to_insert = LocalImage("image/jpeg", test_jpg_data, None)
     jpg_id, jpg_posted = database.post_content(jpg_to_insert)
     assert jpg_id is not None, "post_content should return a content ID"
 
@@ -25,7 +30,7 @@ def test_post_and_fetch_image(
     time.sleep(1)
 
     # Insert a PNG
-    png_to_insert = LocalImage("image/png", test_png_data)
+    png_to_insert = LocalImage("image/png", test_png_data, None)
     png_id, png_posted = database.post_content(png_to_insert)
     assert png_id != jpg_id, "IDs must be unique"
     assert png_posted > jpg_posted, "PNG should be posted after JPG"
@@ -62,6 +67,24 @@ def test_post_and_fetch_image(
     assert (
         fetched_png.image_data == test_png_data
     ), "Data should be unchanged after roundtrip"
+
+
+def test_post_captioned(database: DatabaseController, test_jpg_data: bytes):
+    caption = Caption("Hello", "there")
+    to_insert = [
+        Link("testurl", caption),
+        LocalImage("image/jpeg", test_jpg_data, caption),
+        RemoteImage("testurl", caption),
+    ]
+
+    for content in to_insert:
+        content_id, _ = database.post_content(content)
+        fetched = typing.cast(
+            CaptionedContent, database.fetch_content_by_id(content_id, fetch_blob=False)
+        )
+        print(fetched.to_db_json())
+        assert fetched.caption.title == "Hello", "caption should be identical"
+        assert fetched.caption.body == "there", "caption should be identical"
 
 
 def test_cant_set_id_or_posted(database: DatabaseController):
