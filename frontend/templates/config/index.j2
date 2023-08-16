@@ -60,5 +60,15 @@
       <button type="submit">Submit</button>
       <p hidden class="post-status-message"></p>
     </form>
+
+    <form action="/api/content" method="post" class="post-form">
+      <h3>Post a link</h3>
+      <input type="hidden" id="link_type" name="type" value="link" />
+      <label for="link_url">Url:</label>
+      <input type="url" id="link_url" name="url" />
+
+      <button type="submit">Submit</button>
+      <p hidden class="post-status-message"></p>
+    </form>
   </div>
 {% endblock %}

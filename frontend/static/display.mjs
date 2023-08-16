@@ -15,10 +15,15 @@ export function renderFreeForm (content) {
     const img = document.createElement('img')
     img.src = `/api/content/${content.id}/blob`
     container.append(img)
-  } else {
+  } else if (content.type === 'remote_image') {
     const img = document.createElement('img')
     img.src = content.src
     container.append(img)
+  } else {
+    const a = document.createElement('a')
+    a.innerText = content.url
+    a.href = content.url
+    container.append(a)
   }
 
   return container

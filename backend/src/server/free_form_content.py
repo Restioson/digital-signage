@@ -66,6 +66,8 @@ def from_dict_and_files(form: dict, files: dict) -> FreeFormContent:
         image.verify()
         mime = image.get_format_mimetype()
         return LocalImage(mime, image_data)
+    elif content_type == "link":
+        return Link(form["url"])
     else:
         raise UnknownContentError("Unknown content type", form["type"])
 
@@ -88,6 +90,8 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
         return LocalImage(mime, blob_data, content_id=content_id, posted=posted)
     elif content_type == "remote_image":
         return RemoteImage(data["src"], content_id=content_id, posted=posted)
+    elif content_type == "link":
+        return Link(data["url"], content_id=content_id, posted=posted)
     else:
         raise UnknownContentError("Unknown content type", content_type)
 
@@ -172,3 +176,20 @@ class LocalImage(BinaryContent):
 
     def to_db_json(self) -> dict:
         return {}
+
+
+class Link(FreeFormContent):
+    def __init__(
+        self,
+        url: str,
+        content_id: Optional[int] = None,
+        posted: Optional[datetime] = None,
+    ):
+        super().__init__(content_id, posted)
+        self.url = url
+
+    def type(self) -> str:
+        return "link"
+
+    def to_db_json(self) -> dict:
+        return {"url": self.url}

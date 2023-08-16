@@ -66,6 +66,18 @@ def test_post_remote_image(client):
     assert content[0]["src"] == "testurl"
 
 
+def test_post_link(client):
+    res = client.post("/api/content", data={"type": "link", "url": "testurl"})
+    assert res.json["id"] is not None
+    assert res.json["posted"] is not None
+
+    res = client.get("/api/content")
+    content = res.json["content"]
+    assert len(content) == 1
+
+    assert content[0]["url"] == "testurl"
+
+
 def test_post_text(client):
     """Test that content can be posted over the web API and then
     successfully retrieved"""

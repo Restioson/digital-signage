@@ -49,4 +49,15 @@ describe('renderFreeForm()', function () {
     assert.equal(img.tagName, 'IMG')
     assert(img.src.endsWith('exampleurl'))
   })
+
+  it('link should render into a div with a in body', function () {
+    const out = renderFreeForm({ type: 'link', url: 'https://example.com/' })
+    assert.equal(out.tagName, 'DIV')
+    assert.equal(out.children.length, 1)
+
+    const a = out.children[0]
+    assert.equal(a.tagName, 'A')
+    assert.equal(a.href, 'https://example.com/')
+    assert.equal(a.innerText, 'https://example.com/')
+  })
 })
