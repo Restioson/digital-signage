@@ -1,6 +1,10 @@
+import datetime
 import json
 import time
 import typing
+
+import pytest
+
 from server.database import DatabaseController
 from server.free_form_content import Text, LocalImage
 
@@ -61,7 +65,11 @@ def test_post_and_fetch_image(
 
 
 def test_cant_set_id_or_posted(database: DatabaseController):
-    pass
+    with pytest.raises(Exception):
+        content1_to_insert = Text(
+            "Test title 123", "test body", posted=datetime.datetime.now(), content_id=1
+        )
+        database.post_content(content1_to_insert)
 
 
 def test_post_and_fetch_text(database: DatabaseController):
