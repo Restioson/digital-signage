@@ -1,5 +1,5 @@
 export function main () {
-  for (const form of document.getElementsByClassName('post_form')) {
+  for (const form of document.getElementsByClassName('post-form')) {
     console.log('Added listener')
     form.addEventListener('submit', submitPost)
   }

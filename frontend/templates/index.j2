@@ -1,26 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <link
-      href="{{ url_for('static', filename='display.css') }}"
-      rel="stylesheet"
-    />
-    <meta charset="UTF-8" />
-    <title>Title</title>
-  </head>
-  <body>
-    <h1>Welcome to Campusign</h1>
-    <h2>Directory</h2>
-    <ul>
-      <li><a href="/display">Display view</a></li>
-      <li>
-        <a href="/config">Config</a>
-        <ul>
-          <li><a href="/config/department/lecturer">Add a lecturer</a></li>
-        </ul>
-      </li>
-    </ul>
-    <p></p>
-    <p></p>
-  </body>
-</html>
+{% extends "base.j2" %}
+
+{% block title %}Index{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('main') }}
+{% endblock %}
+
+{% block content %}
+  <ul>
+    <li><a href="/display">Display view</a></li>
+    <li>
+      <a href="/config">Config</a>
+      <ul>
+        <li><a href="/config/department/lecturer">Add a lecturer</a></li>
+      </ul>
+    </li>
+  </ul>
+{% endblock %}

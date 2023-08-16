@@ -2,11 +2,6 @@
 <html lang="en-ZA">
   <head>
     <link
-      href="https://fonts.googleapis.com/css?family=Open Sans"
-      rel="stylesheet"
-    />
-
-    <link
       href="{{ url_for('static', filename='display.css') }}"
       rel="stylesheet"
     />
@@ -18,9 +13,6 @@
       import { main } from "{{ url_for('static', filename='display.mjs') }}";
       await main();
     </script>
-
-    <h1>CampuSign</h1>
-    <h2>Display view</h2>
 
     <div id="content-container"></div>
   </body>

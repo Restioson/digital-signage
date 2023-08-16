@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {%- macro css(url) -%}
+      <link
+        href="{{ url_for('static', filename=url + '.css') }}"
+        rel="stylesheet"
+      />
+    {%- endmacro -%}
+
+    {% block head %}
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Campusign - {% block title %}{% endblock %}</title>
+    {% endblock %}
+  </head>
+  <body>
+    <header>
+      <h1><a href="/">CampuSign</a></h1>
+    </header>
+    <nav>
+      <a href="/display">Display view</a>
+      <a href="/config/department/lecturer">Add Lecturer</a>
+      <a href="/config">Upload Content</a>
+      <a href="#">Configure Monitor</a>
+    </nav>
+    <div id="main-wrap">
+      <main>
+        <h2>{{ self.title() }}</h2>
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </body>
+</html>
