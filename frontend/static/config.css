@@ -1,0 +1,9 @@
+@import url("main.css");
+
+.post-status-message pre {
+  margin-left: 15px;
+}
+
+.post-status-message.error {
+  color: red;
+}
