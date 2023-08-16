@@ -4,9 +4,9 @@ import time
 from typing import Optional
 import flask
 from server import free_form_content
-from server import department_info
+from server import department
 from server.free_form_content import FreeFormContent, BinaryContent
-from server.department_info import departmentinfo
+from server.department import Department
 
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
@@ -116,47 +116,46 @@ class DatabaseController:
         )
 
     """ Newly added stuff """
-    """ table - department_info """
-    """ posted,json form{id, name, title, position, office_hours, office_location, email, phone} """
-    def post_department_info(self, department_info: departmentinfo) -> (int, int):
-        """Insert the given departmentinfo and returns the inserted row id"""
-        assert department_info.posted is None, (
-            "departmentinfo.posted should only be set in"
-            "DatabaseController.post_department_info"
-        )
-
-        post_timestamp = int(time.time())
+    def post_department(self, department: Department) -> (int, int):
+        """Insert the given department and returns the inserted row id"""
 
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO department_info (posted , content_json)"
-                " VALUES (?, ?)",
+                "INSERT INTO lecturers (department, title, full_name, position, office_hours, office_location, email, phone )"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (
-                    post_timestamp,
-                    json.dumps(department_info.to_db_json()),
+                str(department.to_db_department()),
+                str(department.to_db_title()),
+                str(department.to_db_name()),
+                str(department.to_db_position()),
+                str(department.to_db_hours()),
+                str(department.to_db_location()),
+                str(department.to_db_email()),
+                str(department.to_db_phone()),
+
                 ),
             )
-        return cursor.lastrowid, post_timestamp
+        return cursor.lastrowid
 
-    def fetch_all_department_info(self) -> list[departmentinfo]:
+    def fetch_all_lecturers(self) -> list[Department]:
         cursor = self.db.cursor()
-        cursor.row_factory = department_info.from_sql
+        cursor.row_factory = department.from_sql
         return list(
             cursor.execute(
-                "SELECT id, posted, department_info_json FROM department_info "
-                "ORDER BY posted DESC"
+                "SELECT id, department, title, full_name, position, office_hours, office_location,email,phone FROM lecturers "
+                "ORDER BY id"
             )
         )
 
-    def fetch_department_info_by_id(self, department_info_id: int) -> Optional[departmentinfo]:
+    def fetch_department_lecturer_id(self, lecturer_id: int) -> Optional[Department]:
         cursor = self.db.cursor()
-        cursor.row_factory = department_info.from_sql
+        cursor.row_factory = department.from_sql
         return next(
             cursor.execute(
-                "SELECT id, posted, department_info_json FROM department_info"
+                "SELECT id, department, title, full_name, position, office_hours, office_location, email, phone FROM lecturers"
                 " WHERE id = ?",
-                (department_info_id,),
+                (lecturer_id,),
             ),
             None,
         )
