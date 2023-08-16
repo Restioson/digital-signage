@@ -11,21 +11,94 @@
     import { main } from "{{ url_for('static', filename='config.mjs') }}";
     main();
   </script>
+  <div class="column-list">
+    <form action="/api/content" method="post" class="post-form">
+      <h3>Post text</h3>
+      <input type="hidden" id="text_post_type" name="type" value="text" />
 
-  <form action="/api/content" method="post" class="post-form">
-    <label for="type">Type of content:</label>
-    <select id="type" name="type">
-      <option value="text">Text</option>
-    </select>
+      <label for="title">Title:</label>
+      <input id="title" name="title" type="text" />
 
-    <label for="title">Title:</label>
-    <input id="title" name="title" type="text" />
+      <label for="body">Body:</label>
+      <input id="body" name="body" type="text" />
 
-    <label for="body">Body:</label>
-    <input id="body" name="body" type="text" />
+      <button type="submit">Submit</button>
+      <p hidden class="post-status-message"></p>
+    </form>
 
-    <button type="submit">Submit</button>
+    <form
+      action="/api/content"
+      method="post"
+      enctype="multipart/form-data"
+      class="post-form"
+    >
+      <h3>Post an image</h3>
+      <input
+        type="hidden"
+        id="local_image_post_type"
+        name="type"
+        value="local_image"
+      />
+      <label for="image_data">Attach file:</label>
+      <input type="file" id="image_data" name="image_data" />
 
-    <p hidden class="post-status-message"></p>
-  </form>
+      <label
+        >Caption title:
+        <input type="text" name="caption_title" />
+      </label>
+
+      <label
+        >Caption body:
+        <input type="text" name="caption_body" />
+      </label>
+
+      <button type="submit">Submit</button>
+      <p hidden class="post-status-message"></p>
+    </form>
+
+    <form action="/api/content" method="post" class="post-form">
+      <h3>Post an image</h3>
+      <input
+        type="hidden"
+        id="remote_image_post_type"
+        name="type"
+        value="remote_image"
+      />
+      <label for="remote_image_url">Url:</label>
+      <input type="url" id="remote_image_url" name="src" />
+
+      <label
+        >Caption title:
+        <input type="text" name="caption_title" />
+      </label>
+
+      <label
+        >Caption body:
+        <input type="text" name="caption_body" />
+      </label>
+
+      <button type="submit">Submit</button>
+      <p hidden class="post-status-message"></p>
+    </form>
+
+    <form action="/api/content" method="post" class="post-form">
+      <h3>Post a link</h3>
+      <input type="hidden" id="link_type" name="type" value="link" />
+      <label for="link_url">Url:</label>
+      <input type="url" id="link_url" name="url" />
+
+      <label
+        >Caption title:
+        <input type="text" name="caption_title" />
+      </label>
+
+      <label
+        >Caption body:
+        <input type="text" name="caption_body" />
+      </label>
+
+      <button type="submit">Submit</button>
+      <p hidden class="post-status-message"></p>
+    </form>
+  </div>
 {% endblock %}

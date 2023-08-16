@@ -29,7 +29,6 @@ async function submitPost (event) {
   try {
     const res = await fetch(form.action, {
       method: 'post',
-      headers: { 'Content-Type': form.enctype },
       // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
       body:
         form.enctype === 'multipart/form-data'
