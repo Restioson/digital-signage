@@ -1,66 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <link rel="stylesheet" href="main.css" />
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Configure department information</title>
-  </head>
-  <body>
-    <header>
-      <h1>CampuSign</h1>
-    </header>
-    <nav>
-      <a href="#">Add Lecturer</a>
-      <a href="#">Upload Content</a>
-      <a href="#">Configure Monitor</a>
-    </nav>
-    <div class="form-container">
-      <form>
-        <h2>Add Lecturer</h2>
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required />
+{% extends "base.j2" %}
 
-        <label for="title">Title:</label>
-        <select id="title" name="title" required>
-          <option value="mr">Mr</option>
-          <option value="mrs">Mrs</option>
-          <option value="ms">Ms</option>
-          <option value="ms">Mx</option>
-          <option value="prof">Professor</option>
-          <option value="associate_prof">Associate Professor</option>
-          <option value="dr">Dr</option>
-        </select>
+{% block title %}Add a lecturer{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('config/department/lecturer') }}
+{% endblock %}
 
-        <br /><br />
+{% block content %}
+  <form>
+    <label
+      >Name:
+      <input type="text" id="name" name="name" required />
+    </label>
 
-        <label for="position">Position:</label>
-        <input type="text" id="position" name="position" required />
+    <label
+      >Title:
+      <select id="title" name="title" required>
+        <option value="mr">Mr</option>
+        <option value="mrs">Mrs</option>
+        <option value="ms">Ms</option>
+        <option value="ms">Mx</option>
+        <option value="prof">Professor</option>
+        <option value="associate_prof">Associate Professor</option>
+        <option value="dr">Dr</option>
+      </select>
+    </label>
 
-        <label for="office">Office Location:</label>
-        <input type="text" id="office" name="office" />
+    <label
+      >Position:
+      <input type="text" id="position" name="position" required />
+    </label>
 
-        <label for="email">Email Address:</label>
-        <input type="email" id="email" name="email" required />
+    <label
+      >Office Location:
+      <input type="text" id="office" name="office" />
+    </label>
 
-        <label for="tel">Telephone Number:</label>
-        <input type="tel" id="tel" name="tel" required />
+    <label
+      >Email Address:
+      <input type="email" id="email" name="email" required />
+    </label>
 
-        <h4 id="office_hours">Office Hours</h4>
-        <label for="start_time">start time:</label>
-        <input type="time" id="start_time" name="start time" />
-        <label for="end_time">end time:</label>
-        <input type="time" id="end_time" name="endTime" />
+    <label
+      >Telephone Number:
+      <input type="tel" id="tel" name="tel" required />
+    </label>
 
-        <label for="department">Department:</label>
-        <select id="department" name="department">
-          <option value="computer_science">Computer Science</option>
-          <option value="mathematics">Mathematics</option>
-          <option value="chemistry">Chemistry</option>
-        </select>
-        <br /><br />
-        <button type="submit">Submit</button>
-      </form>
+    <div>
+      <label>Office hours:</label>
+      <input type="time" name="start_time" aria-label="start_time" />
+      to
+      <input type="time" name="end_time" aria-label="end_time" />
     </div>
-  </body>
-</html>
+
+    <label
+      >Department:
+      <select id="department" name="department">
+        <option value="computer_science">Computer Science</option>
+        <option value="mathematics">Mathematics</option>
+        <option value="chemistry">Chemistry</option>
+      </select>
+    </label>
+
+    <button type="submit">Submit</button>
+  </form>
+{% endblock %}

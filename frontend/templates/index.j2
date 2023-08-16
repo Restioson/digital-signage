@@ -1,0 +1,19 @@
+{% extends "base.j2" %}
+
+{% block title %}Index{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('main') }}
+{% endblock %}
+
+{% block content %}
+  <ul>
+    <li><a href="/display">Display view</a></li>
+    <li>
+      <a href="/config">Config</a>
+      <ul>
+        <li><a href="/config/department/lecturer">Add a lecturer</a></li>
+      </ul>
+    </li>
+  </ul>
+{% endblock %}

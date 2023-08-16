@@ -5,7 +5,7 @@ blueprint = Blueprint("config_view", __name__, url_prefix="/config")
 
 @blueprint.route("/")
 def hello_world():
-    return render_template("config.j2")
+    return render_template("config/index.j2")
 
 
 @blueprint.route("/department/lecturer")
