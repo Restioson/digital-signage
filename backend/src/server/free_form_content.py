@@ -36,7 +36,9 @@ class FreeFormContent(ABC):
 
     @abstractmethod
     def type(self) -> str:
-        """The type of this content. One of 'link', 'text', 'image', or 'video'"""
+        """The type of this content. One of 'link', 'text', 'local_image',
+        or 'remote_image'
+        """
         raise NotImplementedError
 
     def to_http_json(self) -> dict:
@@ -94,9 +96,11 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
     elif content_type == "remote_image":
         return RemoteImage(form["src"], caption)
     elif content_type == "local_image":
+        # Load and verify the file, throwing an error if it isn't a valid image
         image_data = files["image_data"].read()
         image = PIL.Image.open(io.BytesIO(image_data))
         image.verify()
+
         mime = image.get_format_mimetype()
         return LocalImage(mime, image_data, caption)
     elif content_type == "link":
@@ -169,6 +173,8 @@ class Text(FreeFormContent):
 
 
 class Caption:
+    """A caption for some content with a body and optional title"""
+
     def __init__(self, title: Optional[str], body: str):
         self.title = title
         self.body = body
@@ -197,6 +203,8 @@ class CaptionedContent(FreeFormContent, ABC):
 
 
 class Link(CaptionedContent):
+    """A link to be displayed on the board along with a caption."""
+
     def __init__(
         self,
         url: str,
@@ -236,6 +244,9 @@ class RemoteImage(CaptionedContent):
 
 
 class BinaryContent(CaptionedContent, ABC):
+    """A piece of content which has some attached binary data. A MIME type must be
+    provided for this data in order for browsers to correctly interpret it."""
+
     def __init__(
         self,
         mime_type: str,

@@ -26,11 +26,13 @@ class DatabaseController:
 
     @staticmethod
     def teardown():
+        """Close the database connection and remove it from the global cache"""
         db = flask.g.pop("_database", None)
         if db is not None:
-            db.close()
+            db.db.close()
 
     def create_db(self):
+        """Create the database and run setup SQL"""
         app = flask.current_app
 
         # Wipe tables first if testing to get a clean slate
@@ -110,6 +112,3 @@ class DatabaseController:
             ),
             None,
         )
-
-    def close(self):
-        self.db.close()

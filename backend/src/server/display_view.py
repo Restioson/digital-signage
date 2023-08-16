@@ -4,5 +4,6 @@ blueprint = Blueprint("display_view", __name__, url_prefix="/display")
 
 
 @blueprint.route("/")
-def hello_world():
+def display():
+    """Return the display view page"""
     return render_template("display.j2")

@@ -4,10 +4,12 @@ blueprint = Blueprint("config_view", __name__, url_prefix="/config")
 
 
 @blueprint.route("/")
-def hello_world():
+def index():
+    """Return the config index page"""
     return render_template("config/index.j2")
 
 
 @blueprint.route("/department/lecturer")
-def display_config_department_info():
+def upload_lecturer():
+    """Return the lecturer config page"""
     return render_template("config/department/lecturer.j2")

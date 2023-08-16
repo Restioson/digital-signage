@@ -4,11 +4,15 @@ from server.database import DatabaseController
 
 
 def create_app(testing=False):
+    """Create and configure the flask app"""
+
     app = Flask(
         __name__,
         static_folder="../../../frontend/static",
         template_folder="../../../frontend/templates",
     )
+
+    # Register blueprints for each logical part of the app
     app.register_blueprint(config_view.blueprint)
     app.register_blueprint(display_view.blueprint)
     app.register_blueprint(index.blueprint)
@@ -17,6 +21,7 @@ def create_app(testing=False):
     if testing:
         app.config.update({"TESTING": True})
 
+    # Setup database
     with app.app_context():
         DatabaseController.get().create_db()
 

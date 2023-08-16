@@ -12,6 +12,17 @@ blueprint = Blueprint("api", __name__, url_prefix="/api")
 
 @blueprint.route("/content", methods=["POST", "GET"])
 def content():
+    """The /api/content endpoint.
+
+    GETting this endpoint will return a list of all the content on the server
+    in the reverse order of posting (most recent to least recent). Binary blobs
+    will not be fetched and must be fetched separately using the /api/content/<id>/blob
+    endpoint.
+
+    POSTing to this endpoint with a form representing a new content post will create
+    the post on the server and return the ID and post time upon success.
+    """
+
     if flask.request.method == "GET":
         return {
             "content": [
@@ -29,6 +40,10 @@ def content():
 
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])
 def content_blob(content_id: int):
+    """Fetch the blob (Binary Large OBject) associated with the given content.
+
+    Returns 404 if the content is not BinaryContent.
+    """
     post = DatabaseController.get().fetch_content_by_id(content_id, fetch_blob=True)
 
     if isinstance(post, BinaryContent):
