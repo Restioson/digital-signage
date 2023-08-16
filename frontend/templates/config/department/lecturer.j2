@@ -8,47 +8,60 @@
 
 {% block content %}
   <form>
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required />
+    <label
+      >Name:
+      <input type="text" id="name" name="name" required />
+    </label>
 
-    <label for="title">Title:</label>
-    <select id="title" name="title" required>
-      <option value="mr">Mr</option>
-      <option value="mrs">Mrs</option>
-      <option value="ms">Ms</option>
-      <option value="ms">Mx</option>
-      <option value="prof">Professor</option>
-      <option value="associate_prof">Associate Professor</option>
-      <option value="dr">Dr</option>
-    </select>
+    <label
+      >Title:
+      <select id="title" name="title" required>
+        <option value="mr">Mr</option>
+        <option value="mrs">Mrs</option>
+        <option value="ms">Ms</option>
+        <option value="ms">Mx</option>
+        <option value="prof">Professor</option>
+        <option value="associate_prof">Associate Professor</option>
+        <option value="dr">Dr</option>
+      </select>
+    </label>
 
-    <br /><br />
+    <label
+      >Position:
+      <input type="text" id="position" name="position" required />
+    </label>
 
-    <label for="position">Position:</label>
-    <input type="text" id="position" name="position" required />
+    <label
+      >Office Location:
+      <input type="text" id="office" name="office" />
+    </label>
 
-    <label for="office">Office Location:</label>
-    <input type="text" id="office" name="office" />
+    <label
+      >Email Address:
+      <input type="email" id="email" name="email" required />
+    </label>
 
-    <label for="email">Email Address:</label>
-    <input type="email" id="email" name="email" required />
+    <label
+      >Telephone Number:
+      <input type="tel" id="tel" name="tel" required />
+    </label>
 
-    <label for="tel">Telephone Number:</label>
-    <input type="tel" id="tel" name="tel" required />
+    <div>
+      <label>Office hours:</label>
+      <input type="time" name="start_time" aria-label="start_time" />
+      to
+      <input type="time" name="end_time" aria-label="end_time" />
+    </div>
 
-    <h4 id="office_hours">Office Hours</h4>
-    <label for="start_time">start time:</label>
-    <input type="time" id="start_time" name="start time" />
-    <label for="end_time">end time:</label>
-    <input type="time" id="end_time" name="endTime" />
+    <label
+      >Department:
+      <select id="department" name="department">
+        <option value="computer_science">Computer Science</option>
+        <option value="mathematics">Mathematics</option>
+        <option value="chemistry">Chemistry</option>
+      </select>
+    </label>
 
-    <label for="department">Department:</label>
-    <select id="department" name="department">
-      <option value="computer_science">Computer Science</option>
-      <option value="mathematics">Mathematics</option>
-      <option value="chemistry">Chemistry</option>
-    </select>
-    <br /><br />
     <button type="submit">Submit</button>
   </form>
 {% endblock %}

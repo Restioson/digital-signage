@@ -56,11 +56,9 @@ form {
   padding: 20px;
   border: 1px solid #ddd;
   box-shadow: 0 0 10px rgba(0 0 0 / 10%);
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
 }
 
 input[type="text"],
