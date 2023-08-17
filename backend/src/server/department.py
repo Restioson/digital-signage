@@ -2,7 +2,7 @@ import sqlite3
 from typing import Optional
 
 
-# currently not fully used. but potential functionality in future.
+# TODO: add more functionality and use in display group development
 class Department:
     """A unversity department that has lecturers and are to be the users of this app.
     Currently unused but need for later functionality."""

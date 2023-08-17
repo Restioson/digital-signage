@@ -78,7 +78,7 @@ export async function refresh () {
   contentContainer.innerHTML = ''
   lecturerContainer.innerHTML = ''
 
-  for (const lecturer of lecturerUpdate.lecturer) {
+  for (const lecturer of lecturerUpdate.lecturers) {
     lecturerContainer.appendChild(renderLecturer(lecturer))
   }
   for (const content of contentUpdate.content) {

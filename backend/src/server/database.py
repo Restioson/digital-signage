@@ -114,7 +114,7 @@ class DatabaseController:
             None,
         )
 
-    def post_lecturer(self, lecturer: Lecturer) -> int:
+    def insert_lecturer(self, lecturer: Lecturer) -> int:
         """Insert the given lecturer into the lecturer database
         and returns the inserted row id"""
 
@@ -151,21 +151,8 @@ class DatabaseController:
             )
         )
 
-    """ # this is for future where we will switch it to display based on department
-    def fetch_department(self) -> list[Department]:
-        cursor = self.db.cursor()
-        cursor.row_factory = department.from_sql
-        return list(
-            cursor.execute(
-                "SELECT id, department, title, "
-                "full_name, position, office_hours,"
-                "office_location,email,phone FROM lecturers "
-                " ORDER BY id"
-            )
-        )"""
-
-    def fetch_department_lecturer_id(self, lecturer_id: int) -> Optional[Lecturer]:
-        """ "Fetch a specific lecturer from the database based on their ID"""
+    def fetch_lecturer_by_id(self, lecturer_id: int) -> Optional[Lecturer]:
+        """Fetch a specific lecturer from the database based on their ID"""
         cursor = self.db.cursor()
         cursor.row_factory = Lecturer.from_sql
         return next(
