@@ -115,7 +115,7 @@ class DatabaseController:
         )
 
     def post_lecturer(self, lecturer: Lecturer) -> int:
-        """Insert the given lecturer and returns the inserted row id"""
+        """Insert the given lecturer into the leturer database and returns the inserted row id"""
 
         with self.db:
             cursor = self.db.cursor()
@@ -138,6 +138,7 @@ class DatabaseController:
         return cursor.lastrowid
 
     def fetch_all_departments(self) -> list[Lecturer]:
+        """"Fetch all the departments lecturers from the database"""
         cursor = self.db.cursor()
         cursor.row_factory = Lecturer.from_sql
         return list(
@@ -163,6 +164,7 @@ class DatabaseController:
         )"""
 
     def fetch_department_lecturer_id(self, lecturer_id: int) -> Optional[Lecturer]:
+        """"Fetch a specific lecturer from the database based on their ID"""
         cursor = self.db.cursor()
         cursor.row_factory = Lecturer.from_sql
         return next(

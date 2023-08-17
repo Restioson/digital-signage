@@ -41,6 +41,11 @@ def content():
 
 @blueprint.route("/lecturers", methods=["POST", "GET"])
 def department_route():
+    """The /api/lecturers end point
+    GETing this endpoint fetches all the departments lecturers from the database
+
+    POSTing to this end point inserts a new lecturer into the database
+    """
     if flask.request.method == "GET":
         return {
             "lecturer": [
