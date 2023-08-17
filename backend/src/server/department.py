@@ -4,6 +4,9 @@ from typing import Optional
 
 # currently not fully used. but potential functionality in future.
 class Department:
+    """A unversity department that has lecturers and are to be the users of this app.
+    Currently unused but need for later functionality."""
+
     def __init__(self, name):
         self.name = name
         self.lecturers = []
@@ -40,6 +43,7 @@ class Lecturer(Department):
         self.id = lecturer_id
 
     def to_http_json(self) -> dict:
+        """Sends data in json format to be posted through http"""
         return {
             "department": self.department,
             "title": self.title,
@@ -54,6 +58,7 @@ class Lecturer(Department):
 
     @staticmethod
     def from_form(form: dict):
+        """forms lecturer from data inputted in the configuration form"""
         return Lecturer(
             form["department"],
             form["title"],

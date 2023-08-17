@@ -39,7 +39,7 @@ def content():
         return {"id": content_id, "posted": posted}
 
 
-@blueprint.route("/lecturer", methods=["POST", "GET"])
+@blueprint.route("/lecturers", methods=["POST", "GET"])
 def department_route():
     if flask.request.method == "GET":
         return {

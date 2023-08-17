@@ -53,31 +53,33 @@ function renderCaption (caption) {
   return container
 }
 
-export function renderlecturer (lecturer) {
+export function renderLecturer (lecturer) {
   const container = document.createElement('div')
   const title = document.createElement('h3')
   const body = document.createElement('p')
 
   title.innerText = `${lecturer.title} ${lecturer.name}`
   body.innerText = `Position: ${lecturer.position} in the ${
-    lecturer.lecturer
-  } lecturer\nOffice Hours: ${lecturer.office_hours}\nOffice Location: ${
+    lecturer.department
+  } department\n
+  Office Hours: ${lecturer.office_hours}\nOffice Location: ${
     lecturer.office_location
-  }\nEmail: ${lecturer.email}\nPhone: ${lecturer.phone}`
+  }\n
+  Email: ${lecturer.email}\nPhone: ${lecturer.phone}`
   container.append(title, body)
   return container
 }
 
 export async function refresh () {
   const contentUpdate = await fetch('/api/content').then(res => res.json())
-  const lecturerUpdate = await fetch('/api/lecturer').then(res => res.json())
+  const lecturerUpdate = await fetch('/api/lecturers').then(res => res.json())
   const contentContainer = document.getElementById('content-container')
   const lecturerContainer = document.getElementById('lecturer-container')
   contentContainer.innerHTML = ''
   lecturerContainer.innerHTML = ''
 
   for (const lecturer of lecturerUpdate.lecturer) {
-    lecturerContainer.appendChild(renderlecturer(lecturer))
+    lecturerContainer.appendChild(renderLecturer(lecturer))
   }
   for (const content of contentUpdate.content) {
     contentContainer.appendChild(renderFreeForm(content))
