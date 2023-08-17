@@ -111,18 +111,6 @@ class Lecturer(Department):
     def to_db_phone(self) -> str:
         return self.phone
 
-    def to_db(self) -> dict:
-        return {
-            "department": self.department,
-            "name": self.name,
-            "title": self.title,
-            "position": self.position,
-            "office_hours": self.office_hours,
-            "office_location": self.office_location,
-            "email": self.email,
-            "phone": self.phone,
-        }
-
     def to_http_json(self) -> dict:
         return {
             "department": self.department,

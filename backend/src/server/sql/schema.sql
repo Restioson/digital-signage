@@ -27,9 +27,7 @@ CREATE TABLE IF NOT EXISTS content (
 CREATE TABLE IF NOT EXISTS lecturers (
   id INTEGER PRIMARY KEY,
   department TEXT NOT NULL,
-  title TEXT NOT NULL CHECK (
-    title IN ('Mr', 'Mrs', 'Ms', 'Mx', 'Prof', 'A/Prof', 'Dr')
-  ),
+  title TEXT NOT NULL,
   full_name TEXT NOT NULL,
   position TEXT NOT NULL,
   office_hours TEXT NOT NULL,

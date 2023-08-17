@@ -117,7 +117,7 @@ class DatabaseController:
 
     """ Newly added stuff """
 
-    def post_department(self, department: Department) -> (int, int):
+    def post_department(self, department: Department) -> int:
         """Insert the given department and returns the inserted row id"""
 
         with self.db:

@@ -69,17 +69,19 @@ export function renderDepartment (department) {
 }
 
 export async function refresh () {
-  const update = await fetch('/api/content').then(res => res.json())
-  const update2 = await fetch('/api/department').then(res => res.json())
+  const contentupdate = await fetch('/api/content').then(res => res.json())
+  const departmentupdate = await fetch('/api/department').then(res =>
+    res.json()
+  )
   const contentContainer = document.getElementById('content-container')
   const departmentContainer = document.getElementById('department-container')
   contentContainer.innerHTML = ''
   departmentContainer.innerHTML = ''
 
-  for (const department of update2.department) {
+  for (const department of departmentupdate.department) {
     departmentContainer.appendChild(renderDepartment(department))
   }
-  for (const content of update.content) {
+  for (const content of contentupdate.content) {
     contentContainer.appendChild(renderFreeForm(content))
   }
 
