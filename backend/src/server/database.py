@@ -4,9 +4,8 @@ import time
 from typing import Optional
 import flask
 from server import free_form_content
-from server import department
 from server.free_form_content import FreeFormContent, BinaryContent
-from server.department import Department
+from server.department import Lecturer
 
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
@@ -115,10 +114,8 @@ class DatabaseController:
             None,
         )
 
-    """ Newly added stuff """
-
-    def post_department(self, department: Department) -> int:
-        """Insert the given department and returns the inserted row id"""
+    def post_lecturer(self, lecturer: Lecturer) -> int:
+        """Insert the given lecturer and returns the inserted row id"""
 
         with self.db:
             cursor = self.db.cursor()
@@ -128,19 +125,32 @@ class DatabaseController:
                 "office_hours, office_location, email, phone)"
                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (
-                    str(department.to_db_department()),
-                    str(department.to_db_title()),
-                    str(department.to_db_name()),
-                    str(department.to_db_position()),
-                    str(department.to_db_hours()),
-                    str(department.to_db_location()),
-                    str(department.to_db_email()),
-                    str(department.to_db_phone()),
+                    lecturer.department,
+                    lecturer.title,
+                    lecturer.name,
+                    lecturer.position,
+                    lecturer.office_hours,
+                    lecturer.office_location,
+                    lecturer.email,
+                    lecturer.phone,
                 ),
             )
         return cursor.lastrowid
 
-    def fetch_all_lecturers(self) -> list[Department]:
+    def fetch_all_departments(self) -> list[Lecturer]:
+        cursor = self.db.cursor()
+        cursor.row_factory = Lecturer.from_sql
+        return list(
+            cursor.execute(
+                "SELECT id, department, title, "
+                "full_name, position, office_hours,"
+                "office_location,email,phone FROM lecturers "
+                " ORDER BY id"
+            )
+        )
+
+    """ # this is for future where we will switch it to display based on department
+    def fetch_department(self) -> list[Department]:
         cursor = self.db.cursor()
         cursor.row_factory = department.from_sql
         return list(
@@ -148,13 +158,13 @@ class DatabaseController:
                 "SELECT id, department, title, "
                 "full_name, position, office_hours,"
                 "office_location,email,phone FROM lecturers "
-                "ORDER BY id"
+                " ORDER BY id"
             )
-        )
+        )"""
 
-    def fetch_department_lecturer_id(self, lecturer_id: int) -> Optional[Department]:
+    def fetch_department_lecturer_id(self, lecturer_id: int) -> Optional[Lecturer]:
         cursor = self.db.cursor()
-        cursor.row_factory = department.from_sql
+        cursor.row_factory = Lecturer.from_sql
         return next(
             cursor.execute(
                 "SELECT id, department, title,"
@@ -165,5 +175,3 @@ class DatabaseController:
             ),
             None,
         )
-
-    """ Newly added stuff """

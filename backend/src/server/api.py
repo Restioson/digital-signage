@@ -4,7 +4,7 @@ import flask
 from flask import Blueprint, Response
 
 from server import free_form_content
-from server import department
+from server.department import Lecturer
 from server.database import DatabaseController
 from server.free_form_content import BinaryContent
 
@@ -39,18 +39,18 @@ def content():
         return {"id": content_id, "posted": posted}
 
 
-@blueprint.route("/department", methods=["POST", "GET"])
+@blueprint.route("/lecturer", methods=["POST", "GET"])
 def department_route():
     if flask.request.method == "GET":
         return {
-            "department": [
-                post.to_http_json()
-                for post in DatabaseController.get().fetch_all_lecturers()
+            "lecturer": [
+                lecturer.to_http_json()
+                for lecturer in DatabaseController.get().fetch_all_departments()
             ]
         }
     else:
-        lecturer_id = DatabaseController.get().post_department(
-            department.from_form(flask.request.form)
+        lecturer_id = DatabaseController.get().post_lecturer(
+            Lecturer.from_form(flask.request.form)
         )
 
         return {"id": lecturer_id}
