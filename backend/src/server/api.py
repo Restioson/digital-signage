@@ -4,6 +4,7 @@ import flask
 from flask import Blueprint, Response
 
 from server import free_form_content
+from server.department import Lecturer
 from server.database import DatabaseController
 from server.free_form_content import BinaryContent
 
@@ -36,6 +37,28 @@ def content():
         )
 
         return {"id": content_id, "posted": posted}
+
+
+@blueprint.route("/lecturers", methods=["POST", "GET"])
+def lecturers_route():
+    """The /api/lecturers end point
+    GETing this endpoint fetches all the departments lecturers from the database
+
+    POSTing to this end point inserts a new lecturer into the database
+    """
+    if flask.request.method == "GET":
+        return {
+            "lecturers": [
+                lecturer.to_http_json()
+                for lecturer in DatabaseController.get().fetch_all_departments()
+            ]
+        }
+    else:
+        lecturer_id = DatabaseController.get().insert_lecturer(
+            Lecturer.from_form(flask.request.form)
+        )
+
+        return {"id": lecturer_id}
 
 
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])

@@ -24,3 +24,19 @@ CREATE TABLE IF NOT EXISTS content (
     )
   )
 );
+CREATE TABLE IF NOT EXISTS lecturers (
+  id INTEGER PRIMARY KEY,
+  department TEXT NOT NULL,
+  title TEXT NOT NULL,
+  full_name TEXT NOT NULL,
+  position TEXT NOT NULL,
+  office_hours TEXT NOT NULL,
+  office_location TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS department (
+  id INTEGER PRIMARY KEY,
+  department TEXT NOT NULL,
+  bio TEXT
+);

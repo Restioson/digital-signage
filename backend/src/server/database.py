@@ -5,6 +5,7 @@ from typing import Optional
 import flask
 from server import free_form_content
 from server.free_form_content import FreeFormContent, BinaryContent
+from server.department import Lecturer
 
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
@@ -109,6 +110,58 @@ class DatabaseController:
                 "FROM content"
                 " WHERE id = ?",
                 (content_id,),
+            ),
+            None,
+        )
+
+    def insert_lecturer(self, lecturer: Lecturer) -> int:
+        """Insert the given lecturer into the lecturer database
+        and returns the inserted row id"""
+
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "INSERT INTO lecturers "
+                "(department, title, full_name, position, "
+                "office_hours, office_location, email, phone)"
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    lecturer.department,
+                    lecturer.title,
+                    lecturer.name,
+                    lecturer.position,
+                    lecturer.office_hours,
+                    lecturer.office_location,
+                    lecturer.email,
+                    lecturer.phone,
+                ),
+            )
+        return cursor.lastrowid
+
+    def fetch_all_departments(self) -> list[Lecturer]:
+        """Fetch all the departments lecturers from the database"""
+        cursor = self.db.cursor()
+        cursor.row_factory = Lecturer.from_sql
+        return list(
+            cursor.execute(
+                "SELECT id, department, title, "
+                "full_name, position, office_hours,"
+                "office_location,email,phone FROM lecturers "
+                " ORDER BY id"
+            )
+        )
+
+    def fetch_lecturer_by_id(self, lecturer_id: int) -> Optional[Lecturer]:
+        """Fetch a specific lecturer from the database based on their ID"""
+        cursor = self.db.cursor()
+        cursor.row_factory = Lecturer.from_sql
+        return next(
+            cursor.execute(
+                "SELECT id, department, title,"
+                "full_name, position, office_hours,"
+                "office_location, email, phone FROM lecturers"
+                " WHERE id = ?",
+                (lecturer_id,),
             ),
             None,
         )
