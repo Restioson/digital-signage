@@ -12,7 +12,7 @@
   border: 3px solid #000;
 }
 
-#lecturer-container,
+#lecturer-container > div,
 #content-container > div {
   display: flex;
   flex-direction: column;
