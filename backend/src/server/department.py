@@ -18,7 +18,7 @@ class Department:
             raise ValueError("Invalid Lecturer object")
 
 
-class Lecturer(Department):
+class Lecturer:
     def __init__(
         self,
         department: str,
@@ -31,7 +31,6 @@ class Lecturer(Department):
         phone: str,
         lecturer_id: Optional[int] = None,
     ):
-        super().__init__(lecturer_id)
         self.department = department
         self.title = title
         self.name = name
