@@ -138,7 +138,7 @@ class DatabaseController:
         return cursor.lastrowid
 
     def fetch_all_departments(self) -> list[Lecturer]:
-        """"Fetch all the departments lecturers from the database"""
+        """Fetch all the departments lecturers from the database"""
         cursor = self.db.cursor()
         cursor.row_factory = Lecturer.from_sql
         return list(
