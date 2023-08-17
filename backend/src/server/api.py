@@ -56,7 +56,6 @@ def department_route():
         return {"id": lecturer_id}
 
 
-
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])
 def content_blob(content_id: int):
     """Fetch the blob (Binary Large OBject) associated with the given content.

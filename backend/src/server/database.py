@@ -116,24 +116,26 @@ class DatabaseController:
         )
 
     """ Newly added stuff """
+
     def post_department(self, department: Department) -> (int, int):
         """Insert the given department and returns the inserted row id"""
 
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO lecturers (department, title, full_name, position, office_hours, office_location, email, phone )"
+                "INSERT INTO lecturers "
+                "(department, title, full_name, position, "
+                "office_hours, office_location, email, phone)"
                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 (
-                str(department.to_db_department()),
-                str(department.to_db_title()),
-                str(department.to_db_name()),
-                str(department.to_db_position()),
-                str(department.to_db_hours()),
-                str(department.to_db_location()),
-                str(department.to_db_email()),
-                str(department.to_db_phone()),
-
+                    str(department.to_db_department()),
+                    str(department.to_db_title()),
+                    str(department.to_db_name()),
+                    str(department.to_db_position()),
+                    str(department.to_db_hours()),
+                    str(department.to_db_location()),
+                    str(department.to_db_email()),
+                    str(department.to_db_phone()),
                 ),
             )
         return cursor.lastrowid
@@ -143,7 +145,9 @@ class DatabaseController:
         cursor.row_factory = department.from_sql
         return list(
             cursor.execute(
-                "SELECT id, department, title, full_name, position, office_hours, office_location,email,phone FROM lecturers "
+                "SELECT id, department, title, "
+                "full_name, position, office_hours,"
+                "office_location,email,phone FROM lecturers "
                 "ORDER BY id"
             )
         )
@@ -153,7 +157,9 @@ class DatabaseController:
         cursor.row_factory = department.from_sql
         return next(
             cursor.execute(
-                "SELECT id, department, title, full_name, position, office_hours, office_location, email, phone FROM lecturers"
+                "SELECT id, department, title,"
+                "full_name, position, office_hours,"
+                "office_location, email, phone FROM lecturers"
                 " WHERE id = ?",
                 (lecturer_id,),
             ),

@@ -1,5 +1,3 @@
-from datetime import datetime
-import json
 import sqlite3
 from abc import abstractmethod, ABC
 from typing import Optional
@@ -10,24 +8,38 @@ class Department(ABC):
         self.id = lecturer_id
 
     @abstractmethod
-    def to_db_title(self)-> str:raise NotImplementedError
-    @abstractmethod    
-    def to_db_name(self)-> str:raise NotImplementedError
-    @abstractmethod    
-    def to_db_department(self)-> str:raise NotImplementedError
-    @abstractmethod
-    def to_db_position(self)-> str:raise NotImplementedError
-    @abstractmethod
-    def to_db_hours(self)-> str:raise NotImplementedError
-    @abstractmethod     
-    def to_db_location(self)-> str:raise NotImplementedError
-    @abstractmethod    
-    def to_db_email(self)-> str:raise NotImplementedError
-    @abstractmethod    
-    def to_db_phone(self)-> str:raise NotImplementedError
-    @abstractmethod    
-    
+    def to_db_title(self) -> str:
+        raise NotImplementedError
 
+    @abstractmethod
+    def to_db_name(self) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def to_db_department(self) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def to_db_position(self) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def to_db_hours(self) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def to_db_location(self) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def to_db_email(self) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
+    def to_db_phone(self) -> str:
+        raise NotImplementedError
+
+    @abstractmethod
     @abstractmethod
     def to_http_json(self) -> dict:
         """Convert the data to JSON in order to be sent over HTTP"""
@@ -44,21 +56,22 @@ def from_form(form: dict) -> Department:
         form["office_hours"],
         form["office_location"],
         form["email"],
-        form["phone"])
+        form["phone"],
+    )
 
 
 def from_sql(cursor: sqlite3.Cursor, row: tuple) -> Department:
-    """Parse the given SQL row """
+    """Parse the given SQL row"""
     row = sqlite3.Row(cursor, row)
     lecturer_id = row["id"]
-    department=row["department"]
-    title=row["title"]
-    name=row["full_name"]
-    position=row["position"]
-    hours=row["office_hours"]
-    location=row["office_location"]
-    email=row["email"]
-    phone=row["phone"]
+    department = row["department"]
+    title = row["title"]
+    name = row["full_name"]
+    position = row["position"]
+    hours = row["office_hours"]
+    location = row["office_location"]
+    email = row["email"]
+    phone = row["phone"]
 
     return Lecturer(
         lecturer_id=lecturer_id,
@@ -69,20 +82,35 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> Department:
         office_hours=hours,
         office_location=location,
         email=email,
-        phone=phone        
-        )
+        phone=phone,
+    )
 
 
 class Lecturer(Department):
-    def to_db_title(self)-> str: return self.title
-    def to_db_name(self)-> str: return self.name
-    def to_db_department(self)-> str: return self.department
-    def to_db_position(self)-> str: return self.position
-    def to_db_hours(self)-> str: return self.office_hours
-    def to_db_location(self)-> str: return self.office_location
-    def to_db_email(self)-> str: return self.email
-    def to_db_phone(self)-> str: return self.phone
-    
+    def to_db_title(self) -> str:
+        return self.title
+
+    def to_db_name(self) -> str:
+        return self.name
+
+    def to_db_department(self) -> str:
+        return self.department
+
+    def to_db_position(self) -> str:
+        return self.position
+
+    def to_db_hours(self) -> str:
+        return self.office_hours
+
+    def to_db_location(self) -> str:
+        return self.office_location
+
+    def to_db_email(self) -> str:
+        return self.email
+
+    def to_db_phone(self) -> str:
+        return self.phone
+
     def to_db(self) -> dict:
         return {
             "department": self.department,
@@ -110,7 +138,7 @@ class Lecturer(Department):
 
     def __init__(
         self,
-        department:str,
+        department: str,
         title: str,
         name: str,
         position: str,

@@ -7,7 +7,12 @@
 {% endblock %}
 
 {% block content %}
-  <form>
+  <script type="module">
+    import { main } from "{{ url_for('static', filename='config.mjs') }}";
+    main();
+  </script>
+
+  <form action="/api/department" method="post" class="post-form">
     <label
       >Name:
       <input type="text" id="name" name="name" required />
@@ -16,13 +21,13 @@
     <label
       >Title:
       <select id="title" name="title" required>
-        <option value="mr">Mr</option>
-        <option value="mrs">Mrs</option>
-        <option value="ms">Ms</option>
-        <option value="ms">Mx</option>
-        <option value="prof">Professor</option>
-        <option value="associate_prof">Associate Professor</option>
-        <option value="dr">Dr</option>
+        <option value="Mr">Mr</option>
+        <option value="Mrs">Mrs</option>
+        <option value="Ms">Ms</option>
+        <option value="Mx">Mx</option>
+        <option value="Prof">Professor</option>
+        <option value="A/Prof">Associate Professor</option>
+        <option value="Dr">Dr</option>
       </select>
     </label>
 
@@ -33,7 +38,7 @@
 
     <label
       >Office Location:
-      <input type="text" id="office" name="office" />
+      <input type="text" id="office_location" name="office_location" />
     </label>
 
     <label
@@ -43,25 +48,24 @@
 
     <label
       >Telephone Number:
-      <input type="tel" id="tel" name="tel" required />
+      <input type="tel" id="phone" name="phone" required />
     </label>
 
-    <div>
-      <label>Office hours:</label>
-      <input type="time" name="start_time" aria-label="start_time" />
-      to
-      <input type="time" name="end_time" aria-label="end_time" />
-    </div>
+    <label
+      >Office Hours:
+      <input type="text" id="office_hours" name="office_hours" required />
+    </label>
 
     <label
       >Department:
       <select id="department" name="department">
-        <option value="computer_science">Computer Science</option>
-        <option value="mathematics">Mathematics</option>
-        <option value="chemistry">Chemistry</option>
+        <option value="Computer Science">Computer Science</option>
+        <option value="Mathematics">Mathematics</option>
+        <option value="Chemistry">Chemistry</option>
       </select>
     </label>
 
     <button type="submit">Submit</button>
+    <p hidden class="post-status-message"></p>
   </form>
 {% endblock %}

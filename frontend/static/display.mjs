@@ -53,17 +53,20 @@ function renderCaption (caption) {
   return container
 }
 
-export function renderDepartment(department) {
+export function renderDepartment (department) {
   const container = document.createElement('div')
   const title = document.createElement('h3')
   const body = document.createElement('p')
 
-  title.innerText = `${department.title} ${department.name}`;
-  body.innerText = `Position: ${department.position} in the ${department.department} department\nOffice Hours: ${department.office_hours}\nOffice Location: ${department.office_location}\nEmail: ${department.email}\nPhone: ${department.phone}`;
+  title.innerText = `${department.title} ${department.name}`
+  body.innerText = `Position: ${department.position} in the ${
+    department.department
+  } department\nOffice Hours: ${department.office_hours}\nOffice Location: ${
+    department.office_location
+  }\nEmail: ${department.email}\nPhone: ${department.phone}`
   container.append(title, body)
   return container
 }
-
 
 export async function refresh () {
   const update = await fetch('/api/content').then(res => res.json())
@@ -74,7 +77,7 @@ export async function refresh () {
   departmentContainer.innerHTML = ''
 
   for (const department of update2.department) {
-    departmentContainer.appendChild(renderDepartment (department))
+    departmentContainer.appendChild(renderDepartment(department))
   }
   for (const content of update.content) {
     contentContainer.appendChild(renderFreeForm(content))
