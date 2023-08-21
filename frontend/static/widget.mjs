@@ -11,6 +11,8 @@ export class Widget {
     throw new AbstractClassError('Widget', 'build()')
   }
 
+  async refresh () {}
+
   render () {
     return this.build().render()
   }

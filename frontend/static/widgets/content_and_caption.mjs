@@ -8,6 +8,11 @@ export class ContentAndCaption extends Widget {
     this.caption = caption
   }
 
+  async refresh () {
+    await this.content.refresh()
+    await this.caption.refresh()
+  }
+
   build () {
     return new Column({
       children: this.caption ? [this.content, this.caption] : [this.content]

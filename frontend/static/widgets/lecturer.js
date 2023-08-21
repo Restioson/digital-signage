@@ -1,7 +1,16 @@
 import { Widget } from '../widget.mjs'
 
 export class Lecturer extends Widget {
-  constructor ({ department, position, title, name, officeHours, officeLocation, email, phone }) {
+  constructor ({
+    department,
+    position,
+    title,
+    name,
+    officeHours,
+    officeLocation,
+    email,
+    phone
+  }) {
     super()
     this.department = department
     this.position = position

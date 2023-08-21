@@ -7,10 +7,22 @@ export class Column extends Widget {
     this.classList = classList
   }
 
+  async refresh () {
+    for (const child of this.children) {
+      await child.refresh()
+    }
+  }
+
   render () {
     const container = document.createElement('div')
-    container.append(this.children.map(child => child.render()))
-    container.classList = this.classList
+
+    for (const child of this.children) {
+      container.append(child.render())
+    }
+
+    if (this.classList) {
+      container.classList = this.classList
+    }
 
     return container
   }
