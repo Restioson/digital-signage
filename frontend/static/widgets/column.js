@@ -1,10 +1,9 @@
 import { Widget } from '../widget.mjs'
 
 export class Column extends Widget {
-  constructor ({ children, classList = null }) {
+  constructor ({ children }) {
     super()
     this.children = children
-    this.classList = classList
   }
 
   async refresh () {
@@ -18,10 +17,6 @@ export class Column extends Widget {
 
     for (const child of this.children) {
       container.append(child.render())
-    }
-
-    if (this.classList) {
-      container.classList = this.classList
     }
 
     return container

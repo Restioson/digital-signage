@@ -1,6 +1,7 @@
 import { Widget } from '../../widget.mjs'
 import { Column } from '../column.js'
 import { deserializeFreeFormContent } from './free_form_content_factory.mjs'
+import { WithClasses } from '../with_classes.mjs'
 
 export class ContentStream extends Widget {
   constructor () {
@@ -14,11 +15,13 @@ export class ContentStream extends Widget {
   }
 
   build () {
-    return new Column({
-      children: this.content.map(content =>
-        deserializeFreeFormContent(content)
-      ),
-      classList: ['content-stream']
+    return new WithClasses({
+      classList: ['content-stream'],
+      child: new Column({
+        children: this.content.map(content =>
+          deserializeFreeFormContent(content)
+        )
+      })
     })
   }
 }
