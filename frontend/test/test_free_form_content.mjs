@@ -2,7 +2,7 @@ import assert from 'assert'
 import { JSDOM } from 'jsdom'
 import { deserializeFreeFormContent } from '../static/widgets/free_form_content/free_form_content_factory.mjs'
 
-describe('FreeFormContent', function () {
+describe('Widget', function () {
   beforeEach(() => {
     const dom = new JSDOM(
       `<html lang="en">
@@ -16,74 +16,79 @@ describe('FreeFormContent', function () {
     global.document = dom.window.document
   })
 
-  describe('TextWidget()', function () {
-    it('render', function () {
-      const title = 't'
-      const body = 'b'
-      checkRenderedText(
-        deserializeFreeFormContent({ type: 'text', title, body }).render(),
-        title,
-        body
-      )
-    })
-  })
-
-  describe('LocalImage', function () {
-    it('render', function () {
-      const id = 1
-      checkRenderedLocalImage(
-        deserializeFreeFormContent({ type: 'local_image', id }).render(),
-        id
-      )
-    })
-  })
-
-  describe('RemoteImage', function () {
-    it('render', function () {
-      const url = 'https://example.com/'
-      checkRenderedRemoteImage(
-        deserializeFreeFormContent({ type: 'remote_image', src: url }).render(),
-        url
-      )
-    })
-  })
-
-  describe('Link', function () {
-    it('render', function () {
-      const url = 'https://example.com/'
-      const out = deserializeFreeFormContent({ type: 'link', url }).render()
-      checkRenderedLink(out, url)
-      assert(out.children[1].hidden)
+  describe('FreeFormContent', function () {
+    describe('TextWidget', function () {
+      it('render', function () {
+        const title = 't'
+        const body = 'b'
+        checkRenderedText(
+          deserializeFreeFormContent({ type: 'text', title, body }).render(),
+          title,
+          body
+        )
+      })
     })
 
-    it('render with caption (title & body)', function () {
-      const url = 'https://example.com/'
-      const title = 'Hello'
-      const body = 'there'
-      checkRenderedLinkCaptionedTitleBody(
-        deserializeFreeFormContent({
-          type: 'link',
+    describe('LocalImage', function () {
+      it('render', function () {
+        const id = 1
+        checkRenderedLocalImage(
+          deserializeFreeFormContent({ type: 'local_image', id }).render(),
+          id
+        )
+      })
+    })
+
+    describe('RemoteImage', function () {
+      it('render', function () {
+        const url = 'https://example.com/'
+        checkRenderedRemoteImage(
+          deserializeFreeFormContent({
+            type: 'remote_image',
+            src: url
+          }).render(),
+          url
+        )
+      })
+    })
+
+    describe('Link', function () {
+      it('render', function () {
+        const url = 'https://example.com/'
+        const out = deserializeFreeFormContent({ type: 'link', url }).render()
+        checkRenderedLink(out, url)
+        assert(out.children[1].hidden)
+      })
+
+      it('render with caption (title & body)', function () {
+        const url = 'https://example.com/'
+        const title = 'Hello'
+        const body = 'there'
+        checkRenderedLinkCaptionedTitleBody(
+          deserializeFreeFormContent({
+            type: 'link',
+            url,
+            caption: { title, body }
+          }).render(),
           url,
-          caption: { title, body }
-        }).render(),
-        url,
-        title,
-        body
-      )
-    })
+          title,
+          body
+        )
+      })
 
-    it('render with caption (body only)', function () {
-      const url = 'https://example.com/'
-      const body = 'body of caption'
-      checkRenderedLinkCaptionedBody(
-        deserializeFreeFormContent({
-          type: 'link',
+      it('render with caption (body only)', function () {
+        const url = 'https://example.com/'
+        const body = 'body of caption'
+        checkRenderedLinkCaptionedBody(
+          deserializeFreeFormContent({
+            type: 'link',
+            url,
+            caption: { body }
+          }).render(),
           url,
-          caption: { body }
-        }).render(),
-        url,
-        body
-      )
+          body
+        )
+      })
     })
   })
 })

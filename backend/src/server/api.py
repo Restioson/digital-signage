@@ -11,6 +11,16 @@ from server.free_form_content import BinaryContent
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
 
+@blueprint.route("/health", methods=["GET"])
+def health():
+    """The health check endpoint.
+
+    This returns whether the server is healthy.
+    """
+
+    return {"healthy": True}
+
+
 @blueprint.route("/content", methods=["POST", "GET"])
 def content():
     """The /api/content endpoint.
@@ -32,10 +42,13 @@ def content():
             ]
         }
     else:
+        print("Got req")
+
         content_id, posted = DatabaseController.get().post_content(
             free_form_content.from_form(flask.request.form, flask.request.files)
         )
 
+        print("posted")
         return {"id": content_id, "posted": posted}
 
 
