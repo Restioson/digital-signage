@@ -64,6 +64,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: extractions/setup-just@v1
+      - uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+      - name: Install project
+        run: just setup
       - uses: actions/setup-node@v3
         with:
           node-version: 20
