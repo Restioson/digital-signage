@@ -2,143 +2,181 @@ import assert from 'assert'
 import { JSDOM } from 'jsdom'
 import { deserializeFreeFormContent } from '../static/widgets/free_form_content/free_form_content_factory.mjs'
 
-beforeEach(() => {
-  const dom = new JSDOM(
-    `<html>
+describe('FreeFormContent', function () {
+  beforeEach(() => {
+    const dom = new JSDOM(
+      `<html lang="en">
        <body>
        </body>
      </html>`,
-    { url: 'http://localhost' }
-  )
+      { url: 'http://localhost' }
+    )
 
-  global.window = dom.window
-  global.document = dom.window.document
-})
+    global.window = dom.window
+    global.document = dom.window.document
+  })
 
-describe('TextWidget', function () {
-  it('Text should render into a div with h3 and p in body', function () {
-    const out = deserializeFreeFormContent({
-      id: 1,
-      type: 'text',
-      title: 't',
-      body: 'b'
-    }).render()
-    assert.equal(out.tagName, 'DIV')
-    assert.equal(out.children.length, 2)
+  describe('TextWidget()', function () {
+    it('render', function () {
+      const title = 't'
+      const body = 'b'
+      checkRenderedText(
+        deserializeFreeFormContent({ type: 'text', title, body }).render(),
+        title,
+        body
+      )
+    })
+  })
 
-    const title = out.children[0]
-    assert.equal(title.tagName, 'H3')
-    assert.equal(title.innerText, 't')
+  describe('LocalImage', function () {
+    it('render', function () {
+      const id = 1
+      checkRenderedLocalImage(
+        deserializeFreeFormContent({ type: 'local_image', id }).render(),
+        id
+      )
+    })
+  })
 
-    const body = out.children[1]
-    assert.equal(body.tagName, 'P')
-    assert.equal(body.innerText, 'b')
+  describe('RemoteImage', function () {
+    it('render', function () {
+      const url = 'https://example.com/'
+      checkRenderedRemoteImage(
+        deserializeFreeFormContent({ type: 'remote_image', src: url }).render(),
+        url
+      )
+    })
+  })
+
+  describe('Link', function () {
+    it('render', function () {
+      const url = 'https://example.com/'
+      const out = deserializeFreeFormContent({ type: 'link', url }).render()
+      checkRenderedLink(out, url)
+      assert(out.children[1].hidden)
+    })
+
+    it('render with caption (title & body)', function () {
+      const url = 'https://example.com/'
+      const title = 'Hello'
+      const body = 'there'
+      checkRenderedLinkCaptionedTitleBody(
+        deserializeFreeFormContent({
+          type: 'link',
+          url,
+          caption: { title, body }
+        }).render(),
+        url,
+        title,
+        body
+      )
+    })
+
+    it('render with caption (body only)', function () {
+      const url = 'https://example.com/'
+      const body = 'body of caption'
+      checkRenderedLinkCaptionedBody(
+        deserializeFreeFormContent({
+          type: 'link',
+          url,
+          caption: { body }
+        }).render(),
+        url,
+        body
+      )
+    })
   })
 })
 
-describe('LocalImage', function () {
-  it('LocalImage should render into a div with img in body', function () {
-    const out = deserializeFreeFormContent({
-      id: 1,
-      type: 'local_image'
-    }).render()
-    assert.equal(out.tagName, 'DIV')
-    assert.equal(out.children.length, 2)
+export function checkRenderedText (out, expectedTitle, expectedBody) {
+  assert.equal(out.tagName, 'DIV')
+  assert.equal(out.children.length, 2)
 
-    const img = out.children[0]
-    assert.equal(img.tagName, 'IMG')
-    assert(img.src.endsWith('/api/content/1/blob'))
-    assert(out.children[1].hidden)
-  })
-})
+  const title = out.children[0]
+  assert.equal(title.tagName, 'H3')
+  assert.equal(title.innerText, expectedTitle)
 
-describe('RemoteImage', function () {
-  it('RemoteImage should render into a div with img in body', function () {
-    const out = deserializeFreeFormContent({
-      id: 1,
-      type: 'remote_image',
-      src: 'exampleurl'
-    }).render()
-    assert.equal(out.tagName, 'DIV')
-    assert.equal(out.children.length, 2)
+  const body = out.children[1]
+  assert.equal(body.tagName, 'P')
+  assert.equal(body.innerText, expectedBody)
 
-    const img = out.children[0]
-    assert.equal(img.tagName, 'IMG')
-    assert(img.src.endsWith('exampleurl'))
-    assert(out.children[1].hidden)
-  })
-})
+  return out
+}
 
-describe('Link', function () {
-  it('Link should render into a div with a in body', function () {
-    const out = deserializeFreeFormContent({
-      id: 1,
-      type: 'link',
-      url: 'https://example.com/'
-    }).render()
-    assert.equal(out.tagName, 'DIV')
-    assert.equal(out.children.length, 2)
+export function checkRenderedLocalImage (out, expectedId) {
+  assert.equal(out.tagName, 'DIV')
+  assert.equal(out.children.length, 2)
 
-    const a = out.children[0]
-    assert.equal(a.tagName, 'A')
-    assert.equal(a.href, 'https://example.com/')
-    assert.equal(a.innerText, 'https://example.com/')
-    assert(out.children[1].hidden)
-  })
+  const img = out.children[0]
+  assert.equal(img.tagName, 'IMG')
+  assert(img.src.endsWith(`/api/content/${expectedId}/blob`))
 
-  it('Link with caption (title and body) should be rendered', function () {
-    const out = deserializeFreeFormContent({
-      id: 1,
-      type: 'link',
-      url: 'https://example.com/',
-      caption: { title: 'Hello', body: 'there' }
-    }).render()
-    assert.equal(out.tagName, 'DIV')
-    assert.equal(out.children.length, 2)
+  assert(out.children[1].hidden, 'caption should be hidden')
+}
 
-    const a = out.children[0]
-    assert.equal(a.tagName, 'A')
+export function checkRenderedRemoteImage (out, expectedSrc) {
+  assert.equal(out.tagName, 'DIV')
+  assert.equal(out.children.length, 2)
 
-    const caption = out.children[1]
-    assert.equal(caption.tagName, 'DIV')
-    assert.equal(caption.className, 'content-caption')
-    assert.equal(caption.children.length, 2)
+  const img = out.children[0]
+  assert.equal(img.tagName, 'IMG')
+  assert.equal(img.src, expectedSrc)
 
-    const title = caption.children[0]
-    assert.equal(title.tagName, 'P')
-    assert.equal(title.className, 'caption-title')
-    assert.equal(title.innerText, 'Hello')
+  assert(out.children[1].hidden, 'caption should be hidden')
+}
 
-    const body = caption.children[1]
-    assert.equal(body.tagName, 'P')
-    assert.equal(body.className, 'caption-body')
-    assert.equal(body.innerText, 'there')
-  })
+export function checkRenderedLink (out, expectedUrl) {
+  assert.equal(out.tagName, 'DIV')
+  const a = out.children[0]
+  assert.equal(a.tagName, 'A')
+  assert.equal(a.href, expectedUrl)
+  assert.equal(a.innerText, expectedUrl)
+}
 
-  it('Link with caption (with just body) should be rendered', function () {
-    const out = deserializeFreeFormContent({
-      id: 1,
-      type: 'link',
-      url: 'https://example.com/',
-      caption: { body: 'there' }
-    }).render()
+export function checkRenderedLinkCaptionedTitleBody (
+  out,
+  expectedUrl,
+  expectedTitle,
+  expectedBody
+) {
+  checkRenderedLink(out, expectedUrl)
+  assert.equal(out.children.length, 2)
 
-    assert.equal(out.tagName, 'DIV')
-    assert.equal(out.children.length, 2)
+  const caption = out.children[1]
+  assert.equal(caption.tagName, 'DIV')
+  assert.equal(caption.className, 'content-caption')
+  assert.equal(caption.children.length, 2)
 
-    const a = out.children[0]
-    assert.equal(a.tagName, 'A')
+  const title = caption.children[0]
+  assert.equal(title.tagName, 'P')
+  assert.equal(title.className, 'caption-title')
+  assert.equal(title.innerText, expectedTitle)
 
-    const caption = out.children[1]
-    assert.equal(caption.tagName, 'DIV')
-    assert.equal(caption.className, 'content-caption')
-    assert.equal(caption.children.length, 2)
+  const body = caption.children[1]
+  assert.equal(body.tagName, 'P')
+  assert.equal(body.className, 'caption-body')
+  assert.equal(body.innerText, expectedBody)
+}
 
-    assert(caption.children[0].hidden)
+export function checkRenderedLinkCaptionedBody (
+  out,
+  expectedUrl,
+  expectedBody
+) {
+  checkRenderedLink(out, expectedUrl)
+  assert.equal(out.children.length, 2)
 
-    const body = caption.children[1]
-    assert.equal(body.tagName, 'P')
-    assert.equal(body.className, 'caption-body')
-    assert.equal(body.innerText, 'there')
-  })
-})
+  const caption = out.children[1]
+  assert.equal(caption.tagName, 'DIV')
+  assert.equal(caption.className, 'content-caption')
+  assert.equal(caption.children.length, 2)
+
+  assert(caption.children[0].hidden, 'caption title should be hidden')
+
+  const body = caption.children[1]
+  assert.equal(body.tagName, 'P')
+  assert.equal(body.className, 'caption-body')
+  assert.equal(body.innerText, expectedBody)
+
+  return out
+}
