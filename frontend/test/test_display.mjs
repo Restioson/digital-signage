@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { JSDOM } from 'jsdom'
-import { renderFreeForm } from '../static/display.mjs'
+import { deserializeFreeFormContent } from '../static/widgets/free_form_content/free_form_content_factory.mjs'
 
 beforeEach(() => {
   const dom = new JSDOM(
@@ -15,9 +15,14 @@ beforeEach(() => {
   global.document = dom.window.document
 })
 
-describe('renderFreeForm()', function () {
-  it('text should render into a div with h3 and p in body', function () {
-    const out = renderFreeForm({ type: 'text', title: 't', body: 'b' })
+describe('FreeFormContent', function () {
+  it('Text should render into a div with h3 and p in body', function () {
+    const out = deserializeFreeFormContent({
+      id: 1,
+      type: 'text',
+      title: 't',
+      body: 'b'
+    }).render()
     assert.equal(out.tagName, 'DIV')
     assert.equal(out.children.length, 2)
 
@@ -30,8 +35,11 @@ describe('renderFreeForm()', function () {
     assert.equal(body.innerText, 'b')
   })
 
-  it('local_image should render into a div with img in body', function () {
-    const out = renderFreeForm({ type: 'local_image', id: '1' })
+  it('LocalImage should render into a div with img in body', function () {
+    const out = deserializeFreeFormContent({
+      id: 1,
+      type: 'local_image'
+    }).render()
     assert.equal(out.tagName, 'DIV')
     assert.equal(out.children.length, 1)
 
@@ -40,8 +48,12 @@ describe('renderFreeForm()', function () {
     assert(img.src.endsWith('/api/content/1/blob'))
   })
 
-  it('remote_image should render into a div with img in body', function () {
-    const out = renderFreeForm({ type: 'remote_image', src: 'exampleurl' })
+  it('RemoteImage should render into a div with img in body', function () {
+    const out = deserializeFreeFormContent({
+      id: 1,
+      type: 'remote_image',
+      src: 'exampleurl'
+    }).render()
     assert.equal(out.tagName, 'DIV')
     assert.equal(out.children.length, 1)
 
@@ -50,8 +62,12 @@ describe('renderFreeForm()', function () {
     assert(img.src.endsWith('exampleurl'))
   })
 
-  it('link should render into a div with a in body', function () {
-    const out = renderFreeForm({ type: 'link', url: 'https://example.com/' })
+  it('Link should render into a div with a in body', function () {
+    const out = deserializeFreeFormContent({
+      id: 1,
+      type: 'link',
+      url: 'https://example.com/'
+    }).render()
     assert.equal(out.tagName, 'DIV')
     assert.equal(out.children.length, 1)
 
@@ -61,12 +77,13 @@ describe('renderFreeForm()', function () {
     assert.equal(a.innerText, 'https://example.com/')
   })
 
-  it('captions with title and body should be rendered', function () {
-    const out = renderFreeForm({
+  it('Link with caption (title and body) should be rendered', function () {
+    const out = deserializeFreeFormContent({
+      id: 1,
       type: 'link',
       url: 'https://example.com/',
       caption: { title: 'Hello', body: 'there' }
-    })
+    }).render()
     assert.equal(out.tagName, 'DIV')
     assert.equal(out.children.length, 2)
 
@@ -89,12 +106,14 @@ describe('renderFreeForm()', function () {
     assert.equal(body.innerText, 'there')
   })
 
-  it('captions with just body should be rendered', function () {
-    const out = renderFreeForm({
+  it('Link with caption (with just body) should be rendered', function () {
+    const out = deserializeFreeFormContent({
+      id: 1,
       type: 'link',
       url: 'https://example.com/',
       caption: { body: 'there' }
-    })
+    }).render()
+
     assert.equal(out.tagName, 'DIV')
     assert.equal(out.children.length, 2)
 
