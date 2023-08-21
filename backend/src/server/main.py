@@ -1,5 +1,5 @@
 from flask import Flask
-from server import config_view, display_view, index, api
+from server import config_view, display_view, index, api, login
 from server.database import DatabaseController
 
 
@@ -13,6 +13,7 @@ def create_app(testing=False):
     )
 
     # Register blueprints for each logical part of the app
+    app.register_blueprint(login.blueprint)
     app.register_blueprint(config_view.blueprint)
     app.register_blueprint(display_view.blueprint)
     app.register_blueprint(index.blueprint)

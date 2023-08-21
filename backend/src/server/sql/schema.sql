@@ -49,5 +49,5 @@ CREATE TABLE IF NOT EXISTS display_groups (
 
 CREATE TABLE IF NOT EXISTS users (
   username TEXT PRIMARY KEY,
-  pass_word TEXT NOT NULL,
+  pass_word TEXT NOT NULL
 );
