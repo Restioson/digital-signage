@@ -46,4 +46,8 @@ CREATE TABLE IF NOT EXISTS display_groups (
   name TEXT NOT NULL,
   department INTEGER NOT NULL REFERENCES department(id) ON DELETE CASCADE,
   layout_json TEXT NOT NULL
+
+CREATE TABLE IF NOT EXISTS users (
+  username TEXT PRIMARY KEY,
+  pass_word TEXT NOT NULL,
 );
