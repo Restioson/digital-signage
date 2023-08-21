@@ -1,4 +1,5 @@
 import { Widget } from '../widget.mjs'
+import { Column } from './column.js'
 
 export class ContentAndCaption extends Widget {
   constructor ({ content, caption }) {
@@ -7,14 +8,9 @@ export class ContentAndCaption extends Widget {
     this.caption = caption
   }
 
-  render () {
-    const container = document.createElement('div')
-    container.append(this.content.render())
-
-    if (this.caption) {
-      container.append(this.caption.render())
-    }
-
-    return container
+  build () {
+    return new Column({
+      children: this.caption ? [this.content, this.caption] : [this.content]
+    })
   }
 }
