@@ -1,6 +1,6 @@
 import { Widget } from '../widget.mjs'
 
-export class Column extends Widget {
+export class Container extends Widget {
   constructor ({ children }) {
     super()
     this.children = children

@@ -1,10 +1,10 @@
 import { ContentStream } from './widgets/free_form_content/content_stream.mjs'
 import { Department } from './widgets/department.mjs'
-import { Column } from './widgets/column.js'
+import { Container } from './widgets/container.js'
 
 const REFRESH_INTERVAL_MS = 1000
 
-const mainWidget = new Column({
+const mainWidget = new Container({
   children: [new Department(), new ContentStream()]
 })
 

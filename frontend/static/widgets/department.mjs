@@ -1,5 +1,5 @@
 import { Lecturer } from './lecturer.js'
-import { Column } from './column.js'
+import { Container } from './container.js'
 import { Widget } from '../widget.mjs'
 import { WithClasses } from './with_classes.mjs'
 
@@ -17,7 +17,7 @@ export class Department extends Widget {
   build () {
     return new WithClasses({
       classList: ['department'],
-      child: new Column({
+      child: new Container({
         children: this.lecturers.map(Lecturer.fromJSON)
       })
     })
