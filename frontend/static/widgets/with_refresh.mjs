@@ -47,7 +47,7 @@ export class WithRefresh extends Widget {
     const newElement = this.renderChild()
     element.replaceWith(newElement)
 
-    setTimeout(async () => this.refreshForever(newElement), this.period)
+    setTimeout(() => this.refreshForever(newElement), this.period)
   }
 
   /**

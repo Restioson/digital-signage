@@ -5,6 +5,7 @@ import { Caption } from '../static/widgets/caption.mjs'
 import { Container } from '../static/widgets/containers/container.mjs'
 import { Visibility } from '../static/widgets/visibility.mjs'
 import { ContentAndCaption } from '../static/widgets/containers/content_and_caption.mjs'
+import { WithRefresh } from '../static/widgets/with_refresh.mjs'
 
 beforeEach(() => {
   const dom = new JSDOM(
@@ -56,6 +57,10 @@ describe('WithClasses', function () {
       Array.from(widget.render().classList),
       ['content-caption'].concat(classList)
     )
+  })
+
+  it('does not allow WithRefresh as child', function () {
+    assert.throws(() => new WithClasses({ child: new WithRefresh({}) }), Error)
   })
 })
 

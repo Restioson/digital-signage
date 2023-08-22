@@ -1,4 +1,6 @@
 import { Widget } from './widget.mjs'
+import { WithRefresh } from './with_refresh.mjs'
+import { AssertionError } from '../util.mjs'
 
 /**
  * A {@link Widget} which (additively) applies the given CSS classes to its child.
@@ -12,9 +14,18 @@ export class WithClasses extends Widget {
   /**
    * @param {HTMLElement | Widget} child
    * @param {string[]} classList
+   *
+   * @throws {AssertionError} if the child is a {@link WithRefresh}
    */
   constructor ({ child, classList = null }) {
     super()
+
+    if (child instanceof WithRefresh) {
+      throw new AssertionError(
+        'WithClasses cannot be the direct parent of WithRefresh (see docs)'
+      )
+    }
+
     this.child = child
     this.classList = classList
   }

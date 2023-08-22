@@ -18,3 +18,5 @@ export class RootAlreadyExistsError extends Error {
     super('There may only be one Root widget, and it already exists')
   }
 }
+
+export class AssertionError extends Error {}
