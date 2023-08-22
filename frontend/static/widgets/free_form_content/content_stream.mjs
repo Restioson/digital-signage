@@ -1,4 +1,4 @@
-import { Widget } from '../../widget.mjs'
+import { Widget } from '../widget.mjs'
 import { Container } from '../container.js'
 import { deserializeFreeFormContent } from './free_form_content_factory.mjs'
 import { WithClasses } from '../with_classes.mjs'

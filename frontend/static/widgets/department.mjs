@@ -1,6 +1,6 @@
 import { Lecturer } from './lecturer.js'
 import { Container } from './container.js'
-import { Widget } from '../widget.mjs'
+import { Widget } from './widget.mjs'
 import { WithClasses } from './with_classes.mjs'
 
 export class Department extends Widget {

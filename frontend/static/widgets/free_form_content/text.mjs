@@ -1,4 +1,5 @@
 import { FreeFormContent } from './free_form_content.mjs'
+import { Container } from '../container.js'
 
 export class TextWidget extends FreeFormContent {
   constructor ({ id, title, body }) {
@@ -11,13 +12,12 @@ export class TextWidget extends FreeFormContent {
     return new TextWidget(obj)
   }
 
-  render () {
-    const container = document.createElement('div')
+  build () {
     const title = document.createElement('h3')
     const body = document.createElement('p')
     title.innerText = this.title
     body.innerText = this.body
-    container.append(title, body)
-    return container
+
+    return new Container({ children: [title, body] })
   }
 }

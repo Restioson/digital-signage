@@ -1,7 +1,7 @@
 import { FreeFormContent } from './free_form_content.mjs'
 import { Caption } from '../caption.js'
 import { ContentAndCaption } from '../content_and_caption.mjs'
-import { HtmlWidget } from '../html_widget.mjs'
+import { HtmlRenderable } from '../html_widget.mjs'
 
 export class LocalImage extends FreeFormContent {
   constructor ({ id, caption }) {
@@ -20,7 +20,7 @@ export class LocalImage extends FreeFormContent {
     const img = document.createElement('img')
     img.src = `/api/content/${this.id}/blob`
     return new ContentAndCaption({
-      content: new HtmlWidget(img),
+      content: new HtmlRenderable(img),
       caption: this.caption
     })
   }

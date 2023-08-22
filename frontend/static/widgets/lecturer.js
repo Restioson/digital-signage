@@ -1,4 +1,5 @@
-import { Widget } from '../widget.mjs'
+import { Widget } from './widget.mjs'
+import { Container } from './container.js'
 
 export class Lecturer extends Widget {
   constructor ({
@@ -36,7 +37,6 @@ export class Lecturer extends Widget {
   }
 
   render () {
-    const container = document.createElement('div')
     const title = document.createElement('h3')
     const body = document.createElement('p')
 
@@ -48,7 +48,6 @@ export class Lecturer extends Widget {
       `Email: ${this.email}\n` +
       `Phone: ${this.phone}`
 
-    container.append(title, body)
-    return container
+    return new Container({ children: [title, body] })
   }
 }

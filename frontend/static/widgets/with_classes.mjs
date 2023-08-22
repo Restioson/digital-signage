@@ -1,6 +1,6 @@
-import { Widget } from '../widget.mjs'
+import { Renderable } from '../renderable.mjs'
 
-export class WithClasses extends Widget {
+export class WithClasses extends Renderable {
   constructor ({ child, classList = null }) {
     super()
     this.child = child

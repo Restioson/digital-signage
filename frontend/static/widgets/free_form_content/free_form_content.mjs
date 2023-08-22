@@ -1,4 +1,4 @@
-import { Widget } from '../../widget.mjs'
+import { Widget } from '../widget.mjs'
 import { AbstractClassError } from '../../util.js'
 
 export class FreeFormContent extends Widget {

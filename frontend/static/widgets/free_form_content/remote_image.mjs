@@ -1,7 +1,7 @@
 import { FreeFormContent } from './free_form_content.mjs'
 import { ContentAndCaption } from '../content_and_caption.mjs'
 import { Caption } from '../caption.js'
-import { HtmlWidget } from '../html_widget.mjs'
+import { HtmlRenderable } from '../html_widget.mjs'
 
 export class RemoteImage extends FreeFormContent {
   constructor ({ id, src, caption }) {
@@ -23,7 +23,7 @@ export class RemoteImage extends FreeFormContent {
     img.src = this.src
 
     return new ContentAndCaption({
-      content: new HtmlWidget(img),
+      content: new HtmlRenderable(img),
       caption: this.caption
     })
   }

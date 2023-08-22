@@ -1,4 +1,4 @@
-import { Widget } from '../widget.mjs'
+import { Widget } from './widget.mjs'
 import { Container } from './container.js'
 
 export class ContentAndCaption extends Widget {

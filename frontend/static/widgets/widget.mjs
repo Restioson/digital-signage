@@ -1,7 +1,9 @@
-import { AbstractClassError } from './util.js'
+import { AbstractClassError } from '../util.js'
+import { Renderable } from '../renderable.mjs'
 
-export class Widget {
+export class Widget extends Renderable {
   constructor () {
+    super()
     if (this.constructor === Widget) {
       throw new AbstractClassError('Widget', 'constructor')
     }

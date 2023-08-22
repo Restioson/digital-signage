@@ -1,7 +1,7 @@
 import { FreeFormContent } from './free_form_content.mjs'
 import { ContentAndCaption } from '../content_and_caption.mjs'
 import { Caption } from '../caption.js'
-import { HtmlWidget } from '../html_widget.mjs'
+import { HtmlRenderable } from '../html_widget.mjs'
 
 export class Link extends FreeFormContent {
   constructor ({ id, url, caption }) {
@@ -24,7 +24,7 @@ export class Link extends FreeFormContent {
     link.href = this.url
 
     return new ContentAndCaption({
-      content: new HtmlWidget(link),
+      content: new HtmlRenderable(link),
       caption: this.caption
     })
   }
