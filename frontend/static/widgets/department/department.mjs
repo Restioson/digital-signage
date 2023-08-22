@@ -1,8 +1,8 @@
-import { Lecturer } from './lecturer.js'
-import { Container } from './container.js'
-import { Widget } from './widget.mjs'
-import { WithClasses } from './with_classes.mjs'
-import { WithRefresh } from './with_refresh.mjs'
+import { Lecturer } from './lecturer.mjs'
+import { Container } from '../containers/container.mjs'
+import { Widget } from '../widget.mjs'
+import { WithClasses } from '../with_classes.mjs'
+import { WithRefresh } from '../with_refresh.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
 

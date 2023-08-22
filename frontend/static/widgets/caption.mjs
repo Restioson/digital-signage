@@ -1,7 +1,7 @@
 import { Widget } from './widget.mjs'
 import { WithClasses } from './with_classes.mjs'
-import { Container } from './container.js'
-import { Visibility } from './visibility.js'
+import { Container } from './containers/container.mjs'
+import { Visibility } from './visibility.mjs'
 
 export class Caption extends Widget {
   constructor ({ title, body }) {

@@ -1,4 +1,4 @@
-import { AbstractClassError } from '../util.js'
+import { AbstractClassError } from '../util.mjs'
 
 export class Widget {
   constructor () {

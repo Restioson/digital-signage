@@ -1,10 +1,10 @@
 import { JSDOM } from 'jsdom'
 import { WithClasses } from '../static/widgets/with_classes.mjs'
 import assert from 'assert'
-import { Caption } from '../static/widgets/caption.js'
-import { Container } from '../static/widgets/container.js'
-import { Visibility } from '../static/widgets/visibility.js'
-import { ContentAndCaption } from '../static/widgets/content_and_caption.mjs'
+import { Caption } from '../static/widgets/caption.mjs'
+import { Container } from '../static/widgets/containers/container.mjs'
+import { Visibility } from '../static/widgets/visibility.mjs'
+import { ContentAndCaption } from '../static/widgets/containers/content_and_caption.mjs'
 
 beforeEach(() => {
   const dom = new JSDOM(

@@ -1,6 +1,6 @@
 import { FreeFormContent } from './free_form_content.mjs'
-import { ContentAndCaption } from '../content_and_caption.mjs'
-import { Caption } from '../caption.js'
+import { ContentAndCaption } from '../containers/content_and_caption.mjs'
+import { Caption } from '../caption.mjs'
 
 export class RemoteImage extends FreeFormContent {
   constructor ({ id, src, caption }) {

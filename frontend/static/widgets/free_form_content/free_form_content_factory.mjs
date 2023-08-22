@@ -2,7 +2,7 @@ import { TextWidget } from './text.mjs'
 import { LocalImage } from './local_image.mjs'
 import { RemoteImage } from './remote_image.mjs'
 import { Link } from './link.mjs'
-import { UnknownContentTypeError } from '../../util.js'
+import { UnknownContentTypeError } from '../../util.mjs'
 
 export function deserializeFreeFormContent (content) {
   switch (content.type) {

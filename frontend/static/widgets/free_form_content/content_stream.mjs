@@ -1,5 +1,5 @@
 import { Widget } from '../widget.mjs'
-import { Container } from '../container.js'
+import { Container } from '../containers/container.mjs'
 import { deserializeFreeFormContent } from './free_form_content_factory.mjs'
 import { WithClasses } from '../with_classes.mjs'
 import { WithRefresh } from '../with_refresh.mjs'

@@ -1,5 +1,5 @@
 import { FreeFormContent } from './free_form_content.mjs'
-import { Container } from '../container.js'
+import { Container } from '../containers/container.mjs'
 
 export class TextWidget extends FreeFormContent {
   constructor ({ id, title, body }) {

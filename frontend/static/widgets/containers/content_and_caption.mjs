@@ -1,6 +1,6 @@
-import { Widget } from './widget.mjs'
-import { Container } from './container.js'
-import { Visibility } from './visibility.js'
+import { Widget } from '../widget.mjs'
+import { Container } from './container.mjs'
+import { Visibility } from '../visibility.mjs'
 
 export class ContentAndCaption extends Widget {
   constructor ({ content, caption }) {

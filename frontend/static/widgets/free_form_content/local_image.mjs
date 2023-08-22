@@ -1,6 +1,6 @@
 import { FreeFormContent } from './free_form_content.mjs'
-import { Caption } from '../caption.js'
-import { ContentAndCaption } from '../content_and_caption.mjs'
+import { Caption } from '../caption.mjs'
+import { ContentAndCaption } from '../containers/content_and_caption.mjs'
 
 export class LocalImage extends FreeFormContent {
   constructor ({ id, caption }) {

@@ -1,5 +1,5 @@
-import { Widget } from './widget.mjs'
-import { Container } from './container.js'
+import { Widget } from '../widget.mjs'
+import { Container } from '../containers/container.mjs'
 
 export class Lecturer extends Widget {
   constructor ({

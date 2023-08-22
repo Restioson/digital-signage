@@ -1,6 +1,6 @@
 import { ContentStream } from './widgets/free_form_content/content_stream.mjs'
-import { Department } from './widgets/department.mjs'
-import { Container } from './widgets/container.js'
+import { Department } from './widgets/department/department.mjs'
+import { Container } from './widgets/containers/container.mjs'
 import { Root } from './widgets/root.mjs'
 
 export function main () {

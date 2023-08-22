@@ -1,4 +1,4 @@
-import { RootAlreadyExistsError } from '../util.js'
+import { RootAlreadyExistsError } from '../util.mjs'
 
 let root
 
