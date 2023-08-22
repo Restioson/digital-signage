@@ -1,7 +1,22 @@
 import { Widget } from '../widget.mjs'
 import { Container } from '../containers/container.mjs'
 
+/**
+ * A {@link Widget} which displays a lecturer and all of their details.
+ *
+ * @augments Widget
+ */
 export class Lecturer extends Widget {
+  /**
+   * @param {string} department the department in which the lecturer works
+   * @param {string} position the lecturer's position
+   * @param {string} title the lecturer's title
+   * @param {string} name the lecturer's name
+   * @param {string} officeHours the lecturer's office hours
+   * @param {string} officeLocation the lecturer's office location
+   * @param {string} email the lecturer's email address
+   * @param {string} phone the lecturer's phone number
+   */
   constructor ({
     department,
     position,
@@ -23,6 +38,12 @@ export class Lecturer extends Widget {
     this.phone = phone
   }
 
+  /**
+   * Deserialize the Lecturer from its JSON API representation.
+   *
+   * @param obj
+   * @returns {Lecturer}
+   */
   static fromJSON (obj) {
     return new Lecturer({
       department: obj.department,

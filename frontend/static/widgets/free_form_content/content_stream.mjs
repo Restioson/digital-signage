@@ -6,12 +6,23 @@ import { WithRefresh } from '../with_refresh.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
 
+/**
+ * A container which displays a live view of all the {@link FreeFormContent} on the server.
+ *
+ * @augments Widget
+ */
 export class ContentStream extends Widget {
   constructor () {
     super()
     this.content = []
   }
 
+  /**
+   * Fetch the latest content and update the state.
+   *
+   * @private
+   * @returns {Promise<void>}
+   */
   async refresh () {
     const contentUpdate = await fetch('/api/content').then(res => res.json())
     this.content = contentUpdate.content

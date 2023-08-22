@@ -4,6 +4,13 @@ import { RemoteImage } from './remote_image.mjs'
 import { Link } from './link.mjs'
 import { UnknownContentTypeError } from '../../util.mjs'
 
+/**
+ * Deserialize the given {@link FreeFormContent} from the given API representation.
+ *
+ * @throws UnknownContentTypeError if the given object is not a piece of {@link FreeFormContent}
+ * @param {object} content the object to try to deserialize
+ * @returns {FreeFormContent}
+ */
 export function deserializeFreeFormContent (content) {
   switch (content.type) {
     case 'text':
