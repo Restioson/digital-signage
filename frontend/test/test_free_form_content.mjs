@@ -15,7 +15,7 @@ beforeEach(() => {
   global.document = dom.window.document
 })
 
-describe('FreeFormContent', function () {
+describe('TextWidget', function () {
   it('Text should render into a div with h3 and p in body', function () {
     const out = deserializeFreeFormContent({
       id: 1,
@@ -34,7 +34,9 @@ describe('FreeFormContent', function () {
     assert.equal(body.tagName, 'P')
     assert.equal(body.innerText, 'b')
   })
+})
 
+describe('LocalImage', function () {
   it('LocalImage should render into a div with img in body', function () {
     const out = deserializeFreeFormContent({
       id: 1,
@@ -48,7 +50,9 @@ describe('FreeFormContent', function () {
     assert(img.src.endsWith('/api/content/1/blob'))
     assert(out.children[1].hidden)
   })
+})
 
+describe('RemoteImage', function () {
   it('RemoteImage should render into a div with img in body', function () {
     const out = deserializeFreeFormContent({
       id: 1,
@@ -63,7 +67,9 @@ describe('FreeFormContent', function () {
     assert(img.src.endsWith('exampleurl'))
     assert(out.children[1].hidden)
   })
+})
 
+describe('Link', function () {
   it('Link should render into a div with a in body', function () {
     const out = deserializeFreeFormContent({
       id: 1,

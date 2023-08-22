@@ -128,4 +128,14 @@ describe('ContentAndCaption', function () {
     assert.deepStrictEqual(rendered.children[0], content)
     assert.deepStrictEqual(rendered.children[1], caption.render())
   })
+
+  it('renders with null caption', function () {
+    const content = document.createElement('p')
+    content.innerText = 'test'
+    const widget = new ContentAndCaption({ content, caption: null })
+    const rendered = widget.render()
+    assert.deepStrictEqual(rendered.children.length, 2)
+    assert.deepStrictEqual(rendered.children[0], content)
+    assert(rendered.children[1].hidden)
+  })
 })
