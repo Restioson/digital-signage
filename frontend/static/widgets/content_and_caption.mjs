@@ -1,5 +1,6 @@
 import { Widget } from './widget.mjs'
 import { Container } from './container.js'
+import { Visibility } from './visibility.js'
 
 export class ContentAndCaption extends Widget {
   constructor ({ content, caption }) {
@@ -8,14 +9,15 @@ export class ContentAndCaption extends Widget {
     this.caption = caption
   }
 
-  async refresh () {
-    await this.content.refresh()
-    await this.caption.refresh()
-  }
-
   build () {
     return new Container({
-      children: this.caption ? [this.content, this.caption] : [this.content]
+      children: [
+        this.content,
+        new Visibility({
+          visible: Boolean(this.caption),
+          child: this.caption
+        })
+      ]
     })
   }
 }

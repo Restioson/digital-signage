@@ -1,9 +1,7 @@
 import { AbstractClassError } from '../util.js'
-import { Renderable } from '../renderable.mjs'
 
-export class Widget extends Renderable {
+export class Widget {
   constructor () {
-    super()
     if (this.constructor === Widget) {
       throw new AbstractClassError('Widget', 'constructor')
     }
@@ -13,9 +11,8 @@ export class Widget extends Renderable {
     throw new AbstractClassError('Widget', 'build()')
   }
 
-  async refresh () {}
-
   render () {
-    return this.build().render()
+    const built = this.build()
+    return built instanceof Widget ? built.render() : built
   }
 }

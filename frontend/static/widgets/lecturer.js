@@ -36,7 +36,7 @@ export class Lecturer extends Widget {
     })
   }
 
-  render () {
+  build () {
     const title = document.createElement('h3')
     const body = document.createElement('p')
 

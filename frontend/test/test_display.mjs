@@ -41,11 +41,12 @@ describe('FreeFormContent', function () {
       type: 'local_image'
     }).render()
     assert.equal(out.tagName, 'DIV')
-    assert.equal(out.children.length, 1)
+    assert.equal(out.children.length, 2)
 
     const img = out.children[0]
     assert.equal(img.tagName, 'IMG')
     assert(img.src.endsWith('/api/content/1/blob'))
+    assert(out.children[1].hidden)
   })
 
   it('RemoteImage should render into a div with img in body', function () {
@@ -55,11 +56,12 @@ describe('FreeFormContent', function () {
       src: 'exampleurl'
     }).render()
     assert.equal(out.tagName, 'DIV')
-    assert.equal(out.children.length, 1)
+    assert.equal(out.children.length, 2)
 
     const img = out.children[0]
     assert.equal(img.tagName, 'IMG')
     assert(img.src.endsWith('exampleurl'))
+    assert(out.children[1].hidden)
   })
 
   it('Link should render into a div with a in body', function () {
@@ -69,12 +71,13 @@ describe('FreeFormContent', function () {
       url: 'https://example.com/'
     }).render()
     assert.equal(out.tagName, 'DIV')
-    assert.equal(out.children.length, 1)
+    assert.equal(out.children.length, 2)
 
     const a = out.children[0]
     assert.equal(a.tagName, 'A')
     assert.equal(a.href, 'https://example.com/')
     assert.equal(a.innerText, 'https://example.com/')
+    assert(out.children[1].hidden)
   })
 
   it('Link with caption (title and body) should be rendered', function () {
@@ -123,9 +126,11 @@ describe('FreeFormContent', function () {
     const caption = out.children[1]
     assert.equal(caption.tagName, 'DIV')
     assert.equal(caption.className, 'content-caption')
-    assert.equal(caption.children.length, 1)
+    assert.equal(caption.children.length, 2)
 
-    const body = caption.children[0]
+    assert(caption.children[0].hidden)
+
+    const body = caption.children[1]
     assert.equal(body.tagName, 'P')
     assert.equal(body.className, 'caption-body')
     assert.equal(body.innerText, 'there')

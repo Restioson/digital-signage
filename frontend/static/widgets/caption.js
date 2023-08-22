@@ -1,4 +1,7 @@
 import { Widget } from './widget.mjs'
+import { WithClasses } from './with_classes.mjs'
+import { Container } from './container.js'
+import { Visibility } from './visibility.js'
 
 export class Caption extends Widget {
   constructor ({ title, body }) {
@@ -15,22 +18,29 @@ export class Caption extends Widget {
     return obj ? Caption.fromJSON(obj) : null
   }
 
-  render () {
-    const container = document.createElement('div')
-    container.className = 'content-caption'
-
+  build () {
+    let title = null
     if (this.title) {
-      const title = document.createElement('p')
+      title = document.createElement('p')
       title.className = 'caption-title'
       title.innerText = this.title
-      container.append(title)
     }
 
     const body = document.createElement('p')
     body.className = 'caption-body'
     body.innerText = this.body
 
-    container.append(body)
-    return container
+    return new WithClasses({
+      classList: ['content-caption'],
+      child: new Container({
+        children: [
+          new Visibility({
+            visible: Boolean(title),
+            child: title
+          }),
+          body
+        ]
+      })
+    })
   }
 }

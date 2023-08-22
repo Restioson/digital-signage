@@ -12,3 +12,9 @@ export class UnknownContentTypeError extends Error {
     this.anme = name
   }
 }
+
+export class RootAlreadyExistsError extends Error {
+  constructor () {
+    super('There may only be one Root widget, and it already exists')
+  }
+}

@@ -1,20 +1,17 @@
-import { Renderable } from '../renderable.mjs'
+import { Widget } from './widget.mjs'
 
-export class WithClasses extends Renderable {
+export class WithClasses extends Widget {
   constructor ({ child, classList = null }) {
     super()
     this.child = child
     this.classList = classList
   }
 
-  async refresh () {
-    await this.child.refresh()
-  }
-
-  render () {
-    const rendered = this.child.render()
+  build () {
+    const rendered =
+      this.child instanceof Widget ? this.child.render() : this.child
     if (this.classList) {
-      rendered.classList.add(this.classList)
+      rendered.classList.add(...this.classList)
     }
 
     return rendered
