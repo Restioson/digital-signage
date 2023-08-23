@@ -48,6 +48,8 @@ CREATE TABLE IF NOT EXISTS display_groups (
   layout_json TEXT NOT NULL
 
 CREATE TABLE IF NOT EXISTS users (
-  username TEXT PRIMARY KEY,
+  --make email primary key
+  email TEXT PRIMARY KEY,
+  screen_name TEXT NOT NULL,
   pass_word TEXT NOT NULL
 );

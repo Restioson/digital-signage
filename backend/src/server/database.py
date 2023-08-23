@@ -7,6 +7,7 @@ from server import free_form_content
 from server.display_group import DisplayGroup
 from server.free_form_content import FreeFormContent, BinaryContent
 from server.department import Lecturer, Department
+from server.User import User
 
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
@@ -245,3 +246,20 @@ class DatabaseController:
             ),
             None,
         )
+
+    # TO-DO to add method that validates user is not in db already based on email.
+    # TO-DO add actual login functionallity (compare username and password to DB)
+
+    def insert_user(self, user: User) -> int:
+        """Insert the given user into the user table
+        and returns the inserted row id"""
+
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "INSERT INTO users "
+                "(email, screen_name, pass_word)"
+                " VALUES (?, ?, ?)",
+                (user.email, user.screen_name, user.password),
+            )
+        return cursor.lastrowid

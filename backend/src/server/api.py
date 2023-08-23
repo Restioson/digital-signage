@@ -9,6 +9,7 @@ from server.department import Lecturer
 from server.database import DatabaseController
 from server.display_group import DisplayGroup
 from server.free_form_content import BinaryContent
+from server.User import User
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
@@ -83,6 +84,21 @@ def lecturer(lecturer_id):
         return {"deleted": True}
     else:
         flask.abort(404)
+
+        
+@blueprint.route("/user", methods=["POST"])
+def user_route():
+    # TODO
+    """The /api/user end point
+    GETing this endpoint fetches all the users from the database
+
+    POSTing to this end point inserts a new user into the database
+    """
+
+    if flask.request.method == "POST":
+        email = DatabaseController.get().insert_user(User.from_form(flask.request.form))
+
+        return {"id": email}
 
 
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])
