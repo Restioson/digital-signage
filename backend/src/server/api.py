@@ -11,6 +11,16 @@ from server.free_form_content import BinaryContent
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
 
+@blueprint.route("/health", methods=["GET"])
+def health():
+    """The health check endpoint.
+
+    This returns whether the server is healthy.
+    """
+
+    return {"healthy": True}
+
+
 @blueprint.route("/content", methods=["POST", "GET"])
 def content():
     """The /api/content endpoint.

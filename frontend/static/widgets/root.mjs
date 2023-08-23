@@ -3,6 +3,18 @@ import { RootAlreadyExistsError } from '../util.mjs'
 let root
 
 /**
+ * A collection of exports only to be used when testing
+ */
+export const testExports = { destroyRoot }
+
+/**
+ * Destroy the root. Used only in testing for teardown.
+ */
+function destroyRoot () {
+  root = null
+}
+
+/**
  * The global root element of the page. This can only be created once, through its {@link create} method.
  */
 export class Root {
