@@ -8,6 +8,8 @@ from server.display_group import DisplayGroup
 from server.free_form_content import FreeFormContent, BinaryContent
 from server.department import Lecturer, Department
 from server.User import User
+# todo- use this to hash password
+from werkzeug.security import generate_password_hash, check_password_hash
 
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
@@ -247,22 +249,53 @@ class DatabaseController:
             None,
         )
 
-    # TO-DO to add method that validates user is not in db already based on email.
-    # TO-DO add actual login functionallity (compare username and password to DB)
+    #returns user from db based on email
+    def get_user(self, email: str):
+        "return user list based on email"
+        user_fields = []
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "SELECT email, screen_name FROM users WHERE email = ?",
+                (email,),
+            )
+            db_user_data = cursor.fetchone()  # Fetch the user data from the database
+
+            user_fields.append(db_user_data[0])
+            user_fields.append(db_user_data[1])
+
+        return user_fields
 
     # checks if the user is in the db
-    def user_exists(self, user: User) -> bool:
+    def user_exists(self, email: str) -> bool:
         """checks the db for the user with specified email, using count > 0"""
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
                 "SELECT COUNT(*) FROM users " "WHERE email = ?",
-                (user.email,),
+                (email,),
             )
             count = cursor.fetchone()[0]  # Fetch the count result
-            return count == 0
+            return count > 0
+        
 
-    def insert_user(self, user: User) -> int:
+    def is_valid_user(self, user: list) -> bool:
+        """Checks if the provided user exists in the database and has the correct credentials."""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "SELECT email, screen_name, password FROM users WHERE email = ?",
+                (user[0],),
+            )
+            db_user_data = cursor.fetchone()  # Fetch the user data from the database
+            is_valid = False
+
+            if (user[0] == db_user_data[0] and user[1]==db_user_data[1] and user[2]==db_user_data[2]):
+                is_valid = True
+                
+            return is_valid
+    
+    def insert_user(self,user : list) -> int:
         """Insert the given user into the user table
         and returns the inserted row id"""
 
@@ -272,6 +305,6 @@ class DatabaseController:
                 "INSERT INTO users "
                 "(email, screen_name, password)"
                 " VALUES (?, ?, ?)",
-                (user.email, user.screen_name, user.password),
+                (user[0], user[1], user[2],),
             )
         return cursor.lastrowid

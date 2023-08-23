@@ -2,14 +2,15 @@ import json
 from http import HTTPStatus
 
 import flask
-from flask import Blueprint, Response
-
-from server import free_form_content
+from flask import Blueprint, Response, render_template, redirect, url_for, jsonify
+from flask_login import LoginManager,login_user, login_required, logout_user,current_user, login_manager
+from server import free_form_content, main
 from server.department import Lecturer
 from server.database import DatabaseController
 from server.display_group import DisplayGroup
 from server.free_form_content import BinaryContent
 from server.User import User
+
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
@@ -90,22 +91,47 @@ def lecturer(lecturer_id):
 def user_route():
     # TODO
     """The /api/user end point
-    GETing this endpoint fetches all the users from the database
+    GETing this endpoint fetches all the users from the database"""
+@blueprint.route("/register", methods=["POST"])
+def registration_route():
 
-    POSTing to this end point inserts a new user into the database
-    """
-
-    # this needs to be redone, it works logically, in that it makes sure that no user with the same email is entered in the db.
-    # but it doesn't proved a correct error message, which i think needs to be changed in the java script.
+    #recieves list of user info
+    form_user = User.from_form(flask.request.form)
     if flask.request.method == "POST":
-        if DatabaseController.get().user_exists(User.from_form(flask.request.form)):
-            email = DatabaseController.get().insert_user(
-                User.from_form(flask.request.form)
-            )
-            return {"id": email}
+        if not (DatabaseController.get().user_exists(form_user[0])):
+            email = DatabaseController.get().insert_user(form_user)
+            return redirect(url_for("config_view.index"))
+            
         else:
             flask.abort(500)
-            #add custom error
+            # add custom error
+
+
+@blueprint.route("/login", methods=["POST","GET"])
+def login_route():
+
+    form_user = User.from_form(flask.request.form)
+
+    if (DatabaseController.get().user_exists(form_user[0])):
+        if (DatabaseController.get().is_valid_user(form_user)):
+            user = User(form_user[0],form_user[1])
+            print(login_user(user))
+            print(current_user)
+            return redirect(url_for("config_view.index"))
+        else: 
+            return flask.abort(402)
+            #custom error
+    else:
+        return flask.abort(402)
+        #custom error
+
+@blueprint.route("/logout", methods=["GET"])
+def logout_route():
+    print("made it here")
+    logout_user()
+    return redirect(url_for("login.login"))
+    
+
 
 
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])
