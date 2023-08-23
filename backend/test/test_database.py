@@ -82,7 +82,7 @@ def test_post_captioned(database: DatabaseController, test_jpg_data: bytes):
         fetched = typing.cast(
             CaptionedContent, database.fetch_content_by_id(content_id, fetch_blob=False)
         )
-        print(fetched.to_db_json())
+
         assert fetched.caption.title == "Hello", "caption should be identical"
         assert fetched.caption.body == "there", "caption should be identical"
 

@@ -42,13 +42,10 @@ def content():
             ]
         }
     else:
-        print("Got req")
-
         content_id, posted = DatabaseController.get().post_content(
             free_form_content.from_form(flask.request.form, flask.request.files)
         )
 
-        print("posted")
         return {"id": content_id, "posted": posted}
 
 
