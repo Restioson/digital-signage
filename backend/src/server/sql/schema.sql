@@ -51,5 +51,5 @@ CREATE TABLE IF NOT EXISTS users (
   --make email primary key
   email TEXT PRIMARY KEY,
   screen_name TEXT NOT NULL,
-  pass_word TEXT NOT NULL
+  password TEXT NOT NULL
 );

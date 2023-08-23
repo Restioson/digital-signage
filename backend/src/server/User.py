@@ -12,12 +12,12 @@ class User:
         return {
             "email": self.email,
             "screen_name": self.screen_name,
-            "pass_word": self.password,
+            "password": self.password,
         }
 
     @staticmethod
     def from_form(form: dict):
-        """forms user from data inputted in the registration form"""
+        """Deserializes user from data inputted in the registration form"""
         return User(form["email"], form["screen_name"], form["password"])
 
     @staticmethod
@@ -27,5 +27,5 @@ class User:
         return User(
             email=row["email"],
             screen_name=row["screen_name"],
-            password=row["pass_word"],
+            password=row["password"],
         )

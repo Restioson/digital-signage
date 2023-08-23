@@ -95,10 +95,17 @@ def user_route():
     POSTing to this end point inserts a new user into the database
     """
 
+    # this needs to be redone, it works logically, in that it makes sure that no user with the same email is entered in the db.
+    # but it doesn't proved a correct error message, which i think needs to be changed in the java script.
     if flask.request.method == "POST":
-        email = DatabaseController.get().insert_user(User.from_form(flask.request.form))
-
-        return {"id": email}
+        if DatabaseController.get().user_exists(User.from_form(flask.request.form)):
+            email = DatabaseController.get().insert_user(
+                User.from_form(flask.request.form)
+            )
+            return {"id": email}
+        else:
+            flask.abort(500)
+            #add custom error
 
 
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])

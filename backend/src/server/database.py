@@ -250,6 +250,18 @@ class DatabaseController:
     # TO-DO to add method that validates user is not in db already based on email.
     # TO-DO add actual login functionallity (compare username and password to DB)
 
+    # checks if the user is in the db
+    def user_exists(self, user: User) -> bool:
+        """checks the db for the user with specified email, using count > 0"""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "SELECT COUNT(*) FROM users " "WHERE email = ?",
+                (user.email,),
+            )
+            count = cursor.fetchone()[0]  # Fetch the count result
+            return count == 0
+
     def insert_user(self, user: User) -> int:
         """Insert the given user into the user table
         and returns the inserted row id"""
@@ -258,7 +270,7 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.execute(
                 "INSERT INTO users "
-                "(email, screen_name, pass_word)"
+                "(email, screen_name, password)"
                 " VALUES (?, ?, ?)",
                 (user.email, user.screen_name, user.password),
             )
