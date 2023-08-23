@@ -7,7 +7,8 @@ from server import free_form_content
 from server.display_group import DisplayGroup
 from server.free_form_content import FreeFormContent, BinaryContent
 from server.department import Lecturer, Department
-from server.User import User
+from server.user import User
+from server.department import Lecturer
 # todo- use this to hash password
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -249,7 +250,7 @@ class DatabaseController:
             None,
         )
 
-    #returns user from db based on email
+    # returns user from db based on email
     def get_user(self, email: str):
         "return user list based on email"
         user_fields = []
@@ -277,10 +278,9 @@ class DatabaseController:
             )
             count = cursor.fetchone()[0]  # Fetch the count result
             return count > 0
-        
 
     def is_valid_user(self, user: list) -> bool:
-        """Checks if the provided user exists in the database and has the correct credentials."""
+        """Checks if the provided user has the correct credentials."""
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
@@ -290,12 +290,16 @@ class DatabaseController:
             db_user_data = cursor.fetchone()  # Fetch the user data from the database
             is_valid = False
 
-            if (user[0] == db_user_data[0] and user[1]==db_user_data[1] and user[2]==db_user_data[2]):
+            if (
+                user[0] == db_user_data[0]
+                and user[1] == db_user_data[1]
+                and check_password_hash(db_user_data[2], user[2])
+            ):  # password hashing implemented
                 is_valid = True
-                
+
             return is_valid
-    
-    def insert_user(self,user : list) -> int:
+
+    def insert_user(self, user: list) -> int:
         """Insert the given user into the user table
         and returns the inserted row id"""
 
@@ -305,6 +309,10 @@ class DatabaseController:
                 "INSERT INTO users "
                 "(email, screen_name, password)"
                 " VALUES (?, ?, ?)",
-                (user[0], user[1], user[2],),
+                (
+                    user[0],
+                    user[1],
+                    generate_password_hash(user[2]),
+                ),  # password hashing impemented
             )
         return cursor.lastrowid

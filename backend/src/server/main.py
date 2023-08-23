@@ -1,10 +1,8 @@
 from flask import Flask
-from server import config_view, display_view, index, api, login, registration,User, database
-from server.database import DatabaseController
+from server import config_view, display_view, index, api, login, registration
 from flask_login import LoginManager
 from server.database import DatabaseController
-from server.User import User
-
+from server.user import User
 
 
 def create_app(testing=False):
@@ -23,8 +21,7 @@ def create_app(testing=False):
     @login_manager.user_loader
     def load_user(user_id):
         attr_list = DatabaseController.get().get_user(user_id)
-        loaded_user = User(attr_list[0],attr_list[1])
-        print(loaded_user.email)
+        loaded_user = User(attr_list[0], attr_list[1])
         return loaded_user
 
     # Register blueprints for each logical part of the app
