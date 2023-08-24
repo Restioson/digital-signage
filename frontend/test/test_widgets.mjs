@@ -5,7 +5,9 @@ import { Caption } from '../static/widgets/caption.mjs'
 import { Container } from '../static/widgets/containers/container.mjs'
 import { Visibility } from '../static/widgets/visibility.mjs'
 import { ContentAndCaption } from '../static/widgets/containers/content_and_caption.mjs'
-import { WithRefresh } from '../static/widgets/with_refresh.mjs'
+import { WithRefresh } from '../static/widgets/dynamic/with_refresh.mjs'
+import { Widget } from '../static/widgets/widget.mjs'
+import { CachingContainer } from '../static/widgets/dynamic/caching_container.mjs'
 
 describe('Widget', function () {
   beforeEach(() => {
@@ -149,6 +151,71 @@ describe('Widget', function () {
       assert.deepStrictEqual(rendered.children.length, 2)
       assert.deepStrictEqual(rendered.children[0], content)
       assert(rendered.children[1].hidden)
+    })
+  })
+
+  describe('CachingContainer', function () {
+    class TrackerWidget extends Widget {
+      constructor ({ id }) {
+        super()
+        this.id = id
+        this.builds = 0
+      }
+
+      build () {
+        this.builds++
+        const div = document.createElement('div')
+        div.innerText = this.id
+        return div
+      }
+    }
+
+    function checkRender (out, ids) {
+      assert.equal(out.tagName, 'DIV')
+      assert.equal(out.children.length, ids.length)
+
+      for (let i = 0; i < out.children.length; i++) {
+        assert.equal(out.children[i].innerText, ids[i])
+      }
+    }
+
+    it('should not rebuild children when unchanged', function () {
+      const container = new CachingContainer({ getId: widget => widget.id })
+      container.children = [
+        new TrackerWidget({ id: 1 }),
+        new TrackerWidget({ id: 2 })
+      ]
+
+      let out = container.render()
+      checkRender(out, [1, 2])
+      assert.strictEqual(container.children[0].builds, 1)
+      assert.strictEqual(container.children[1].builds, 1)
+
+      out = container.render()
+      checkRender(out, [1, 2])
+      assert.strictEqual(container.children[0].builds, 1)
+      assert.strictEqual(container.children[1].builds, 1)
+    })
+
+    it('should rebuild when changed', function () {
+      const container = new CachingContainer({ getId: widget => widget.id })
+      container.children = [
+        new TrackerWidget({ id: 1 }),
+        new TrackerWidget({ id: 2 })
+      ]
+
+      let out = container.render()
+      checkRender(out, [1, 2])
+      assert.strictEqual(container.children[0].builds, 1)
+      assert.strictEqual(container.children[1].builds, 1)
+
+      container.children.splice(1, 0, new TrackerWidget({ id: 3 }))
+      container.children[0].id = 4
+      out = container.render()
+      checkRender(out, [4, 3, 2])
+      assert.strictEqual(container.children[0].builds, 2)
+      assert.strictEqual(container.children[1].builds, 1)
+      assert.strictEqual(container.children[2].builds, 1)
     })
   })
 })

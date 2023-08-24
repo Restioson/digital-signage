@@ -1,5 +1,5 @@
 import { Widget } from './widget.mjs'
-import { WithRefresh } from './with_refresh.mjs'
+import { WithRefresh } from './dynamic/with_refresh.mjs'
 import { AssertionError } from '../util.mjs'
 
 /**
@@ -31,8 +31,7 @@ export class WithClasses extends Widget {
   }
 
   build () {
-    const rendered =
-      this.child instanceof Widget ? this.child.render() : this.child
+    const rendered = Widget.renderIfWidget(this.child)
     if (this.classList) {
       rendered.classList.add(...this.classList)
     }
