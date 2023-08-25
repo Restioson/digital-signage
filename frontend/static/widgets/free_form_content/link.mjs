@@ -37,9 +37,18 @@ export class Link extends FreeFormContent {
     const link = document.createElement('a')
     link.innerText = this.url
     link.href = this.url
+    const qrcodecontainer = document.createElement('qrcode')
+    new QRCode(qrcodecontainer, {
+      text: this.url,
+      width: 128,
+      height: 128,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    })
 
     return new ContentAndCaption({
-      content: link,
+      content: qrcodecontainer,
       caption: this.caption
     })
   }
