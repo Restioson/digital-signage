@@ -28,3 +28,9 @@
   height: 80%;
   object-fit: contain;
 }
+
+.clock {
+  text-align: center;
+  padding: 15px;
+  font-size: 24pt;
+}
