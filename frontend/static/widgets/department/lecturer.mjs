@@ -63,7 +63,8 @@ export class Lecturer extends Widget {
 
     title.innerText = `${this.title} ${this.name}`
     body.innerText =
-      `Position: ${this.position} in the ${this.department} department\n` +
+      `Department: ${this.department}\n`
+      `Position: ${this.position}\n` +
       `Office Hours: ${this.officeHours}\n` +
       `Office Location: ${this.officeLocation}\n` +
       `Email: ${this.email}\n` +
