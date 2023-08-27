@@ -7,7 +7,7 @@ import { Caption } from '../caption.mjs'
  *
  * @augments FreeFormContent
  */
-export class qrcode extends FreeFormContent {
+export class Qrcode extends FreeFormContent {
   /**
    * @param {int} id the content's ID
    * @param {URL} url the URL to display
@@ -23,10 +23,10 @@ export class qrcode extends FreeFormContent {
    * Deserialize the qrcode from its JSON API representation.
    *
    * @param obj
-   * @returns {qrcode}
+   * @returns {Qrcode}
    */
   static fromJSON (obj) {
-    return new qrcode({
+    return new Qrcode({
       id: obj.id,
       url: obj.url,
       caption: Caption.maybeFromJSON(obj.caption)
@@ -35,9 +35,9 @@ export class qrcode extends FreeFormContent {
 
   static qrcodegen (url) {
     const qrcodecontainer = document.createElement('div')
-    qrcodecontainer.style.width = `125px`; 
-    qrcodecontainer.style.height = `125px`; 
-    new QRCode(qrcodecontainer, {
+    qrcodecontainer.style.width = '125px'
+    qrcodecontainer.style.height = '125px'
+    const makeQR = new QRCode(qrcodecontainer, {
       text: url,
       width: 128,
       height: 128,
@@ -49,7 +49,7 @@ export class qrcode extends FreeFormContent {
   }
 
   build () {
-    const qrcodecontainer = qrcode.qrcodegen(this.url)
+    const qrcodecontainer = Qrcode.qrcodegen(this.url)
     return new ContentAndCaption({
       content: qrcodecontainer,
       caption: this.caption
