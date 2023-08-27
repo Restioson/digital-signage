@@ -5,7 +5,7 @@ import { Widget } from '../widget.mjs'
  */
 export class Container extends Widget {
   /**
-   * @param {HTMLElement | Widget} children the children to display
+   * @param {(HTMLElement | Widget)[]} children the children to display
    */
   constructor ({ children }) {
     super()
@@ -16,7 +16,7 @@ export class Container extends Widget {
     const container = document.createElement('div')
 
     for (const child of this.children) {
-      container.append(child instanceof Widget ? child.render() : child)
+      container.appendChild(Widget.renderIfWidget(child))
     }
 
     return container

@@ -18,6 +18,7 @@ import {
 } from './test_free_form_content.mjs'
 import { checkRenderedLecturer } from './test_department.mjs'
 import { Department } from '../static/widgets/department/department.mjs'
+import { deserializeFreeFormContent } from '../static/widgets/free_form_content/free_form_content_factory.mjs'
 
 let serverProcess
 
@@ -198,9 +199,9 @@ describe('API Integration', function () {
       describe('refresh', function () {
         it('should result in empty content list with empty database', async function () {
           const stream = new ContentStream()
-          assert.deepStrictEqual(stream.content, [])
+          assert.deepStrictEqual(stream.cache.children, [])
           await stream.refresh()
-          assert.deepStrictEqual(stream.content, [])
+          assert.deepStrictEqual(stream.cache.children, [])
         })
 
         it('should fetch and render all content correctly', async function () {
@@ -234,10 +235,13 @@ describe('API Integration', function () {
           expected.reverse()
 
           const stream = new ContentStream()
-          assert.deepStrictEqual(stream.content, [])
+          assert.deepStrictEqual(stream.cache.children, [])
 
           await stream.refresh()
-          assert.deepStrictEqual(stream.content, expected)
+          assert.deepStrictEqual(
+            stream.cache.children,
+            expected.map(deserializeFreeFormContent)
+          )
 
           const out = stream.render()
           assert.equal(out.tagName, 'DIV')
@@ -293,9 +297,9 @@ describe('API Integration', function () {
       describe('refresh', function () {
         it('should result in empty lecturers list with empty database', async function () {
           const dept = new Department()
-          assert.deepStrictEqual(dept.lecturers, [])
+          assert.deepStrictEqual(dept.cache.children, [])
           await dept.refresh()
-          assert.deepStrictEqual(dept.lecturers, [])
+          assert.deepStrictEqual(dept.cache.children, [])
         })
 
         it('should fetch and render all lecturers correctly', async function () {
@@ -327,7 +331,7 @@ describe('API Integration', function () {
           }
 
           const dept = new Department()
-          assert.deepStrictEqual(dept.lecturers, [])
+          assert.deepStrictEqual(dept.cache.children, [])
 
           await dept.refresh()
 

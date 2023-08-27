@@ -8,6 +8,7 @@ import { Container } from '../containers/container.mjs'
  */
 export class Lecturer extends Widget {
   /**
+   * @param {int} id the lecturer's id
    * @param {string} department the department in which the lecturer works
    * @param {string} position the lecturer's position
    * @param {string} title the lecturer's title
@@ -18,6 +19,7 @@ export class Lecturer extends Widget {
    * @param {string} phone the lecturer's phone number
    */
   constructor ({
+    id,
     department,
     position,
     title,
@@ -28,6 +30,7 @@ export class Lecturer extends Widget {
     phone
   }) {
     super()
+    this.id = id
     this.department = department
     this.position = position
     this.title = title
@@ -46,6 +49,7 @@ export class Lecturer extends Widget {
    */
   static fromJSON (obj) {
     return new Lecturer({
+      id: obj.id,
       department: obj.department,
       position: obj.position,
       title: obj.title,
