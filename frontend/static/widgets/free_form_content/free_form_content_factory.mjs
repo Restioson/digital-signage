@@ -3,6 +3,7 @@ import { LocalImage } from './local_image.mjs'
 import { RemoteImage } from './remote_image.mjs'
 import { Link } from './link.mjs'
 import { UnknownContentTypeError } from '../../util.mjs'
+import { qrcode } from './qrcode.mjs'
 
 /**
  * Deserialize the given {@link FreeFormContent} from the given API representation.
@@ -21,6 +22,8 @@ export function deserializeFreeFormContent (content) {
       return RemoteImage.fromJSON(content)
     case 'link':
       return Link.fromJSON(content)
+    case 'qrcode':
+      return qrcode.fromJSON(content)
     default:
       throw UnknownContentTypeError(content.type)
   }

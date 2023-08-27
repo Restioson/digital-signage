@@ -1,16 +1,17 @@
 import { FreeFormContent } from './free_form_content.mjs'
 import { ContentAndCaption } from '../containers/content_and_caption.mjs'
 import { Caption } from '../caption.mjs'
+import { qrcode } from '../free_form_content/qrcode.mjs'
 
 /**
- * A piece of {@link FreeFormContent} which displays a link.
+ * A piece of {@link FreeFormContent} which displays the embedded content of a link.
  *
  * @augments FreeFormContent
  */
 export class Link extends FreeFormContent {
   /**
    * @param {int} id the content's ID
-   * @param {URL} url the URL to display
+   * @param {URL} url the URL to embed in the iFrame
    * @param {?Caption} caption the link's caption
    */
   constructor ({ id, url, caption }) {
@@ -34,21 +35,23 @@ export class Link extends FreeFormContent {
   }
 
   build () {
-    const link = document.createElement('a')
-    link.innerText = this.url
-    link.href = this.url
-    const qrcodecontainer = document.createElement('qrcode')
-    new QRCode(qrcodecontainer, {
-      text: this.url,
-      width: 128,
-      height: 128,
-      colorDark: '#000000',
-      colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.H
-    })
-
+    const container = document.createElement('div')
+    try {
+    const iframe = document.createElement('iframe')
+    iframe.src = this.url
+    iframe.width = '400'
+    iframe.height = '300'
+    container.append(iframe)
+    } catch (error){
+    console.error("A error with the iFrame occurred:", error.message);
+    }
+    try {
+    container.append(qrcode.qrcodegen(this.url))
+    } catch (error){
+      console.error("A error with the QRcode occurred:", error.message);
+    }
     return new ContentAndCaption({
-      content: qrcodecontainer,
+      content: container,
       caption: this.caption
     })
   }

@@ -105,6 +105,8 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
         return LocalImage(mime, image_data, caption)
     elif content_type == "link":
         return Link(form["url"], caption)
+    elif content_type == "qrcode":
+        return QRcode(form["url"], caption)
     else:
         raise UnknownContentError("Unknown content type", form["type"])
 
@@ -139,6 +141,8 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
         return RemoteImage(data["src"], caption, content_id=content_id, posted=posted)
     elif content_type == "link":
         return Link(data["url"], caption, content_id=content_id, posted=posted)
+    elif content_type == "qrcode":
+        return QRcode(data["url"], caption, content_id=content_id, posted=posted)
     else:
         raise UnknownContentError("Unknown content type", content_type)
 
@@ -203,7 +207,7 @@ class CaptionedContent(FreeFormContent, ABC):
 
 
 class Link(CaptionedContent):
-    """A link to be displayed on the board along with a caption."""
+    """A link to be embedded in an iframe on the board along with a caption."""
 
     def __init__(
         self,
@@ -218,6 +222,27 @@ class Link(CaptionedContent):
 
     def type(self) -> str:
         return "link"
+
+    def to_db_json(self) -> dict:
+        return combine(super().to_db_json(), {"url": self.url})
+
+
+class QRcode(CaptionedContent):
+    """A link to be displayed as a QRcode on the board along with a caption."""
+
+    def __init__(
+        self,
+        url: str,
+        caption: Optional[Caption],
+        content_id: Optional[int] = None,
+        posted: Optional[datetime] = None,
+    ):
+        super().__init__(caption, content_id, posted)
+        self.url = url
+        self.caption = caption
+
+    def type(self) -> str:
+        return "qrcode"
 
     def to_db_json(self) -> dict:
         return combine(super().to_db_json(), {"url": self.url})
