@@ -1,6 +1,7 @@
 import { FreeFormContent } from './free_form_content.mjs'
 import { ContentAndCaption } from '../containers/content_and_caption.mjs'
 import { Caption } from '../caption.mjs'
+import { QRCode } from 'https://cdn.skypack.dev/qrcodejs_es_module'
 
 /**
  * A piece of {@qrcode FreeFormContent} which displays a link in the form of a qrcode.
@@ -34,24 +35,22 @@ export class Qrcode extends FreeFormContent {
   }
 
   static qrcodegen (url) {
-    const qrcodecontainer = document.createElement('div')
-    qrcodecontainer.style.width = '125px'
-    qrcodecontainer.style.height = '125px'
-    const makeQR = new QRCode(qrcodecontainer, {
+    const qrCodeContainer = document.createElement('div')
+    qrCodeContainer.style.width = '125px'
+    qrCodeContainer.style.height = '125px'
+    console.log(QRCode)
+    new QRCode(qrCodeContainer, {
       text: url,
       width: 128,
-      height: 128,
-      colorDark: '#000000',
-      colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.H
+      height: 128
     })
-    return qrcodecontainer
+    return qrCodeContainer
   }
 
   build () {
-    const qrcodecontainer = Qrcode.qrcodegen(this.url)
+    const qrCodeContainer = Qrcode.qrcodegen(this.url)
     return new ContentAndCaption({
-      content: qrcodecontainer,
+      content: qrCodeContainer,
       caption: this.caption
     })
   }

@@ -4,7 +4,7 @@ import { Caption } from '../caption.mjs'
 import { Qrcode } from '../free_form_content/qrcode.mjs'
 
 /**
- * A piece of {@link FreeFormContent} which displays the embedded content of a link.
+ * A piece of {@link FreeFormContent} which displays the embedded content of a link along with its QRcode.
  *
  * @augments FreeFormContent
  */
