@@ -1,10 +1,11 @@
 import { FreeFormContent } from './free_form_content.mjs'
 import { ContentAndCaption } from '../containers/content_and_caption.mjs'
+import { Container } from '../containers/container.mjs'
 import { Caption } from '../caption.mjs'
-import { Qrcode } from '../free_form_content/qrcode.mjs'
+import { Qrcode } from '../qrcode.mjs'
 
 /**
- * A piece of {@link FreeFormContent} which displays the embedded content of a link along with its QRcode.
+ * A piece of {@link FreeFormContent} which displays the embedded content of a link along with its QRcode and a potential caption.
  *
  * @augments FreeFormContent
  */
@@ -35,23 +36,14 @@ export class Link extends FreeFormContent {
   }
 
   build () {
-    const container = document.createElement('div')
-    try {
-      const iframe = document.createElement('iframe')
-      iframe.src = this.url
-      iframe.width = '400'
-      iframe.height = '300'
-      container.append(iframe)
-    } catch (error) {
-      console.error('A error with the iFrame occurred:', error.message)
-    }
-    try {
-      container.append(Qrcode.qrcodegen(this.url))
-    } catch (error) {
-      console.error('A error with the QRcode occurred:', error.message)
-    }
+    const iframe = document.createElement('iframe')
+    iframe.src = this.url
+    iframe.width = '400'
+    iframe.height = '300'
     return new ContentAndCaption({
-      content: container,
+      content: new Container({
+        children: [iframe, new Qrcode({ url: this.url })]
+      }),
       caption: this.caption
     })
   }

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS content (
       'remote_image',
       'video',
       'link',
-      'qrcode'
+      'qrcode_content'
     )
   ),
   content_json TEXT NOT NULL,

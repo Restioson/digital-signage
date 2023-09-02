@@ -103,9 +103,14 @@
 
     <form action="/api/content" method="post" class="post-form">
       <h3>Post a QRcode</h3>
-      <input type="hidden" id="qrcode_type" name="type" value="qrcode" />
-      <label for="qrcode_url">Url:</label>
-      <input type="url" id="qrcode_url" name="url" />
+      <input
+        type="hidden"
+        id="qrcode_content_type"
+        name="type"
+        value="qrcode_content"
+      />
+      <label for="qrcode_content_url">Url:</label>
+      <input type="url" id="qrcode_content_url" name="url" />
 
       <label
         >Caption title:
