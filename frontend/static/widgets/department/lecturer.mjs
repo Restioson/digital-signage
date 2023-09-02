@@ -1,12 +1,12 @@
-import { Widget } from '../widget.mjs'
 import { Container } from '../containers/container.mjs'
+import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 
 /**
  * A {@link Widget} which displays a lecturers and all of their details.
  *
  * @augments Widget
  */
-export class Lecturer extends Widget {
+export class Lecturer extends DeserializableWidget {
   /**
    * @param {int} id the lecturers's id
    * @param {string} department the department in which the lecturers works

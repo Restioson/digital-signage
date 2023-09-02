@@ -6,10 +6,10 @@ export class AbstractClassError extends Error {
   }
 }
 
-export class UnknownContentTypeError extends Error {
+export class UnknownWidgetTypeError extends Error {
   constructor (name) {
-    super(`unknown content type ${name}`)
-    this.anme = name
+    super(`unknown widget ${name}`)
+    this.name = name
   }
 }
 
@@ -20,3 +20,11 @@ export class RootAlreadyExistsError extends Error {
 }
 
 export class AssertionError extends Error {}
+
+export async function importFromNpm (moduleName) {
+  if (typeof global !== 'undefined' && typeof global.it === 'function') {
+    return await import(moduleName)
+  } else {
+    return await import(`https://cdn.skypack.dev/${moduleName}`)
+  }
+}

@@ -18,7 +18,7 @@ import {
 } from './test_free_form_content.mjs'
 import { checkRenderedLecturer } from './test_department.mjs'
 import { Department } from '../static/widgets/department/department.mjs'
-import { deserializeFreeFormContent } from '../static/widgets/free_form_content/free_form_content_factory.mjs'
+import { deserializeWidget } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
 
 let serverProcess
 
@@ -261,7 +261,7 @@ describe('API Integration', function () {
           await stream.refresh()
           assert.deepStrictEqual(
             stream.cache.children,
-            expected.map(deserializeFreeFormContent)
+            expected.map(deserializeWidget)
           )
 
           const out = stream.render()
