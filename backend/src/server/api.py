@@ -60,7 +60,7 @@ def lecturers_route():
         return {
             "lecturers": [
                 lecturer.to_http_json()
-                for lecturer in DatabaseController.get().fetch_all_departments()
+                for lecturer in DatabaseController.get().fetch_all_lecturers()
             ]
         }
     else:

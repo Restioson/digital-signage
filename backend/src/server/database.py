@@ -5,7 +5,7 @@ from typing import Optional
 import flask
 from server import free_form_content
 from server.free_form_content import FreeFormContent, BinaryContent
-from server.department import Lecturer
+from server.department import Lecturer, Department
 
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
@@ -114,6 +114,31 @@ class DatabaseController:
             None,
         )
 
+    def create_department(self, department: Department, insert_lecturers=False) -> int:
+        """Create a department and return its row id. If `insert_lecturers` is `True`,
+        the lecturers in the `Department` object will also be inserted."""
+
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "INSERT INTO department (name, bio) VALUES (?, ?)",
+                (department.name, department.bio),
+            )
+            dept_id = cursor.lastrowid
+
+            if insert_lecturers:
+                for lecturer in department.lecturers:
+                    self.insert_lecturer(lecturer)
+
+            return dept_id
+
+    # TODO(https://github.com/Restioson/digital-signage/issues/74): once we
+    # associate lecturers with depts, we can fetch a dept's lecturers here, too
+    def fetch_all_departments(self) -> list[Department]:
+        cursor = self.db.cursor()
+        cursor.row_factory = Department.from_sql
+        return list(cursor.execute("SELECT id, name, bio FROM department ORDER BY id"))
+
     def upsert_lecturer(self, lecturer: Lecturer) -> int:
         """Insert (or update) the given lecturer into the database
         and returns the inserted row id"""
@@ -147,7 +172,7 @@ class DatabaseController:
             cursor.execute("DELETE FROM lecturers WHERE id = ?", (lecturer_id,))
         return cursor.rowcount == 1
 
-    def fetch_all_departments(self) -> list[Lecturer]:
+    def fetch_all_lecturers(self) -> list[Lecturer]:
         """Fetch all the departments lecturers from the database"""
         cursor = self.db.cursor()
         cursor.row_factory = Lecturer.from_sql
@@ -161,7 +186,7 @@ class DatabaseController:
         )
 
     def fetch_lecturer_by_id(self, lecturer_id: int) -> Optional[Lecturer]:
-        """Fetch a specific lecturers from the database based on their ID"""
+        """Fetch a specific lecturer from the database based on their ID"""
         cursor = self.db.cursor()
         cursor.row_factory = Lecturer.from_sql
         return next(

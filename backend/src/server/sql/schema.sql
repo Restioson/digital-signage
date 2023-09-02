@@ -37,6 +37,6 @@ CREATE TABLE IF NOT EXISTS lecturers (
 );
 CREATE TABLE IF NOT EXISTS department (
   id INTEGER PRIMARY KEY,
-  department TEXT NOT NULL,
+  name TEXT NOT NULL,
   bio TEXT
 );

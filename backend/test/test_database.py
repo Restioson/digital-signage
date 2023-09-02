@@ -4,6 +4,7 @@ import time
 import typing
 import pytest
 from server.database import DatabaseController
+from server.department import Department
 from server.free_form_content import (
     Text,
     LocalImage,
@@ -179,3 +180,16 @@ def test_post_and_fetch_text(database: DatabaseController):
     assert (
         fetched_content2.body == content2_to_insert.body
     ), "inserted content 2's body should be correct"
+
+
+def test_create_dept(database: DatabaseController):
+    assert (
+        len(database.fetch_all_departments()) == 0
+    ), "DB should start with 0 departments"
+    dept = Department("CS Department", "We are the CS department in the School of IT")
+    dept_id = database.create_department(dept)
+    depts = database.fetch_all_departments()
+    assert len(depts) == 1, "Only 1 department should be inserted"
+    assert depts[0].name == dept.name, "name should match"
+    assert depts[0].id == dept_id, "ids should match"
+    assert depts[0].bio == dept.bio, "bios should match"
