@@ -5,6 +5,7 @@ import typing
 import pytest
 from server.database import DatabaseController
 from server.department import Department
+from server.display_group import DisplayGroup
 from server.free_form_content import (
     Text,
     LocalImage,
@@ -184,12 +185,45 @@ def test_post_and_fetch_text(database: DatabaseController):
 
 def test_create_dept(database: DatabaseController):
     assert (
-        len(database.fetch_all_departments()) == 0
-    ), "DB should start with 0 departments"
+        len(database.fetch_all_departments()) == 1
+    ), "DB should start with 1 default department"
+
     dept = Department("CS Department", "We are the CS department in the School of IT")
     dept_id = database.create_department(dept)
     depts = database.fetch_all_departments()
-    assert len(depts) == 1, "Only 1 department should be inserted"
-    assert depts[0].name == dept.name, "name should match"
-    assert depts[0].id == dept_id, "ids should match"
-    assert depts[0].bio == dept.bio, "bios should match"
+    assert len(depts) == 2, "Only 1 department should be inserted"
+
+    assert depts[0].id == 1, "default department id should be 1"
+    assert depts[0].name == "Default", "default name should be 'Default'"
+    assert (
+        depts[0].bio == "Default department"
+    ), "default bio should be 'Default department'"
+
+    assert depts[1].id == dept_id, "ids should match"
+    assert depts[1].name == dept.name, "name should match"
+    assert depts[1].bio == dept.bio, "bios should match"
+
+
+def test_create_display_group(database: DatabaseController):
+    assert (
+        len(database.fetch_all_display_groups()) == 1
+    ), "DB should start with 1 default display group"
+
+    group = DisplayGroup("Test Group", 1, "{ 'type': 'clock' }")
+    group_id = database.create_display_group(group)
+    groups = database.fetch_all_display_groups()
+    assert len(groups) == 2, "Only 1 department should be inserted"
+
+    assert groups[0].id == 1, "default group id should be 1"
+    assert groups[0].name == "Default", "default name should be 'Default'"
+    assert groups[0].department_id == 1, "default department id should be 1"
+
+    assert groups[1].id == group_id, "group ids should match"
+    assert groups[1].name == group.name, "names should match"
+    assert groups[1].department_id == group.department_id, "department ids should match"
+    assert groups[1].layout_json == group.layout_json, "layout_jsons should match"
+
+
+def test_display_group_has_valid_dept(database: DatabaseController):
+    with pytest.raises(Exception):
+        database.create_display_group(DisplayGroup("Test Group 2", 301, "{}"))
