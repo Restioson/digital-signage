@@ -18,6 +18,8 @@ export class Qrcode extends Widget {
   build () {
     const qrCodeContainer = document.createElement('div')
     try {
+      // This instance is made and ignored due to the nature of the library used so we ignore it in the lint
+      // eslint-disable-next-line no-new
       new QRCode(qrCodeContainer, {
         text: this.url,
         width: 128,
