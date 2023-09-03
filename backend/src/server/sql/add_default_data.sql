@@ -9,5 +9,5 @@ VALUES
     1,
     'Default',
     1,
-    '{ "type": "container", children: [ {"type": "clock"}, {"type": "department"}, {"type": "content_stream"} } ] }'
-);
+    '{ "type": "container", "children": [ {"type": "clock"}, {"type": "department"}, {"type": "content_stream"} ] }'
+  );

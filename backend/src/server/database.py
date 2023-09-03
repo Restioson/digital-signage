@@ -176,12 +176,13 @@ class DatabaseController:
         """Fetch the given display group from the database"""
         cursor = self.db.cursor()
         cursor.row_factory = DisplayGroup.from_sql
-        return list(
+        return next(
             cursor.execute(
                 "SELECT id, name, department, layout_json FROM display_groups"
                 " WHERE id = ?",
                 (group_id,),
-            )
+            ),
+            None,
         )
 
     def fetch_all_lecturers(self) -> list[Lecturer]:

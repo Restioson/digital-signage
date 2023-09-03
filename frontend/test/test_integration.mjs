@@ -178,6 +178,39 @@ describe('API Integration', function () {
     rootTestExports.destroyRoot()
   })
 
+  describe('/display', function () {
+    it('default should render', async function () {
+      // rootTestExports.destroyRoot()
+      const res = await fetch('/display')
+      assert.equal(res.status, 200)
+      const fetchedDom = new JSDOM(await res.text(), {
+        url: 'http://localhost:5000',
+        runScripts: 'dangerously'
+      })
+      const root = fetchedDom.window.document.getElementById('root')
+      assert.equal(root.children.length, 1)
+
+      const container = root.children[0]
+      assert.equal(container.tagName, 'DIV')
+      assert.equal(container.children.length, 3)
+
+      assert.equal(container.children[0].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[0].classList), [
+        'clock'
+      ])
+
+      assert.equal(container.children[1].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[1].classList), [
+        'department'
+      ])
+
+      assert.equal(container.children[2].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[2].classList), [
+        'content-stream'
+      ])
+    })
+  })
+
   describe('/api/content', function () {
     describe('Text', function () {
       it('uploads', async function () {
