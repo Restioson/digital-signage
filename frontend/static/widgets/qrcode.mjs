@@ -2,6 +2,7 @@
 import { importFromNpm } from '../util.mjs'
 import { Widget } from './widget.mjs'
 const { default: QRCode } = await importFromNpm('qrcode')
+const { default: CanvasRenderer } = await importFromNpm('canvas')
 
 /**
  * A piece of {@qrcode Widget} which displays a link in the form of a qrcode.
@@ -18,7 +19,7 @@ export class Qrcode extends Widget {
   }
 
   build () {
-    const qrCodeContainer = document.createElement('div')
+    const qrCodeContainer = document.createElement('A')
     try {
       var canvas = document.createElement('canvas')
       QRCode.toCanvas(canvas, this.url, function (error) {

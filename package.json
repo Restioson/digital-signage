@@ -12,7 +12,8 @@
     "standard": "^17.1.0",
     "stylelint": "^15.10.2",
     "stylelint-config-standard": "^34.0.0",
-    "qrcode": "^1.5.3"
+    "qrcode": "^1.5.3",
+    "canvas": "^2.8.0"
   },
   "standard": {
     "globals": [
