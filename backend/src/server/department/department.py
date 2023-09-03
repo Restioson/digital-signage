@@ -31,3 +31,7 @@ class Department:
             name=row["name"],
             bio=row["bio"],
         )
+
+    def to_http_json(self) -> dict:
+        """Serialize the given Department into its HTTP API representation"""
+        return {"id": self.id, "name": self.name, "bio": self.bio}

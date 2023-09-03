@@ -209,7 +209,7 @@ def test_create_display_group(database: DatabaseController):
         len(database.fetch_all_display_groups()) == 1
     ), "DB should start with 1 default display group"
 
-    group = DisplayGroup("Test Group", 1, "{ 'type': 'clock' }")
+    group = DisplayGroup("Test Group", 1, {"type": "clock"})
     group_id = database.create_display_group(group)
     groups = database.fetch_all_display_groups()
     assert len(groups) == 2, "Only 1 department should be inserted"
@@ -226,4 +226,4 @@ def test_create_display_group(database: DatabaseController):
 
 def test_display_group_has_valid_dept(database: DatabaseController):
     with pytest.raises(Exception):
-        database.create_display_group(DisplayGroup("Test Group 2", 301, "{}"))
+        database.create_display_group(DisplayGroup("Test Group 2", 301, {}))

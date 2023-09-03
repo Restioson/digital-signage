@@ -1,3 +1,4 @@
+import json
 from http import HTTPStatus
 
 import flask
@@ -6,6 +7,7 @@ from flask import Blueprint, Response
 from server import free_form_content
 from server.department import Lecturer
 from server.database import DatabaseController
+from server.display_group import DisplayGroup
 from server.free_form_content import BinaryContent
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
@@ -97,3 +99,14 @@ def content_blob(content_id: int):
         )
     else:
         flask.abort(404)
+
+
+@blueprint.route("/display_groups", methods=["POST"])
+def display_groups():
+    try:
+        group_id = DatabaseController.get().create_display_group(
+            DisplayGroup.from_form(flask.request.form)
+        )
+        return {"id": group_id}
+    except json.JSONDecodeError as err:
+        return flask.abort(400, description=f"Error in layout JSON: {err}")

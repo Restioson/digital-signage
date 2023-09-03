@@ -1,3 +1,4 @@
+import json
 import sqlite3
 from typing import Optional
 
@@ -11,13 +12,22 @@ class DisplayGroup:
         self,
         name: str,
         department_id: int,
-        layout_json: str,
+        layout_json: dict,
         group_id: Optional[int] = None,
     ):
         self.name = name
         self.department_id = department_id
         self.layout_json = layout_json
         self.id = group_id
+
+    @staticmethod
+    def from_form(form: dict):
+        print(form["layout_json"])
+        return DisplayGroup(
+            name=form["name"],
+            department_id=form["department"],
+            layout_json=json.loads(form["layout_json"]),
+        )
 
     @staticmethod
     def from_sql(cursor: sqlite3.Cursor, row: tuple):
@@ -28,5 +38,5 @@ class DisplayGroup:
             group_id=row["id"],
             name=row["name"],
             department_id=row["department"],
-            layout_json=row["layout_json"],
+            layout_json=json.loads(row["layout_json"]),
         )

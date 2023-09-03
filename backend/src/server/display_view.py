@@ -1,5 +1,3 @@
-import json
-
 import flask
 from flask import Blueprint, render_template
 
@@ -22,9 +20,7 @@ def display_group(group_id: int):
     if not group:
         flask.abort(404)
 
-    layout = group.layout_json
-
     return render_template(
         "display.j2",
-        layout_json=json.loads(layout),
+        layout_json=group.layout_json,
     )

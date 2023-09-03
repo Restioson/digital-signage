@@ -39,7 +39,7 @@ async function submitPost (event) {
     }
 
     postStatusMessage.classList.add('success')
-    postStatusMessage.innerText = `Successfully submitted post (id: ${
+    postStatusMessage.innerText = `Successfully submitted (id: ${
       (await res.json()).id
     })`
   } catch (err) {
