@@ -10,12 +10,15 @@ import { Widget } from '../static/widgets/widget.mjs'
 import { CachingContainer } from '../static/widgets/dynamic/caching_container.mjs'
 import { deserializeWidget } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
 import { Clock } from '../static/widgets/clock.js'
+import { main } from '../static/display.mjs'
+import { testExports } from '../static/widgets/root.mjs'
 
 describe('Widget', function () {
   beforeEach(() => {
     const dom = new JSDOM(
       `<html>
          <body>
+            <div id="root"></div>
          </body>
        </html>`,
       { url: 'http://localhost' }
@@ -23,6 +26,40 @@ describe('Widget', function () {
 
     global.window = dom.window
     global.document = dom.window.document
+  })
+
+  describe('DeserializableWidget', function () {
+    afterEach(function () {
+      document.getElementById('root').replaceChildren()
+      testExports.destroyRoot()
+    })
+
+    it('loads entire layout and renders', function () {
+      main(
+        '{ "type": "container", "children": [ {"type": "clock"}, {"type": "department"}, {"type": "content_stream"} ] }'
+      )
+      const root = document.getElementById('root')
+      assert.equal(root.children.length, 1)
+
+      const container = root.children[0]
+      assert.equal(container.tagName, 'DIV')
+      assert.equal(container.children.length, 3)
+
+      assert.equal(container.children[0].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[0].classList), [
+        'clock'
+      ])
+
+      assert.equal(container.children[1].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[1].classList), [
+        'department'
+      ])
+
+      assert.equal(container.children[2].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[2].classList), [
+        'content-stream'
+      ])
+    })
   })
 
   describe('WithClasses', function () {
