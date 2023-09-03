@@ -1,5 +1,7 @@
-import { QRCode } from 'https://cdn.skypack.dev/qrcodejs_es_module'
+//import { QRCode } from 'https://cdn.skypack.dev/qrcodejs_es_module'
+import { importFromNpm } from '../util.mjs'
 import { Widget } from './widget.mjs'
+const { default: QRCode } = await importFromNpm('qrcode')
 
 /**
  * A piece of {@qrcode Widget} which displays a link in the form of a qrcode.
@@ -18,13 +20,12 @@ export class Qrcode extends Widget {
   build () {
     const qrCodeContainer = document.createElement('div')
     try {
-      // This instance is made and ignored due to the nature of the library used so we ignore it in the lint
-      // eslint-disable-next-line no-new
-      new QRCode(qrCodeContainer, {
-        text: this.url,
-        width: 128,
-        height: 128
+      var canvas = document.createElement('canvas')
+      QRCode.toCanvas(canvas, this.url, function (error) {
+        if (error) console.error(error)
+        console.log('success!')
       })
+      qrCodeContainer.append(canvas)
     } catch (error) {
       console.error('A error with the QRcode occurred:', error.message)
       const imageElement = document.createElement('img')
