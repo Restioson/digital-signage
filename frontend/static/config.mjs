@@ -22,13 +22,12 @@ async function submitPost (event) {
   event.preventDefault()
   const form = event.target
 
-  const postStatusMessage = form.querySelector('.post-status-message')
-  postStatusMessage.className = 'post-status-message' // Clear success/error class
+  const postStatusMessage = form.querySelector('.status-message')
+  postStatusMessage.className = 'status-message' // Clear success/error class
 
   try {
     const res = await fetch(form.action, {
       method: 'post',
-      // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
       body:
         form.enctype === 'multipart/form-data'
           ? new FormData(form)

@@ -64,11 +64,23 @@ def lecturers_route():
             ]
         }
     else:
-        lecturer_id = DatabaseController.get().insert_lecturer(
+        lecturer_id = DatabaseController.get().upsert_lecturer(
             Lecturer.from_form(flask.request.form)
         )
 
         return {"id": lecturer_id}
+
+
+@blueprint.route("/lecturers/<int:lecturer_id>", methods=["DELETE"])
+def lecturer(lecturer_id):
+    """The /api/lecturers/<id> endpoint.
+
+    DELETEing this endpoint deletes the given lecturer in the database.
+    """
+    if DatabaseController.get().delete_lecturer(lecturer_id):
+        return {"deleted": True}
+    else:
+        flask.abort(404)
 
 
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])

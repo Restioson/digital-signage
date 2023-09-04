@@ -114,18 +114,19 @@ class DatabaseController:
             None,
         )
 
-    def insert_lecturer(self, lecturer: Lecturer) -> int:
-        """Insert the given lecturer into the lecturer database
+    def upsert_lecturer(self, lecturer: Lecturer) -> int:
+        """Insert (or update) the given lecturer into the database
         and returns the inserted row id"""
 
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO lecturers "
-                "(department, title, full_name, position, "
+                "REPLACE INTO lecturers "
+                "(id, department, title, full_name, position, "
                 "office_hours, office_location, email, phone)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
+                    lecturer.id,
                     lecturer.department,
                     lecturer.title,
                     lecturer.name,
@@ -137,6 +138,14 @@ class DatabaseController:
                 ),
             )
         return cursor.lastrowid
+
+    def delete_lecturer(self, lecturer_id: int) -> bool:
+        """Delete the given lecturer, returning whether it was in the
+        database before deletion."""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute("DELETE FROM lecturers WHERE id = ?", (lecturer_id,))
+        return cursor.rowcount == 1
 
     def fetch_all_departments(self) -> list[Lecturer]:
         """Fetch all the departments lecturers from the database"""
@@ -152,7 +161,7 @@ class DatabaseController:
         )
 
     def fetch_lecturer_by_id(self, lecturer_id: int) -> Optional[Lecturer]:
-        """Fetch a specific lecturer from the database based on their ID"""
+        """Fetch a specific lecturers from the database based on their ID"""
         cursor = self.db.cursor()
         cursor.row_factory = Lecturer.from_sql
         return next(
