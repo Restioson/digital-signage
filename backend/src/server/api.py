@@ -71,6 +71,18 @@ def lecturers_route():
         return {"id": lecturer_id}
 
 
+@blueprint.route("/lecturers/<int:lecturer_id>", methods=["DELETE"])
+def lecturer(lecturer_id):
+    """The /api/lecturers/<id> endpoint.
+
+    DELETEing this endpoint deletes the given lecturer in the database.
+    """
+    if DatabaseController.get().delete_lecturer(lecturer_id):
+        return {"deleted": True}
+    else:
+        flask.abort(404)
+
+
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])
 def content_blob(content_id: int):
     """Fetch the blob (Binary Large OBject) associated with the given content.

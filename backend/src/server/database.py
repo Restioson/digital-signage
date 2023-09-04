@@ -139,6 +139,14 @@ class DatabaseController:
             )
         return cursor.lastrowid
 
+    def delete_lecturer(self, lecturer_id: int) -> bool:
+        """Delete the given lecturer, returning whether it was in the
+        database before deletion."""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute("DELETE FROM lecturers WHERE id = ?", (lecturer_id,))
+        return cursor.rowcount == 1
+
     def fetch_all_departments(self) -> list[Lecturer]:
         """Fetch all the departments lecturers from the database"""
         cursor = self.db.cursor()

@@ -7,6 +7,11 @@
 {% endblock %}
 
 {% block content %}
+  <script type="module">
+    import { main } from "{{ url_for('static', filename='config/department/lecturers.mjs') }}";
+    main();
+  </script>
+
   <div class="column-list">
     <table>
       <thead>
@@ -43,9 +48,19 @@
                 <button type="submit">Edit</button>
               </form>
             </td>
+            <td>
+              <button
+                type="button"
+                class="delete-button"
+                data-lecturer-id="{{ lecturer.id }}"
+              >
+                Delete
+              </button>
+            </td>
           </tr>
         {%- endfor -%}
       </tbody>
     </table>
+    <p hidden class="status-message"></p>
   </div>
 {% endblock %}
