@@ -14,7 +14,7 @@ export class Department extends Widget {
     super()
 
     /**
-     * The caching container to store the content. This is kept in order to prevent constantly rebuilding child lecturer
+     * The caching container to store the content. This is kept in order to prevent constantly rebuilding child lecturers
      * widgets.
      *
      * @type {CachingContainer}

@@ -100,6 +100,27 @@ async function uploadLecturer (formData) {
   return (await res.json()).id
 }
 
+async function checkUploadLecturer (formData) {
+  const res = await fetch('/api/lecturers', {
+    method: 'post',
+    // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
+    body: new URLSearchParams(formData)
+  })
+  assert.equal(res.status, 200)
+  const id = (await res.json()).id
+
+  const fetchAllRes = await fetch('/api/lecturers')
+  assert.equal(fetchAllRes.status, 200)
+  const lecturers = (await fetchAllRes.json()).lecturers
+
+  assert.equal(lecturers.length, 1)
+  const fetched = lecturers[0]
+  assert.equal(fetched.id, id)
+
+  assert.deepStrictEqual(fetched, { id, ...formData })
+  return id
+}
+
 async function sleepMs (ms) {
   await new Promise(resolve => setTimeout(resolve, ms))
 }
@@ -279,17 +300,31 @@ describe('API Integration', function () {
           title: 'Prof'
         }
 
-        const id = await uploadLecturer(formData)
+        await checkUploadLecturer(formData)
+      })
 
-        const fetchAllRes = await fetch('/api/lecturers')
-        assert.equal(fetchAllRes.status, 200)
-        const lecturers = (await fetchAllRes.json()).lecturers
+      it('edits', async function () {
+        const formData = {
+          department: 'testDept',
+          email: 'myemail@example.com',
+          name: 'John Doe',
+          office_hours: '10am-9pm on Wednesdays',
+          office_location: 'CS302',
+          phone: '021 111 1111',
+          position: 'Professor',
+          title: 'Prof'
+        }
 
-        assert.equal(lecturers.length, 1)
-        const fetched = lecturers[0]
-        assert.equal(fetched.id, id)
+        const id = await checkUploadLecturer(formData)
 
-        assert.deepStrictEqual(fetched, { id, ...formData })
+        let newId = await checkUploadLecturer({ id, ...formData })
+        assert.equal(id, newId, 'id should be unchanged after edit')
+
+        formData.department = 'otherDept'
+        formData.email = 'otherEmail@example.com'
+
+        newId = await checkUploadLecturer({ id, ...formData })
+        assert.equal(id, newId, 'id should be unchanged after edit')
       })
     })
 

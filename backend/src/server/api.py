@@ -64,7 +64,7 @@ def lecturers_route():
             ]
         }
     else:
-        lecturer_id = DatabaseController.get().insert_lecturer(
+        lecturer_id = DatabaseController.get().upsert_lecturer(
             Lecturer.from_form(flask.request.form)
         )
 

@@ -1,5 +1,5 @@
 import { Widget } from './widget.mjs'
-import { WithRefresh } from './with_refresh.mjs'
+import { WithRefresh } from './dynamic/with_refresh.mjs'
 import { WithClasses } from './with_classes.mjs'
 import moment from 'https://cdn.skypack.dev/moment'
 

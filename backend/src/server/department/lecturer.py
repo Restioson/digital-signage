@@ -40,6 +40,22 @@ class Lecturer:
         }
 
     @staticmethod
+    def empty():
+        """Create an empty Lecturer object for use in the
+        Flask form (it will prefill with nothing)"""
+        return Lecturer(
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            None,
+        )
+
+    @staticmethod
     def from_form(form: dict):
         """forms lecturer from data inputted in the configuration form"""
         return Lecturer(
@@ -51,6 +67,7 @@ class Lecturer:
             form["office_location"],
             form["email"],
             form["phone"],
+            lecturer_id=form.get("id"),
         )
 
     @staticmethod

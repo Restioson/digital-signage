@@ -1,0 +1,51 @@
+{% extends "base.j2" %}
+
+{% block title %}Lecturers{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('config/department/lecturers') }}
+{% endblock %}
+
+{% block content %}
+  <div class="column-list">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Title</th>
+          <th scope="col">Position</th>
+          <th scope="col">Office location</th>
+          <th scope="col">Email</th>
+          <th scope="col">Telephone</th>
+          <th scope="col">Office hours</th>
+          <th scope="col">Department</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {%- for lecturer in lecturers -%}
+          <tr>
+            <td>{{ lecturer.name }}</td>
+            <td>{{ lecturer.title }}</td>
+            <td>{{ lecturer.position }}</td>
+            <td>{{ lecturer.office_location }}</td>
+            <td>{{ lecturer.email }}</td>
+            <td>{{ lecturer.telephone }}</td>
+            <td>{{ lecturer.office_hours }}</td>
+            <td>{{ lecturer.department }}</td>
+            <td>
+              {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
+              <form
+                action="/config/department/lecturers/{{ lecturer.id }}"
+                method="get"
+                class="redirect-form"
+              >
+                <button type="submit">Edit</button>
+              </form>
+            </td>
+          </tr>
+        {%- endfor -%}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
