@@ -1,15 +1,15 @@
 import { Lecturer } from './lecturer.mjs'
-import { Widget } from '../widget.mjs'
 import { WithClasses } from '../with_classes.mjs'
 import { WithRefresh } from '../dynamic/with_refresh.mjs'
 import { CachingContainer } from '../dynamic/caching_container.mjs'
+import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
 
 /**
  * A {@link Widget} which displays a live view of all the {@link Lecturer}s on the server.
  */
-export class Department extends Widget {
+export class Department extends DeserializableWidget {
   constructor () {
     super()
 
@@ -44,5 +44,9 @@ export class Department extends Widget {
           child: this.cache
         })
     })
+  }
+
+  static fromJSON (obj) {
+    return new Department()
   }
 }

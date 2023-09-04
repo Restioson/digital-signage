@@ -1,12 +1,13 @@
-import { Widget } from './widget.mjs'
 import { WithRefresh } from './dynamic/with_refresh.mjs'
 import { WithClasses } from './with_classes.mjs'
-import moment from 'https://cdn.skypack.dev/moment'
+import { importFromNpm } from '../util.mjs'
+import { DeserializableWidget } from './deserializable/deserializable_widget.mjs'
+const { default: moment } = await importFromNpm('moment')
 
 /**
  * A widget which displays the current datetime.
  */
-export class Clock extends Widget {
+export class Clock extends DeserializableWidget {
   /**
    * @param {string} format the datetime format to display (see https://momentjs.com/)
    */
@@ -25,5 +26,9 @@ export class Clock extends Widget {
         return new WithClasses({ classList: ['clock'], child: text })
       }
     })
+  }
+
+  static fromJSON (obj) {
+    return new Clock({ format: obj.format })
   }
 }

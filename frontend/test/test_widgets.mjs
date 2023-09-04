@@ -8,12 +8,17 @@ import { ContentAndCaption } from '../static/widgets/containers/content_and_capt
 import { WithRefresh } from '../static/widgets/dynamic/with_refresh.mjs'
 import { Widget } from '../static/widgets/widget.mjs'
 import { CachingContainer } from '../static/widgets/dynamic/caching_container.mjs'
+import { deserializeWidget } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
+import { Clock } from '../static/widgets/clock.js'
+import { main } from '../static/display.mjs'
+import { testExports } from '../static/widgets/root.mjs'
 
 describe('Widget', function () {
   beforeEach(() => {
     const dom = new JSDOM(
       `<html>
          <body>
+            <div id="root"></div>
          </body>
        </html>`,
       { url: 'http://localhost' }
@@ -21,6 +26,40 @@ describe('Widget', function () {
 
     global.window = dom.window
     global.document = dom.window.document
+  })
+
+  describe('DeserializableWidget', function () {
+    afterEach(function () {
+      document.getElementById('root').replaceChildren()
+      testExports.destroyRoot()
+    })
+
+    it('loads entire layout and renders', function () {
+      main(
+        '{ "type": "container", "children": [ {"type": "clock"}, {"type": "department"}, {"type": "content_stream"} ] }'
+      )
+      const root = document.getElementById('root')
+      assert.equal(root.children.length, 1)
+
+      const container = root.children[0]
+      assert.equal(container.tagName, 'DIV')
+      assert.equal(container.children.length, 3)
+
+      assert.equal(container.children[0].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[0].classList), [
+        'clock'
+      ])
+
+      assert.equal(container.children[1].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[1].classList), [
+        'department'
+      ])
+
+      assert.equal(container.children[2].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[2].classList), [
+        'content-stream'
+      ])
+    })
   })
 
   describe('WithClasses', function () {
@@ -68,6 +107,20 @@ describe('Widget', function () {
         Error
       )
     })
+
+    it('deserializes', function () {
+      const obj = {
+        type: 'with_classes',
+        classList: ['someClass1', 'someClass2'],
+        child: { type: 'clock', format: 'h:mm:ss' }
+      }
+
+      const widget = deserializeWidget(obj)
+      assert(widget instanceof WithClasses)
+      assert.deepStrictEqual(Array.from(widget.classList), obj.classList)
+      assert(widget.child instanceof Clock)
+      assert.equal(widget.child.format, obj.child.format)
+    })
   })
 
   describe('Container', function () {
@@ -92,6 +145,23 @@ describe('Widget', function () {
         Array.from(widget.render().children),
         children.map(child => child.render())
       )
+    })
+
+    it('deserializes', function () {
+      const obj = {
+        type: 'container',
+        children: [
+          { type: 'clock', format: 'h:mm:ss' },
+          { type: 'clock', format: 'h:mm:ss a' }
+        ]
+      }
+
+      const widget = deserializeWidget(obj)
+      assert(widget instanceof Container)
+      assert(widget.children[0] instanceof Clock)
+      assert.equal(widget.children[0].format, obj.children[0].format)
+      assert(widget.children[1] instanceof Clock)
+      assert.equal(widget.children[1].format, obj.children[1].format)
     })
   })
 
@@ -118,6 +188,19 @@ describe('Widget', function () {
       assert.equal(rendered.children[1].tagName, 'P')
       assert.equal(rendered.children[1].className, 'caption-body')
       assert.equal(rendered.children[1].innerText, 'Body')
+    })
+
+    it('deserializes', function () {
+      const obj = {
+        type: 'caption',
+        title: 'myTitle',
+        body: 'myBody'
+      }
+
+      const widget = deserializeWidget(obj)
+      assert(widget instanceof Caption)
+      assert.equal(widget.title, obj.title)
+      assert.equal(widget.body, obj.body)
     })
   })
 
@@ -151,6 +234,22 @@ describe('Widget', function () {
       assert.deepStrictEqual(rendered.children.length, 2)
       assert.deepStrictEqual(rendered.children[0], content)
       assert(rendered.children[1].hidden)
+    })
+
+    it('deserializes', function () {
+      const obj = {
+        type: 'content_and_caption',
+        caption: { title: 'myTitle', body: 'myBody1' },
+        content: { type: 'clock', format: 'h:mm:ss' }
+      }
+
+      const widget = deserializeWidget(obj)
+      assert(widget instanceof ContentAndCaption)
+      assert(widget.content instanceof Clock)
+      assert.equal(widget.content.format, obj.content.format)
+      assert(widget.caption instanceof Caption)
+      assert.equal(widget.caption.title, obj.caption.title)
+      assert.equal(widget.caption.body, obj.caption.body)
     })
   })
 

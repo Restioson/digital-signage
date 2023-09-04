@@ -1,13 +1,12 @@
-import { Widget } from '../widget.mjs'
 import { AbstractClassError } from '../../util.mjs'
+import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 
 /**
  * A {@link Widget} displaying a piece of free form content.
  *
- * @augments Widget
  * @abstract
  */
-export class FreeFormContent extends Widget {
+export class FreeFormContent extends DeserializableWidget {
   /**
    * @param {int} id the ID of the content
    */

@@ -42,3 +42,12 @@ def edit_lecturer(lecturer_id: int):
             "config/department/lecturers/add.j2",
             lecturer=lecturer,
         )
+
+
+@blueprint.route("/display_group/add")
+def add_display_group():
+    """Return the page to add a display group"""
+    return render_template(
+        "config/display_group/add.j2",
+        departments=DatabaseController.get().fetch_all_departments(),
+    )

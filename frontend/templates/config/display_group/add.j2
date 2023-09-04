@@ -1,0 +1,44 @@
+{% extends "base.j2" %}
+
+{% block title %}Add display group{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('config') }}
+{% endblock %}
+
+{% block content %}
+  <script type="module">
+    import { main } from "{{ url_for('static', filename='config.mjs') }}";
+    main();
+  </script>
+
+  <form action="/api/display_groups" method="post" class="post-form">
+    <h3>Create display group</h3>
+    <label for="name">Name:</label>
+    <input id="name" name="name" type="text" />
+
+    <label for="department">Department:</label>
+    <select id="department" name="department" type="text">
+      {% for department in departments %}
+        <option value="{{ department.id }}">{{ department.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="layout_json">Layout JSON:</label>
+    <textarea id="layout_json" name="layout_json" rows="10">
+{
+    "type": "content_and_caption",
+    "content": {
+        "type": "clock"
+    },
+    "caption": {
+        "body": "Current time"
+    }
+}
+    </textarea
+    >
+
+    <button type="submit">Submit</button>
+    <p hidden class="post-status-message"></p>
+  </form>
+{% endblock %}

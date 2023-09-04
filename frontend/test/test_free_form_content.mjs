@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { JSDOM } from 'jsdom'
-import { deserializeFreeFormContent } from '../static/widgets/free_form_content/free_form_content_factory.mjs'
+import { deserializeWidget } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
 
 describe('Widget', function () {
   beforeEach(() => {
@@ -18,11 +18,11 @@ describe('Widget', function () {
 
   describe('FreeFormContent', function () {
     describe('TextWidget', function () {
-      it('render', function () {
+      it('renders', function () {
         const title = 't'
         const body = 'b'
         checkRenderedText(
-          deserializeFreeFormContent({ type: 'text', title, body }).render(),
+          deserializeWidget({ type: 'text', title, body }).render(),
           title,
           body
         )
@@ -33,7 +33,7 @@ describe('Widget', function () {
       it('render', function () {
         const id = 1
         checkRenderedLocalImage(
-          deserializeFreeFormContent({ type: 'local_image', id }).render(),
+          deserializeWidget({ type: 'local_image', id }).render(),
           id
         )
       })
@@ -43,7 +43,7 @@ describe('Widget', function () {
       it('render', function () {
         const url = 'https://example.com/'
         checkRenderedRemoteImage(
-          deserializeFreeFormContent({
+          deserializeWidget({
             type: 'remote_image',
             src: url
           }).render(),
@@ -55,7 +55,7 @@ describe('Widget', function () {
     describe('Link', function () {
       it('render', function () {
         const url = 'https://example.com/'
-        const out = deserializeFreeFormContent({ type: 'link', url }).render()
+        const out = deserializeWidget({ type: 'link', url }).render()
         checkRenderedLink(out, url)
         assert(out.children[1].hidden)
       })
@@ -65,7 +65,7 @@ describe('Widget', function () {
         const title = 'Hello'
         const body = 'there'
         checkRenderedLinkCaptionedTitleBody(
-          deserializeFreeFormContent({
+          deserializeWidget({
             type: 'link',
             url,
             caption: { title, body }
@@ -80,7 +80,7 @@ describe('Widget', function () {
         const url = 'https://example.com/'
         const body = 'body of caption'
         checkRenderedLinkCaptionedBody(
-          deserializeFreeFormContent({
+          deserializeWidget({
             type: 'link',
             url,
             caption: { body }

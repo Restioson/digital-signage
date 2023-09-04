@@ -1,17 +1,17 @@
-import { Widget } from '../widget.mjs'
-import { deserializeFreeFormContent } from './free_form_content_factory.mjs'
 import { WithClasses } from '../with_classes.mjs'
 import { WithRefresh } from '../dynamic/with_refresh.mjs'
 import { CachingContainer } from '../dynamic/caching_container.mjs'
+import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
+import { deserializeWidget } from '../deserializable/widget_deserialization_factory.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
 
 /**
  * A container which displays a live view of all the {@link FreeFormContent} on the server.
  *
- * @augments Widget
+ * @augments DeserializableWidget
  */
-export class ContentStream extends Widget {
+export class ContentStream extends DeserializableWidget {
   constructor () {
     super()
 
@@ -34,8 +34,12 @@ export class ContentStream extends Widget {
   async refresh () {
     const update = await fetch('/api/content').then(res => res.json())
     this.cache.children = update.content.map(content =>
-      deserializeFreeFormContent(content)
+      deserializeWidget(content)
     )
+  }
+
+  static fromJson (obj) {
+    return new ContentStream()
   }
 
   build () {
