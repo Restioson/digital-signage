@@ -57,7 +57,7 @@ describe('Widget', function () {
         const url = 'https://example.com/'
         const out = deserializeFreeFormContent({ type: 'link', url }).render()
         checkRenderedLink(out, url)
-        assert(out.children[1].hidden)
+        assert(out.children[1].children[1].hidden)
       })
 
       it('render with caption (title & body)', function () {
@@ -90,6 +90,48 @@ describe('Widget', function () {
         )
       })
     })
+    ///-------------------------------------------------
+    describe('Qrcode', function () {
+      it('render', function () {
+        const url = 'https://example.com/'
+        const out = deserializeFreeFormContent({ type: 'qrcode_content', url }).render()
+        checkRenderedQrcode(out, url)
+        assert(out.children[1].hidden)
+      })
+
+      it('render with caption (title & body)', function () {
+        const url = 'https://example.com/'
+        const title = 'Hello'
+        const body = 'there'
+        checkRenderedQrcodeCaptionedTitleBody(
+          deserializeFreeFormContent({
+            type: 'qrcode_content',
+            url,
+            caption: { title, body }
+          }).render(),
+          url,
+          title,
+          body
+        )
+      })
+
+      it('render with caption (body only)', function () {
+        const url = 'https://example.com/'
+        const body = 'body of caption'
+        checkRenderedQrcodeCaptionedBody(
+          deserializeFreeFormContent({
+            type: 'qrcode_content',
+            url,
+            caption: { body }
+          }).render(),
+          url,
+          body
+        )
+      })
+    })
+
+    ///--------------------------------------------------
+
   })
 })
 
@@ -133,8 +175,12 @@ export function checkRenderedRemoteImage (out, expectedSrc) {
 export function checkRenderedLink (out, expectedUrl) {
   assert.equal(out.tagName, 'DIV')
   const a = out.children[0]
-  assert.equal(a.tagName, 'iframe')
+  assert.equal(a.tagName, 'IFRAME')
   assert.equal(a.src, expectedUrl)
+  const b = out.children[1]
+  assert.equal(b.tagName, 'DIV')
+  const c = b.children[0]
+  assert.equal(c.tagName, 'A')
 }
 
 export function checkRenderedLinkCaptionedTitleBody (
@@ -144,9 +190,7 @@ export function checkRenderedLinkCaptionedTitleBody (
   expectedBody
 ) {
   checkRenderedLink(out, expectedUrl)
-  assert.equal(out.children.length, 2)
-
-  const caption = out.children[1]
+  const caption = out.children[1].children[1]
   assert.equal(caption.tagName, 'DIV')
   assert.equal(caption.className, 'content-caption')
   assert.equal(caption.children.length, 2)
@@ -168,8 +212,61 @@ export function checkRenderedLinkCaptionedBody (
   expectedBody
 ) {
   checkRenderedLink(out, expectedUrl)
-  assert.equal(out.children.length, 2)
+  const caption = out.children[1].children[1]
+  assert.equal(caption.tagName, 'DIV')
+  assert.equal(caption.className, 'content-caption')
+  assert.equal(caption.children.length, 2)
 
+  assert(caption.children[0].hidden, 'caption title should be hidden')
+
+  const body = caption.children[1]
+  assert.equal(body.tagName, 'P')
+  assert.equal(body.className, 'caption-body')
+  assert.equal(body.innerText, expectedBody)
+
+  return out
+}
+
+///------------------------------------------
+export function checkRenderedQrcode (out, expectedUrl) {
+  assert.equal(out.tagName, 'DIV')
+  const a = out.children[0]
+  assert.equal(a.tagName, 'A')
+  const aa= a.children[0]
+  assert.equal(aa.tagName, 'CANVAS')
+}
+
+export function checkRenderedQrcodeCaptionedTitleBody (
+  out,
+  expectedUrl,
+  expectedTitle,
+  expectedBody
+) {
+  checkRenderedQrcode(out, expectedUrl)
+  assert.equal(out.children.length, 2)
+  const caption = out.children[1]
+  assert.equal(caption.tagName, 'DIV')
+  assert.equal(caption.className, 'content-caption')
+  assert.equal(caption.children.length, 2)
+
+  const title = caption.children[0]
+  assert.equal(title.tagName, 'P')
+  assert.equal(title.className, 'caption-title')
+  assert.equal(title.innerText, expectedTitle)
+
+  const body = caption.children[1]
+  assert.equal(body.tagName, 'P')
+  assert.equal(body.className, 'caption-body')
+  assert.equal(body.innerText, expectedBody)
+}
+
+export function checkRenderedQrcodeCaptionedBody (
+  out,
+  expectedUrl,
+  expectedBody
+) {
+  checkRenderedQrcode(out, expectedUrl)
+  assert.equal(out.children.length, 2)
   const caption = out.children[1]
   assert.equal(caption.tagName, 'DIV')
   assert.equal(caption.className, 'content-caption')
@@ -184,3 +281,5 @@ export function checkRenderedLinkCaptionedBody (
 
   return out
 }
+
+///------------------------------------------

@@ -14,9 +14,10 @@ export class QrcodeContent extends FreeFormContent {
   /**
    * @param {int} id the content's ID
    * @param {URL} url the URL to display
+   * @param {?Caption} caption the link's caption
    */
   constructor ({ id, url, caption }) {
-    super(id)
+    super({id})
     this.url = url
     this.caption = caption
   }
