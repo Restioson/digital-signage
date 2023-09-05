@@ -133,9 +133,8 @@ export function checkRenderedRemoteImage (out, expectedSrc) {
 export function checkRenderedLink (out, expectedUrl) {
   assert.equal(out.tagName, 'DIV')
   const a = out.children[0]
-  assert.equal(a.tagName, 'A')
-  assert.equal(a.href, expectedUrl)
-  assert.equal(a.innerText, expectedUrl)
+  assert.equal(a.tagName, 'iframe')
+  assert.equal(a.src, expectedUrl)
 }
 
 export function checkRenderedLinkCaptionedTitleBody (

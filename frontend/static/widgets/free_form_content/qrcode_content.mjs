@@ -36,20 +36,11 @@ export class QrcodeContent extends FreeFormContent {
   }
 
   build () {
-    if (this.caption !== null) {
       return new WithClasses({
         classList: ['qrcode-content'],
-        child: new Container({
-          children: [new Qrcode({ url: this.url }), new Caption(this.caption)]
+        child: new ContentAndCaption({
+          content: new Qrcode({ url: this.url }), caption : this.caption
         })
       })
-    } else {
-      return new WithClasses({
-        classList: ['qrcode-content'],
-        child: new Container({
-          children: [new Qrcode({ url: this.url })]
-        })
-      })
-    }
   }
 }

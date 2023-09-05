@@ -39,32 +39,16 @@ export class Link extends FreeFormContent {
   build () {
     const iframe = document.createElement('iframe')
     iframe.src = this.url
-    if (this.caption !== null) {
-      // return new WithClasses({
-      //   classList: ['link'],
-      //   child: new ContentAndCaption({
-      //   content: new Container({
-      //     children: [iframe, new Qrcode({ url: this.url }),new Caption(this.caption)]
-      //   }),
-      //   caption: null
-      // })})
       return new WithClasses({
         classList: ['link'],
         child: new Container({
           children: [
             iframe,
-            new Qrcode({ url: this.url }),
-            new Caption(this.caption)
+            new ContentAndCaption({
+                content: new Qrcode({ url: this.url }),
+                caption: this.caption})
           ]
         })
       })
-    } else {
-      return new WithClasses({
-        classList: ['link'],
-        child: new Container({
-          children: [iframe, new Qrcode({ url: this.url })]
-        })
-      })
-    }
   }
 }

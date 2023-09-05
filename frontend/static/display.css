@@ -41,11 +41,17 @@
   object-fit: contain;
 }
 
-.link > a,
-.link > div.content-caption {
+.link > div {
+  display: inline-block;
+  height: 30%;
+  width:100%;
+  object-fit: contain;
+}
+
+.link > div > a,
+.link > div > div.content-caption {
   display: inline-block;
   width: 50%;
-  height: 30%;
   object-fit: contain;
 }
 
