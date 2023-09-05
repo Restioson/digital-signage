@@ -22,7 +22,11 @@ export class Qrcode extends Widget {
     const qrCodeContainer = document.createElement('A')
     try {
       var canvas = document.createElement('canvas')
-      QRCode.toCanvas(canvas, this.url, function (error) {
+      const options = {
+        width: 100,
+        height: 100
+      }
+      QRCode.toCanvas(canvas, this.url, options, function (error) {
         if (error) console.error(error)
         console.log('success!')
       })
@@ -31,8 +35,8 @@ export class Qrcode extends Widget {
       console.error('A error with the QRcode occurred:', error.message)
       const imageElement = document.createElement('img')
       imageElement.src = '/static/QRcode_failure.jpg'
-      imageElement.width = 200
-      imageElement.height = 200
+      imageElement.width = 100
+      imageElement.height = 100
       qrCodeContainer.append(imageElement)
     }
     return qrCodeContainer

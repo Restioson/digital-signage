@@ -2,6 +2,8 @@ import { ContentAndCaption } from '../containers/content_and_caption.mjs'
 import { Caption } from '../caption.mjs'
 import { FreeFormContent } from './free_form_content.mjs'
 import { Qrcode } from '../qrcode.mjs'
+import { WithClasses } from '../with_classes.mjs'
+import { Container } from '../containers/container.mjs'
 
 /**
  * A piece of {@qrcode_content FreeFormContent} which displays a link in the form of a qrcode with a potential caption.
@@ -34,9 +36,20 @@ export class QrcodeContent extends FreeFormContent {
   }
 
   build () {
-    return new ContentAndCaption({
-      content: new Qrcode({ url: this.url }),
-      caption: this.caption
-    })
+    if (this.caption !== null) {
+      return new WithClasses({
+        classList: ['qrcode-content'],
+        child: new Container({
+          children: [new Qrcode({ url: this.url }), new Caption(this.caption)]
+        })
+      })
+    } else {
+      return new WithClasses({
+        classList: ['qrcode-content'],
+        child: new Container({
+          children: [new Qrcode({ url: this.url })]
+        })
+      })
+    }
   }
 }
