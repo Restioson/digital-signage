@@ -51,4 +51,5 @@ async function submitPost (event) {
   }
 
   postStatusMessage.hidden = false
+  postStatusMessage.scrollIntoView()
 }

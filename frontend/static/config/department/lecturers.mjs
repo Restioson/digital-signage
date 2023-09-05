@@ -50,4 +50,5 @@ async function deleteLecturer (event) {
   }
 
   statusMessage.hidden = false
+  statusMessage.scrollIntoView()
 }
