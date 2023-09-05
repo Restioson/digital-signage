@@ -6,7 +6,7 @@
 {% endblock %}
 {% block head %}
   {{ super() }}
-  {{ css('config/department/lecturers') }}
+  {{ css('config/departments/lecturers') }}
 {% endblock %}
 
 {% block content %}
@@ -15,7 +15,17 @@
     main();
   </script>
 
-  <form action="/api/lecturers" method="post" class="post-form">
+
+  {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
+  <form
+    action="/api/departments/{{ department_id }}/lecturers"
+    method="post"
+    class="post-form"
+  >
+    {%- if lecturer.id -%}
+      <input type="hidden" name="id" value="{{ lecturer.id }}" />
+    {%- endif -%}
+
     <label
       >Name:
       <input
@@ -26,10 +36,6 @@
         value="{{ lecturer.name }}"
       />
     </label>
-
-    {%- if lecturer.id -%}
-      <input type="hidden" name="id" value="{{ lecturer.id }}" />
-    {%- endif -%}
 
     <label
       >Title:
@@ -105,24 +111,6 @@
         value="{{ lecturer.office_hours }}"
         required
       />
-    </label>
-
-    <label
-      >Department:
-      <select id="department" name="department">
-        {#- TODO: https://github.com/Restioson/digital-signage/issues/74 -#}
-
-        {%- macro dept(val) -%}
-          {%- if lecturer.title == val -%}
-            {%- set selected = "selected" -%}
-          {%- endif -%}
-          <option value="{{ val }}" {{ selected }}>{{ val }}</option>
-        {%- endmacro -%}
-
-        {{ dept("Computer Science") }}
-        {{ dept("Mathematics") }}
-        {{ dept("Chemistry") }}
-      </select>
     </label>
 
     <button type="submit">Submit</button>

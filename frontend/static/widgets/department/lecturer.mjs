@@ -8,15 +8,15 @@ import { DeserializableWidget } from '../deserializable/deserializable_widget.mj
  */
 export class Lecturer extends DeserializableWidget {
   /**
-   * @param {int} id the lecturers's id
-   * @param {string} department the department in which the lecturers works
-   * @param {string} position the lecturers's position
-   * @param {string} title the lecturers's title
-   * @param {string} name the lecturers's name
-   * @param {string} officeHours the lecturers's office hours
-   * @param {string} officeLocation the lecturers's office location
-   * @param {string} email the lecturers's email address
-   * @param {string} phone the lecturers's phone number
+   * @param {int} id the lecturer's id
+   * @param {string} department the departments in which the lecturer works
+   * @param {string} position the lecturer's position
+   * @param {string} title the lecturer's title
+   * @param {string} name the lecturer's name
+   * @param {string} officeHours the lecturer's office hours
+   * @param {string} officeLocation the lecturer's office location
+   * @param {string} email the lecturer's email address
+   * @param {string} phone the lecturer's phone number
    */
   constructor ({
     id,
@@ -50,7 +50,6 @@ export class Lecturer extends DeserializableWidget {
   static fromJSON (obj) {
     return new Lecturer({
       id: obj.id,
-      department: obj.department,
       position: obj.position,
       title: obj.title,
       name: obj.name,
@@ -67,7 +66,6 @@ export class Lecturer extends DeserializableWidget {
 
     title.innerText = `${this.title} ${this.name}`
     body.innerText =
-      `Department: ${this.department}\n` +
       `Position: ${this.position}\n` +
       `Office Hours: ${this.officeHours}\n` +
       `Office Location: ${this.officeLocation}\n` +

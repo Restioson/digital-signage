@@ -15,41 +15,74 @@ def index():
     return render_template("config/index.j2")
 
 
-@blueprint.route("/department/lecturers")
-def list_lecturers():
-    """Return the lecturers page which lists all lecturers"""
+@blueprint.route("/departments/")
+def list_departments():
+    """Return the departments index page"""
+
     return render_template(
-        "config/department/lecturers/index.j2",
-        lecturers=DatabaseController.get().fetch_all_departments(),
+        "config/departments/index.j2",
+        departments=DatabaseController.get().fetch_all_departments(
+            fetch_display_groups=True
+        ),
     )
 
 
-@blueprint.route("/department/lecturers/add")
-def upload_lecturer():
+@blueprint.route("/departments/<int:department_id>/lecturers")
+def list_lecturers(department_id: int):
+    """Return the lecturers page which lists all lecturers in the given department"""
+
+    dept = DatabaseController.get().fetch_department_by_id(
+        department_id, fetch_lecturers=True
+    )
+
+    if not dept:
+        flask.abort(404)
+
+    return render_template(
+        "config/departments/lecturers/index.j2",
+        department=dept,
+    )
+
+
+@blueprint.route("/departments/<int:department_id>/lecturers/add")
+def upload_lecturer(department_id: int):
     """Return the 'add lecturers' page"""
+
+    if not DatabaseController.get().fetch_department_by_id(department_id):
+        flask.abort(404)
+
     return render_template(
-        "config/department/lecturers/add.j2", lecturer=Lecturer.empty()
+        "config/departments/lecturers/add.j2",
+        lecturer=Lecturer.empty(),
+        department_id=department_id,
     )
 
 
-@blueprint.route("/department/lecturers/<int:lecturer_id>")
-def edit_lecturer(lecturer_id: int):
+@blueprint.route("/departments/<int:department_id>/lecturers/<int:lecturer_id>")
+def edit_lecturer(department_id: int, lecturer_id: int):
     """Return the 'edit lecturers' page for the given lecturers"""
     lecturer = DatabaseController.get().fetch_lecturer_by_id(lecturer_id)
 
     if not lecturer:
         flask.abort(404)
-    else:
-        return render_template(
-            "config/department/lecturers/add.j2",
-            lecturer=lecturer,
-        )
+
+    if not DatabaseController.get().fetch_department_by_id(department_id):
+        flask.abort(404)
+
+    return render_template(
+        "config/departments/lecturers/add.j2",
+        lecturer=lecturer,
+        department_id=department_id,
+    )
 
 
-@blueprint.route("/display_group/add")
-def add_display_group():
+@blueprint.route("/departments/<int:department_id>/display_group/add")
+def add_display_group(department_id: int):
     """Return the page to add a display group"""
+    if not DatabaseController.get().fetch_department_by_id(department_id):
+        flask.abort(404)
+
     return render_template(
         "config/display_group/add.j2",
-        departments=DatabaseController.get().fetch_all_departments(),
+        department_id=department_id,
     )

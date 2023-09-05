@@ -188,12 +188,12 @@ def test_create_dept(database: DatabaseController):
         len(database.fetch_all_departments()) == 1
     ), "DB should start with 1 default department"
 
-    dept = Department("CS Department", "We are the CS department in the School of IT")
+    dept = Department("CS Department", "We are the CS departments in the School of IT")
     dept_id = database.create_department(dept)
     depts = database.fetch_all_departments()
     assert len(depts) == 2, "Only 1 department should be inserted"
 
-    assert depts[0].id == 1, "default department id should be 1"
+    assert depts[0].id == 1, "default department's id should be 1"
     assert depts[0].name == "Default", "default name should be 'Default'"
     assert (
         depts[0].bio == "Default department"
@@ -206,21 +206,19 @@ def test_create_dept(database: DatabaseController):
 
 def test_create_display_group(database: DatabaseController):
     assert (
-        len(database.fetch_all_display_groups()) == 1
+        len(database.fetch_all_display_groups_in_dept(1)) == 1
     ), "DB should start with 1 default display group"
 
-    group = DisplayGroup("Test Group", 1, {"type": "clock"})
-    group_id = database.create_display_group(group)
-    groups = database.fetch_all_display_groups()
+    group = DisplayGroup("Test Group", {"type": "clock"})
+    group_id = database.create_display_group(group, 1)
+    groups = database.fetch_all_display_groups_in_dept(1)
     assert len(groups) == 2, "Only 1 department should be inserted"
 
     assert groups[0].id == 1, "default group id should be 1"
     assert groups[0].name == "Default", "default name should be 'Default'"
-    assert groups[0].department_id == 1, "default department id should be 1"
 
     assert groups[1].id == group_id, "group ids should match"
     assert groups[1].name == group.name, "names should match"
-    assert groups[1].department_id == group.department_id, "department ids should match"
     assert groups[1].layout_json == group.layout_json, "layout_jsons should match"
 
 

@@ -19,7 +19,6 @@ describe('Widget', function () {
   describe('Lecturer', function () {
     it('renders', function () {
       const expectedProps = {
-        department: 'testDept',
         email: 'myemail@example.com',
         name: 'John Doe',
         officeHours: '10am-9pm on Wednesdays',
@@ -45,10 +44,9 @@ export function checkRenderedLecturer (out, expected) {
 
   const body = out.children[1]
   const split = body.innerText.split('\n')
-  assert.equal(split[0], `Department: ${expected.department}`)
-  assert.equal(split[1], `Position: ${expected.position}`)
-  assert.equal(split[2], `Office Hours: ${expected.officeHours}`)
-  assert.equal(split[3], `Office Location: ${expected.officeLocation}`)
-  assert.equal(split[4], `Email: ${expected.email}`)
-  assert.equal(split[5], `Phone: ${expected.phone}`)
+  assert.equal(split[0], `Position: ${expected.position}`)
+  assert.equal(split[1], `Office Hours: ${expected.officeHours}`)
+  assert.equal(split[2], `Office Location: ${expected.officeLocation}`)
+  assert.equal(split[3], `Email: ${expected.email}`)
+  assert.equal(split[4], `Phone: ${expected.phone}`)
 }

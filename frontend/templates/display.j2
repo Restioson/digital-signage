@@ -13,7 +13,7 @@
        make sure that the JSON is html-safe and not going to escape and break something weirdly. #}
     <script type="module">
       import { main } from "{{ url_for('static', filename='display.mjs') }}";
-      main(`{{ layout_json|tojson }}`);
+      main(`{{ display_config|tojson }}`);
     </script>
 
     <div id="root"></div>

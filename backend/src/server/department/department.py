@@ -2,6 +2,7 @@ import sqlite3
 from typing import Optional
 
 from server.department.lecturer import Lecturer
+from server.display_group import DisplayGroup
 
 
 # TODO: add more functionality and use in display group development
@@ -14,11 +15,13 @@ class Department:
         name: str,
         bio: str,
         lecturers: Optional[list[Lecturer]] = None,
+        display_groups: Optional[list[DisplayGroup]] = None,
         department_id: Optional[int] = None,
     ):
         self.name = name
         self.bio = bio
         self.lecturers = lecturers or []
+        self.display_groups = display_groups or []
         self.id = department_id
 
     @staticmethod

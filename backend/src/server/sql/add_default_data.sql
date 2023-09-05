@@ -1,5 +1,5 @@
 INSERT INTO
-  department (id, name, bio)
+  departments (id, name, bio)
 VALUES
   (1, 'Default', 'Default department');
 INSERT INTO

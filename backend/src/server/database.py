@@ -133,25 +133,71 @@ class DatabaseController:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO department (name, bio) VALUES (?, ?)",
+                "INSERT INTO departments (name, bio) VALUES (?, ?)",
                 (department.name, department.bio),
             )
             dept_id = cursor.lastrowid
 
             if insert_lecturers:
                 for lecturer in department.lecturers:
-                    self.insert_lecturer(lecturer)
+                    self.upsert_lecturer(lecturer, dept_id)
 
             return dept_id
 
-    # TODO(https://github.com/Restioson/digital-signage/issues/74): once we
-    # associate lecturers with depts, we can fetch a dept's lecturers here, too
-    def fetch_all_departments(self) -> list[Department]:
+    def fetch_all_departments(self, fetch_display_groups=False) -> list[Department]:
+        """Fetch all departments (but does not fetch their lecturers).
+
+        If fetch_display_groups is True, display groups for this
+        Department will also be fetched.
+        """
         cursor = self.db.cursor()
         cursor.row_factory = Department.from_sql
-        return list(cursor.execute("SELECT id, name, bio FROM department ORDER BY id"))
 
-    def create_display_group(self, group: DisplayGroup) -> int:
+        departments = list(
+            cursor.execute("SELECT id, name, bio FROM departments ORDER BY id")
+        )
+
+        if fetch_display_groups:
+            for department in departments:
+                department.display_groups = self.fetch_all_display_groups_in_dept(
+                    department.id
+                )
+
+        return departments
+
+    def fetch_department_by_id(
+        self, department_id: int, fetch_lecturers=False, fetch_display_groups=False
+    ) -> Optional[Department]:
+        """Fetch the given Department by its ID"""
+        cursor = self.db.cursor()
+        cursor.row_factory = Department.from_sql
+        dept = next(
+            cursor.execute(
+                "SELECT id, name, bio FROM departments WHERE id = ?", (department_id,)
+            ),
+            None,
+        )
+
+        if dept and fetch_lecturers:
+            cursor = self.db.cursor()
+            cursor.row_factory = Lecturer.from_sql
+            dept.lecturers = list(
+                cursor.execute(
+                    "SELECT id, department, title, "
+                    "full_name, position, office_hours,"
+                    "office_location,email,phone FROM lecturers "
+                    " WHERE department = ?"
+                    " ORDER BY id",
+                    (department_id,),
+                )
+            )
+
+        if dept and fetch_display_groups:
+            dept.display_groups = self.fetch_all_display_groups_in_dept(dept.id)
+
+        return dept
+
+    def create_display_group(self, group: DisplayGroup, department_id: int) -> int:
         """Create a display ground and return its row id."""
 
         assert group.id is None, "Department ID should only be set in create_department"
@@ -161,17 +207,20 @@ class DatabaseController:
             cursor.execute(
                 "INSERT INTO display_groups (name, department, layout_json)"
                 " VALUES (?, ?, ?)",
-                (group.name, group.department_id, json.dumps(group.layout_json)),
+                (group.name, department_id, json.dumps(group.layout_json)),
             )
         return cursor.lastrowid
 
-    def fetch_all_display_groups(self) -> list[DisplayGroup]:
+    def fetch_all_display_groups_in_dept(
+        self, department_id: int
+    ) -> list[DisplayGroup]:
         """Fetch all display groups from the database"""
         cursor = self.db.cursor()
         cursor.row_factory = DisplayGroup.from_sql
         return list(
             cursor.execute(
-                "SELECT id, name, department, layout_json FROM display_groups"
+                "SELECT id, name, layout_json FROM display_groups WHERE department = ?",
+                (department_id,),
             )
         )
 
@@ -188,22 +237,9 @@ class DatabaseController:
             None,
         )
 
-    def fetch_all_lecturers(self) -> list[Lecturer]:
-        """Fetch all the departments lecturers from the database"""
-        cursor = self.db.cursor()
-        cursor.row_factory = Lecturer.from_sql
-        return list(
-            cursor.execute(
-                "SELECT id, department, title, "
-                "full_name, position, office_hours,"
-                "office_location,email,phone FROM lecturers "
-                " ORDER BY id"
-            )
-        )
-
-    def upsert_lecturer(self, lecturer: Lecturer) -> int:
+    def upsert_lecturer(self, lecturer: Lecturer, department_id: int) -> int:
         """Insert (or update) the given lecturer into the database
-        and returns the inserted row id"""
+        in the given department and returns the inserted row id"""
 
         with self.db:
             cursor = self.db.cursor()
@@ -214,7 +250,7 @@ class DatabaseController:
                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     lecturer.id,
-                    lecturer.department,
+                    department_id,
                     lecturer.title,
                     lecturer.name,
                     lecturer.position,

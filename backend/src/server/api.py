@@ -56,34 +56,44 @@ def content():
         return {"id": content_id, "posted": posted}
 
 
-@blueprint.route("/lecturers", methods=["POST", "GET"])
-def lecturers_route():
-    """The /api/lecturers end point
+@blueprint.route("/departments/<int:department_id>/lecturers", methods=["POST", "GET"])
+def lecturers_route(department_id: int):
+    """The /api/departments/<id>/lecturers end point
     GETing this endpoint fetches all the departments lecturers from the database
 
     POSTing to this end point inserts a new lecturer into the database
     """
+    dept = DatabaseController.get().fetch_department_by_id(
+        department_id, fetch_lecturers=True
+    )
+
+    if not dept:
+        print("Not dept")
+        flask.abort(404)
+
     if flask.request.method == "GET":
-        return {
-            "lecturers": [
-                lecturer.to_http_json()
-                for lecturer in DatabaseController.get().fetch_all_lecturers()
-            ]
-        }
+        return {"lecturers": [lecturer.to_http_json() for lecturer in dept.lecturers]}
     else:
         lecturer_id = DatabaseController.get().upsert_lecturer(
-            Lecturer.from_form(flask.request.form)
+            Lecturer.from_form(flask.request.form), department_id
         )
 
         return {"id": lecturer_id}
 
 
-@blueprint.route("/lecturers/<int:lecturer_id>", methods=["DELETE"])
-def lecturer(lecturer_id):
-    """The /api/lecturers/<id> endpoint.
+@blueprint.route(
+    "/departments/<int:department_id>/lecturers/<int:lecturer_id>", methods=["DELETE"]
+)
+def lecturer(department_id: int, lecturer_id: int):
+    """The /api/departments/<dept_id>/lecturers/<id> endpoint.
 
     DELETEing this endpoint deletes the given lecturer in the database.
     """
+    if not DatabaseController.get().fetch_department_by_id(
+        department_id, fetch_lecturers=True
+    ):
+        flask.abort(404)
+
     if DatabaseController.get().delete_lecturer(lecturer_id):
         return {"deleted": True}
     else:
@@ -152,11 +162,11 @@ def content_blob(content_id: int):
         flask.abort(404)
 
 
-@blueprint.route("/display_groups", methods=["POST"])
-def display_groups():
+@blueprint.route("/departments/<int:department_id>/display_groups", methods=["POST"])
+def display_groups(department_id: int):
     try:
         group_id = DatabaseController.get().create_display_group(
-            DisplayGroup.from_form(flask.request.form)
+            DisplayGroup.from_form(flask.request.form), department_id
         )
         return {"id": group_id}
     except json.JSONDecodeError as err:

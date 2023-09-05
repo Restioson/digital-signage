@@ -11,12 +11,10 @@ class DisplayGroup:
     def __init__(
         self,
         name: str,
-        department_id: int,
         layout_json: dict,
         group_id: Optional[int] = None,
     ):
         self.name = name
-        self.department_id = department_id
         self.layout_json = layout_json
         self.id = group_id
 
@@ -25,7 +23,6 @@ class DisplayGroup:
         print(form["layout_json"])
         return DisplayGroup(
             name=form["name"],
-            department_id=form["department"],
             layout_json=json.loads(form["layout_json"]),
         )
 
@@ -37,6 +34,5 @@ class DisplayGroup:
         return DisplayGroup(
             group_id=row["id"],
             name=row["name"],
-            department_id=row["department"],
             layout_json=json.loads(row["layout_json"]),
         )

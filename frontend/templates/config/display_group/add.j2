@@ -13,16 +13,11 @@
   </script>
 
   <form action="/api/display_groups" method="post" class="post-form">
+    <input type="hidden" name="department_id" value="department_id" />
+
     <h3>Create display group</h3>
     <label for="name">Name:</label>
     <input id="name" name="name" type="text" />
-
-    <label for="department">Department:</label>
-    <select id="department" name="department" type="text">
-      {% for department in departments %}
-        <option value="{{ department.id }}">{{ department.name }}</option>
-      {% endfor %}
-    </select>
 
     <label for="layout_json">Layout JSON:</label>
     <textarea id="layout_json" name="layout_json" rows="10">

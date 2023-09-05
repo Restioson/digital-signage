@@ -3,12 +3,12 @@
 {% block title %}Lecturers{% endblock %}
 {% block head %}
   {{ super() }}
-  {{ css('config/department/lecturers') }}
+  {{ css('config/departments/lecturers') }}
 {% endblock %}
 
 {% block content %}
   <script type="module">
-    import { main } from "{{ url_for('static', filename='config/department/lecturers.mjs') }}";
+    import { main } from "{{ url_for('static', filename='config/departments/lecturers.mjs') }}";
     main();
   </script>
 
@@ -28,7 +28,7 @@
       </thead>
 
       <tbody>
-        {%- for lecturer in lecturers -%}
+        {%- for lecturer in department.lecturers -%}
           <tr>
             <td>{{ lecturer.name }}</td>
             <td>{{ lecturer.title }}</td>
@@ -41,7 +41,7 @@
             <td>
               {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
               <form
-                action="/config/department/lecturers/{{ lecturer.id }}"
+                action="/config/departments/{{ department.id }}/lecturers/{{ lecturer.id }}"
                 method="get"
                 class="redirect-form"
               >
@@ -52,6 +52,7 @@
               <button
                 type="button"
                 class="delete-button"
+                data-department-id="{{ department.id }}"
                 data-lecturer-id="{{ lecturer.id }}"
               >
                 Delete
@@ -62,8 +63,9 @@
       </tbody>
     </table>
 
+    {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
     <form
-      action="/config/department/lecturers/add"
+      action="/config/departments/{{ department.id }}/lecturers/add"
       method="get"
       class="redirect-form"
     >
