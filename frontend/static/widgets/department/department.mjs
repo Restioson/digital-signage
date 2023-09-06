@@ -2,6 +2,7 @@ import { Lecturer } from './lecturer.mjs'
 import { WithClasses } from '../with_classes.mjs'
 import { WithRefresh } from '../dynamic/with_refresh.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
+import { Root } from '../root.mjs'
 import { Container } from '../containers/container.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
@@ -22,7 +23,8 @@ export class Department extends DeserializableWidget {
    * @returns {Promise<void>}
    */
   async refresh () {
-    const update = await fetch('/api/lecturers').then(res => res.json())
+    const endpoint = `/api/departments/${Root.getInstance().getDepartment()}/lecturers`
+    const update = await fetch(endpoint).then(res => res.json())
 
     let dirty = update.lecturers.length !== this.children.length
 

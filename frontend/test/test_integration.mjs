@@ -92,7 +92,7 @@ async function checkUploadOne (content) {
 }
 
 async function uploadLecturer (formData) {
-  const res = await fetch('/api/lecturers', {
+  const res = await fetch('/api/departments/1/lecturers', {
     method: 'post',
     // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
     body: new URLSearchParams(formData)
@@ -102,7 +102,7 @@ async function uploadLecturer (formData) {
 }
 
 async function checkUploadLecturer (formData) {
-  const res = await fetch('/api/lecturers', {
+  const res = await fetch('/api/departments/1/lecturers', {
     method: 'post',
     // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
     body: new URLSearchParams(formData)
@@ -110,7 +110,7 @@ async function checkUploadLecturer (formData) {
   assert.equal(res.status, 200)
   const id = (await res.json()).id
 
-  const fetchAllRes = await fetch('/api/lecturers')
+  const fetchAllRes = await fetch('/api/departments/1/lecturers')
   assert.equal(fetchAllRes.status, 200)
   const lecturers = (await fetchAllRes.json()).lecturers
 
@@ -170,7 +170,8 @@ describe('API Integration', function () {
 
     Root.create({
       child: new Container({ children: [] }),
-      targetElement: document.getElementById('root')
+      targetElement: document.getElementById('root'),
+      departmentId: 1
     })
   })
 
@@ -304,7 +305,6 @@ describe('API Integration', function () {
     describe('Lecturer', function () {
       it('uploads', async function () {
         const formData = {
-          department: 'testDept',
           email: 'myemail@example.com',
           name: 'John Doe',
           office_hours: '10am-9pm on Wednesdays',
@@ -319,7 +319,6 @@ describe('API Integration', function () {
 
       it('edits', async function () {
         const formData = {
-          department: 'testDept',
           email: 'myemail@example.com',
           name: 'John Doe',
           office_hours: '10am-9pm on Wednesdays',
@@ -334,7 +333,6 @@ describe('API Integration', function () {
         let newId = await checkUploadLecturer({ id, ...formData })
         assert.equal(id, newId, 'id should be unchanged after edit')
 
-        formData.department = 'otherDept'
         formData.email = 'otherEmail@example.com'
 
         newId = await checkUploadLecturer({ id, ...formData })
@@ -354,7 +352,6 @@ describe('API Integration', function () {
         it('should fetch and render all lecturers correctly', async function () {
           const lecturers = [
             {
-              department: 'CS',
               email: 'myemail@example.com',
               name: 'John Doe',
               office_hours: '10am-9pm on Wednesdays',
@@ -364,7 +361,6 @@ describe('API Integration', function () {
               title: 'Prof'
             },
             {
-              department: 'Maths',
               email: 'notmyemail@example.org',
               name: 'Jamie Doe',
               office_hours: '11am-10pm on Thursdays',

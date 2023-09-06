@@ -29,9 +29,12 @@ async function deleteLecturer (event) {
   const row = button.parentElement.parentElement
   const lecturerName = row.children[0].innerText
   const id = button.dataset.lecturerId
+  const deptId = button.dataset.departmentId
 
   try {
-    const res = await fetch(`/api/lecturers/${id}`, { method: 'delete' })
+    const res = await fetch(`/api/departments/${deptId}/lecturers/${id}`, {
+      method: 'delete'
+    })
 
     if (res.status !== 200) {
       throw new ApiError(await res.text())

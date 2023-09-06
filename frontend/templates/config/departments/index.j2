@@ -1,0 +1,32 @@
+{% extends "base.j2" %}
+
+{% block title %}Departments{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('main') }}
+{% endblock %}
+
+{% block content %}
+  <div class="column-list">
+    {%- for department in departments -%}
+      <div>
+        <h3>{{ department.name }}</h3>
+        <p>{{ department.bio }}</p>
+        <a href="/config/departments/{{ department.id }}/lecturers"
+          >View lecturers</a
+        >
+
+        <h4>Display groups:</h4>
+        {%- if department.display_groups -%}
+          <ul>
+            {%- for group in department.display_groups -%}
+              <li><a href="/display/{{ group.id }}">{{ group.name }}</a></li>
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          <p>This department has no display groups.</p>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+{% endblock %}

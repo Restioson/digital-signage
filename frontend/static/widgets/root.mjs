@@ -18,7 +18,8 @@ function destroyRoot () {
  * The global root element of the page. This can only be created once, through its {@link create} method.
  */
 export class Root {
-  constructor () {
+  constructor (departmentId) {
+    this.departmentId = departmentId
     this.postRenderCallbacks = []
   }
 
@@ -27,12 +28,13 @@ export class Root {
    * will be left intact.
    * @param {Widget} child
    * @param {HTMLElement} targetElement
+   * @param {number} departmentId the departments ID of this display group
    */
-  static create ({ child, targetElement }) {
+  static create ({ child, targetElement, departmentId }) {
     if (root) {
       throw new RootAlreadyExistsError()
     } else {
-      root = new Root()
+      root = new Root(departmentId)
     }
 
     targetElement.replaceChildren(child.render())
@@ -48,5 +50,9 @@ export class Root {
 
   addPostRenderCallback (callback) {
     this.postRenderCallbacks.push(callback)
+  }
+
+  getDepartment () {
+    return this.departmentId
   }
 }

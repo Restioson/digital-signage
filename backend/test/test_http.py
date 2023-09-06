@@ -171,3 +171,13 @@ def test_post_text(client):
 
     assert content[0]["id"] != content[1]["id"]
     assert content[0]["posted"] > content[1]["posted"]
+
+
+def test_invalid_dept_should_404(client):
+    for route in ["lecturers", "lecturers/add", "lecturers/20", "display_group/add"]:
+        path = f"/config/departments/10000/{route}"
+        assert client.get(path).status == "404 NOT FOUND", f"Expected 404 from {path}"
+
+    assert (
+        client.get("/display/10000/1").status == "404 NOT FOUND"
+    ), "Expected 404 from /display/10000/1"

@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS content (
 );
 CREATE TABLE IF NOT EXISTS lecturers (
   id INTEGER PRIMARY KEY,
-  department TEXT NOT NULL,
+  department INTEGER NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   full_name TEXT NOT NULL,
   position TEXT NOT NULL,
@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS lecturers (
   email TEXT NOT NULL,
   phone TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS department (
+CREATE INDEX IF NOT EXISTS lecturer_by_department ON lecturers(department);
+CREATE TABLE IF NOT EXISTS departments (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
   bio TEXT
@@ -45,9 +46,10 @@ CREATE TABLE IF NOT EXISTS department (
 CREATE TABLE IF NOT EXISTS display_groups (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
-  department INTEGER NOT NULL REFERENCES department(id) ON DELETE CASCADE,
+  department INTEGER NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
   layout_json TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS group_by_department ON display_groups(department);
 CREATE TABLE IF NOT EXISTS users (
   --make email primary key
   email TEXT PRIMARY KEY,

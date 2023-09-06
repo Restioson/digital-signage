@@ -5,7 +5,6 @@ from typing import Optional
 class Lecturer:
     def __init__(
         self,
-        department: str,
         title: str,
         name: str,
         position: str,
@@ -15,7 +14,6 @@ class Lecturer:
         phone: str,
         lecturer_id: Optional[int] = None,
     ):
-        self.department = department
         self.title = title
         self.name = name
         self.position = position
@@ -28,7 +26,6 @@ class Lecturer:
     def to_http_json(self) -> dict:
         """Sends data in json format to be posted through http"""
         return {
-            "department": self.department,
             "title": self.title,
             "name": self.name,
             "position": self.position,
@@ -51,7 +48,6 @@ class Lecturer:
             "",
             "",
             "",
-            "",
             None,
         )
 
@@ -59,7 +55,6 @@ class Lecturer:
     def from_form(form: dict):
         """forms lecturer from data inputted in the configuration form"""
         return Lecturer(
-            form["department"],
             form["title"],
             form["name"],
             form["position"],
@@ -76,7 +71,6 @@ class Lecturer:
         row = sqlite3.Row(cursor, row)
         return Lecturer(
             lecturer_id=row["id"],
-            department=row["department"],
             title=row["title"],
             name=row["full_name"],
             position=row["position"],
