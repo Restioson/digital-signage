@@ -20,11 +20,11 @@ def test_post_and_fetch_image(
     database: DatabaseController, test_jpg_data: bytes, test_png_data: bytes
 ):
     assert (
-        len(database.fetch_all_content()) == 0
+        len(database.fetch_content_in_streams([1])) == 0
     ), "Database should start with no content"
 
     # Insert a JPG
-    jpg_to_insert = LocalImage("image/jpeg", test_jpg_data, None)
+    jpg_to_insert = LocalImage("image/jpeg", test_jpg_data, None, 1)
     jpg_id, jpg_posted = database.post_content(jpg_to_insert)
     assert jpg_id is not None, "post_content should return a content ID"
 
@@ -32,13 +32,13 @@ def test_post_and_fetch_image(
     time.sleep(1)
 
     # Insert a PNG
-    png_to_insert = LocalImage("image/png", test_png_data, None)
+    png_to_insert = LocalImage("image/png", test_png_data, None, 1)
     png_id, png_posted = database.post_content(png_to_insert)
     assert png_id != jpg_id, "IDs must be unique"
     assert png_posted > jpg_posted, "PNG should be posted after JPG"
 
     [fetched_png, fetched_jpg] = typing.cast(
-        list[LocalImage], database.fetch_all_content()
+        list[LocalImage], database.fetch_content_in_streams([1])
     )
     assert (
         fetched_png.image_data is None
@@ -48,7 +48,7 @@ def test_post_and_fetch_image(
     ), "fetch_all_content with fetch_blob=False should not fetch blob"
 
     [fetched_png, fetched_jpg] = typing.cast(
-        list[LocalImage], database.fetch_all_content(fetch_blob=True)
+        list[LocalImage], database.fetch_content_in_streams([1], fetch_blob=True)
     )
     assert (
         fetched_png.image_data == test_png_data
@@ -74,9 +74,9 @@ def test_post_and_fetch_image(
 def test_post_captioned(database: DatabaseController, test_jpg_data: bytes):
     caption = Caption("Hello", "there")
     to_insert = [
-        Link("testurl", caption),
-        LocalImage("image/jpeg", test_jpg_data, caption),
-        RemoteImage("testurl", caption),
+        Link("testurl", caption, 1),
+        LocalImage("image/jpeg", test_jpg_data, caption, 1),
+        RemoteImage("testurl", caption, 1),
     ]
 
     for content in to_insert:
@@ -92,18 +92,22 @@ def test_post_captioned(database: DatabaseController, test_jpg_data: bytes):
 def test_cant_set_id_or_posted(database: DatabaseController):
     with pytest.raises(Exception):
         content1_to_insert = Text(
-            "Test title 123", "test body", posted=datetime.datetime.now(), content_id=1
+            "Test title 123",
+            "test body",
+            1,
+            posted=datetime.datetime.now(),
+            content_id=1,
         )
         database.post_content(content1_to_insert)
 
 
 def test_post_and_fetch_text(database: DatabaseController):
     assert (
-        len(database.fetch_all_content()) == 0
+        len(database.fetch_content_in_streams([1])) == 0
     ), "Database should start with no content"
 
     # Insert a piece of content
-    content1_to_insert = Text("Test title 123", "test body")
+    content1_to_insert = Text("Test title 123", "test body", 1)
     content1_id, content1_posted = database.post_content(content1_to_insert)
     assert content1_id is not None, "post_content should return a content ID"
 
@@ -118,7 +122,7 @@ def test_post_and_fetch_text(database: DatabaseController):
     ), "inserted content 1's body should be correct"
 
     # Fetch content using fetch_all_content()
-    all_content = database.fetch_all_content()
+    all_content = database.fetch_content_in_streams([1])
     assert len(all_content) == 1
     fetched_content1 = typing.cast(Text, all_content[0])
     assert fetched_content1.type() == "text", "inserted content 1 should be text"
@@ -143,7 +147,7 @@ def test_post_and_fetch_text(database: DatabaseController):
     time.sleep(1)
 
     # Insert a second piece of content
-    content2_to_insert = Text("Test title 456", "test body 2")
+    content2_to_insert = Text("Test title 456", "test body 2", 1)
     content2_id, content2_posted = database.post_content(content2_to_insert)
     assert content2_id is not None, "post_content should return a content ID"
     assert (
@@ -161,7 +165,7 @@ def test_post_and_fetch_text(database: DatabaseController):
     ), "inserted content 2's body should be correct"
 
     # Fetch content using fetch_all_content()
-    all_content = database.fetch_all_content()
+    all_content = database.fetch_content_in_streams([1])
     assert len(all_content) == 2
 
     fetched_content1 = typing.cast(Text, all_content[1])

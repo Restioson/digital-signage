@@ -15,9 +15,10 @@ class BinaryContent(CaptionedContent, ABC):
         mime_type: str,
         blob: bytes,
         caption: Optional[Caption],
+        stream_id: int,
         content_id: Optional[int],
         posted: Optional[datetime],
     ):
-        super().__init__(caption, content_id, posted)
+        super().__init__(caption, stream_id, content_id, posted)
         self.mime_type = mime_type
         self.blob = blob

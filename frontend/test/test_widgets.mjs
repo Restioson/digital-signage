@@ -34,7 +34,7 @@ describe('Widget', function () {
 
     it('loads entire layout and renders', function () {
       main(
-        '{ "department": 1, "layout": { "type": "container", "children": [ {"type": "clock"}, {"type": "department"}, {"type": "content_stream"} ] } }'
+        '{ "department": 1, "layout": { "type": "container", "children": [ {"type": "clock"}, {"type": "department"}, {"type": "content_stream", "streams": [1] } ] } }'
       )
       const root = document.getElementById('root')
       assert.equal(root.children.length, 1)

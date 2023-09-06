@@ -11,10 +11,11 @@ class Text(FreeFormContent):
         self,
         title: str,
         body: str,
+        stream_id: int,
         content_id: Optional[int] = None,
         posted: Optional[datetime] = None,
     ):
-        super().__init__(content_id, posted)
+        super().__init__(stream_id, content_id, posted)
         self.title = title
         self.body = body
 

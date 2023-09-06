@@ -17,7 +17,13 @@ def check_logged_in():
 @blueprint.route("/")
 def index():
     """Return the config index page"""
-    return render_template("config/index.j2")
+
+    print(DatabaseController.get().fetch_all_content_streams().public)
+
+    return render_template(
+        "config/index.j2",
+        content_streams=DatabaseController.get().fetch_all_content_streams(),
+    )
 
 
 @blueprint.route("/departments/")

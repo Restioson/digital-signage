@@ -24,7 +24,7 @@ import { deserializeWidget } from '../static/widgets/deserializable/widget_deser
 let serverProcess
 
 async function fetchContent () {
-  const res = await fetch('/api/content')
+  const res = await fetch('/api/content?stream=1')
   assert.equal(res.status, 200)
   return (await res.json()).content
 }
@@ -39,7 +39,7 @@ async function uploadContent (formData) {
   const res = await fetch('/api/content', {
     method: 'post',
     // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
-    body: new URLSearchParams(formData)
+    body: new URLSearchParams({ content_stream: 1, ...formData })
   })
 
   const expected = await res.json()
@@ -63,6 +63,7 @@ async function uploadContent (formData) {
 async function uploadLocalImage () {
   const formData = new FormData()
   formData.append('type', 'local_image')
+  formData.append('content_stream', '1')
   const file = await open('../backend/test/data/test.jpg')
   const buffer = (await file.read()).buffer
   await file.close()
@@ -243,7 +244,7 @@ describe('API Integration', function () {
     describe('ContentStream', function () {
       describe('refresh', function () {
         it('should result in empty content list with empty database', async function () {
-          const stream = new ContentStream()
+          const stream = new ContentStream({ streams: [1] })
           assert.deepStrictEqual(stream.children, [])
           await stream.refresh()
           assert.deepStrictEqual(stream.children, [])
@@ -285,7 +286,7 @@ describe('API Integration', function () {
           // Content is shown latest to oldest, so reverse the expected list
           expected.reverse()
 
-          const stream = new ContentStream()
+          const stream = new ContentStream({ streams: [1] })
           assert.deepStrictEqual(stream.children, [])
 
           await stream.refresh()
