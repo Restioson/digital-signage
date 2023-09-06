@@ -13,6 +13,7 @@ import { Container } from '../static/widgets/containers/container.mjs'
 import {
   checkRenderedLinkCaptionedTitleBody,
   checkRenderedLocalImage,
+  checkRenderedQrcodeCaptionedTitleBody,
   checkRenderedRemoteImage,
   checkRenderedText
 } from './test_free_form_content.mjs'
@@ -238,6 +239,12 @@ describe('API Integration', function () {
               caption_body: 'body hello'
             },
             {
+              type: 'qrcode_content',
+              url: 'https://example.com/',
+              caption_title: 'title hello',
+              caption_body: 'body hello'
+            },
+            {
               type: 'text',
               title: 'title hello',
               body: 'body hello'
@@ -266,7 +273,7 @@ describe('API Integration', function () {
 
           const out = stream.render()
           assert.equal(out.tagName, 'DIV')
-          assert.equal(out.children.length, 4)
+          assert.equal(out.children.length, 5)
 
           checkRenderedLocalImage(out.children[0], expected[0].id)
           checkRenderedText(
@@ -275,12 +282,19 @@ describe('API Integration', function () {
             expected[1].body
           )
           checkRenderedLinkCaptionedTitleBody(
+            out.children[3],
+            expected[3].url,
+            expected[3].caption.title,
+            expected[3].caption.body
+          )
+          checkRenderedQrcodeCaptionedTitleBody(
             out.children[2],
             expected[2].url,
             expected[2].caption.title,
             expected[2].caption.body
           )
-          checkRenderedRemoteImage(out.children[3], expected[3].src)
+
+          checkRenderedRemoteImage(out.children[4], expected[4].src)
         }).timeout(5000)
       })
     })

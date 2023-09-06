@@ -227,7 +227,6 @@ export function checkRenderedLinkCaptionedBody (
   return out
 }
 
-///------------------------------------------
 export function checkRenderedQrcode (out, expectedUrl) {
   assert.equal(out.tagName, 'DIV')
   const a = out.children[0]
@@ -281,5 +280,3 @@ export function checkRenderedQrcodeCaptionedBody (
 
   return out
 }
-
-///------------------------------------------

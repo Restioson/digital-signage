@@ -3,7 +3,6 @@ import { Caption } from '../caption.mjs'
 import { FreeFormContent } from './free_form_content.mjs'
 import { Qrcode } from '../qrcode.mjs'
 import { WithClasses } from '../with_classes.mjs'
-import { Container } from '../containers/container.mjs'
 
 /**
  * A piece of {@qrcode_content FreeFormContent} which displays a link in the form of a qrcode with a potential caption.
