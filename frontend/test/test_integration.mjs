@@ -221,9 +221,9 @@ describe('API Integration', function () {
       describe('refresh', function () {
         it('should result in empty content list with empty database', async function () {
           const stream = new ContentStream()
-          assert.deepStrictEqual(stream.cache.children, [])
+          assert.deepStrictEqual(stream.children, [])
           await stream.refresh()
-          assert.deepStrictEqual(stream.cache.children, [])
+          assert.deepStrictEqual(stream.children, [])
         })
 
         it('should fetch and render all content correctly', async function () {
@@ -263,11 +263,11 @@ describe('API Integration', function () {
           expected.reverse()
 
           const stream = new ContentStream()
-          assert.deepStrictEqual(stream.cache.children, [])
+          assert.deepStrictEqual(stream.children, [])
 
           await stream.refresh()
           assert.deepStrictEqual(
-            stream.cache.children,
+            stream.children,
             expected.map(deserializeWidget)
           )
 
@@ -346,9 +346,9 @@ describe('API Integration', function () {
       describe('refresh', function () {
         it('should result in empty lecturers list with empty database', async function () {
           const dept = new Department()
-          assert.deepStrictEqual(dept.cache.children, [])
+          assert.deepStrictEqual(dept.children, [])
           await dept.refresh()
-          assert.deepStrictEqual(dept.cache.children, [])
+          assert.deepStrictEqual(dept.children, [])
         })
 
         it('should fetch and render all lecturers correctly', async function () {
@@ -380,7 +380,7 @@ describe('API Integration', function () {
           }
 
           const dept = new Department()
-          assert.deepStrictEqual(dept.cache.children, [])
+          assert.deepStrictEqual(dept.children, [])
 
           await dept.refresh()
 

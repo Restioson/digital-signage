@@ -1,8 +1,8 @@
 import { WithClasses } from '../with_classes.mjs'
 import { WithRefresh } from '../dynamic/with_refresh.mjs'
-import { CachingContainer } from '../dynamic/caching_container.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 import { deserializeWidget } from '../deserializable/widget_deserialization_factory.mjs'
+import { Container } from '../containers/container.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
 
@@ -14,28 +14,35 @@ const REFRESH_INTERVAL_MS = 1000
 export class ContentStream extends DeserializableWidget {
   constructor () {
     super()
-
-    /**
-     * The caching container to store the content. This is kept in order to prevent constantly rebuilding child post
-     * widgets.
-     *
-     * @type {CachingContainer}
-     * @private
-     */
-    this.cache = new CachingContainer({ getId: post => post.id })
+    this.children = []
   }
 
   /**
    * Fetch the latest content and update the state.
    *
    * @private
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>}
    */
   async refresh () {
     const update = await fetch('/api/content').then(res => res.json())
-    this.cache.children = update.content.map(content =>
-      deserializeWidget(content)
-    )
+
+    let dirty = update.content.length !== this.children.length
+
+    if (!dirty) {
+      for (let i = 0; i < update.content.length; i++) {
+        dirty |= update.content[i].id === this.children.id
+
+        if (dirty) {
+          break
+        }
+      }
+    }
+
+    if (dirty) {
+      this.children = update.content.map(content => deserializeWidget(content))
+    }
+
+    return dirty
   }
 
   static fromJson (obj) {
@@ -49,7 +56,7 @@ export class ContentStream extends DeserializableWidget {
       builder: () =>
         new WithClasses({
           classList: ['content-stream'],
-          child: this.cache
+          child: new Container({ children: this.children })
         })
     })
   }

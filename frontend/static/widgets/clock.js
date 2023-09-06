@@ -18,7 +18,7 @@ export class Clock extends DeserializableWidget {
 
   build () {
     return new WithRefresh({
-      refresh: () => null,
+      refresh: () => true,
       period: 1000,
       builder: () => {
         const text = document.createElement('div')
