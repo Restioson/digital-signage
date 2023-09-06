@@ -29,6 +29,12 @@
   object-fit: contain;
 }
 
+.clock {
+  text-align: center;
+  padding: 15px;
+  font-size: 24pt;
+}
+
 .content-stream > div.link {
   display: inline-block;
   flex-direction: column;

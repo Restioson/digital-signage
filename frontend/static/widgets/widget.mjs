@@ -23,6 +23,7 @@ export class Widget {
    * Convert the `Widget` to its display representation. This can return a `Widget` itself, or an `HTMLElement`.
    *
    * @returns {Widget | HTMLElement}
+   * @abstract
    */
   build () {
     throw new AbstractClassError('Widget', 'build()')
@@ -34,7 +35,19 @@ export class Widget {
    * @returns {HTMLElement}
    */
   render () {
-    const built = this.build()
-    return built instanceof Widget ? built.render() : built
+    return Widget.renderIfWidget(this.build())
+  }
+
+  /**
+   * Renders the given display item if it is a {@link Widget}, or returns it if it is a {@link HTMLElement}.
+   *
+   * @param {Widget|HTMLElement} widgetOrElement
+   * @protected
+   * @return HTMLElement
+   */
+  static renderIfWidget (widgetOrElement) {
+    return widgetOrElement instanceof Widget
+      ? widgetOrElement.render()
+      : widgetOrElement
   }
 }

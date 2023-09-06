@@ -1,29 +1,19 @@
-import { Widget } from './widget.mjs'
-import { Root } from './root.mjs'
-
-/**
- * The refresh callback. This should update the {@link Widget}'s state.
- * @callback refresh
- * @async
- */
-
-/**
- * The build callback. This should return a {@link Widget} or {@link HTMLElement} using the {@link Widget}'s state.
- * @callback refresh
- * @return {HTMLElement | Widget}
- */
+import { Widget } from '../widget.mjs'
+import { Root } from '../root.mjs'
 
 /**
  * A {@link Widget} which is refreshed at regular intervals. It is completely rebuilt and replaced in-place upon
  * refresh.
  *
+ * @see CachingContainer
+ *
  * @augments Widget
  */
 export class WithRefresh extends Widget {
   /**
-   * @param {refresh} refresh called every refresh period
+   * @param {function(): Promise<void>} refresh called every refresh period and should update the state
    * @param period how often to call refresh
-   * @param {builder} builder rebuild the visual representation of the widget
+   * @param {function(): (Widget|HTMLElement)} builder rebuild the visual representation of the widget
    */
   constructor ({ refresh, period, builder }) {
     super()
@@ -54,11 +44,10 @@ export class WithRefresh extends Widget {
    * Render the widget's child using the builder method.
    *
    * @private
-   * @returns {HTMLElement|*}
+   * @returns {HTMLElement}
    */
   renderChild () {
-    const built = this.builder()
-    return built instanceof Widget ? built.render() : built
+    return Widget.renderIfWidget(this.builder())
   }
 
   build () {

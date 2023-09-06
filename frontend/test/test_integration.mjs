@@ -16,6 +16,9 @@ import {
   checkRenderedRemoteImage,
   checkRenderedText
 } from './test_free_form_content.mjs'
+import { checkRenderedLecturer } from './test_department.mjs'
+import { Department } from '../static/widgets/department/department.mjs'
+import { deserializeWidget } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
 
 let serverProcess
 
@@ -85,6 +88,37 @@ async function checkUploadOne (content) {
   const expected = await uploadContent(content)
   const fetched = await fetchContent()
   assert.deepStrictEqual(fetched, [expected])
+}
+
+async function uploadLecturer (formData) {
+  const res = await fetch('/api/lecturers', {
+    method: 'post',
+    // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
+    body: new URLSearchParams(formData)
+  })
+  assert.equal(res.status, 200)
+  return (await res.json()).id
+}
+
+async function checkUploadLecturer (formData) {
+  const res = await fetch('/api/lecturers', {
+    method: 'post',
+    // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
+    body: new URLSearchParams(formData)
+  })
+  assert.equal(res.status, 200)
+  const id = (await res.json()).id
+
+  const fetchAllRes = await fetch('/api/lecturers')
+  assert.equal(fetchAllRes.status, 200)
+  const lecturers = (await fetchAllRes.json()).lecturers
+
+  assert.equal(lecturers.length, 1)
+  const fetched = lecturers[0]
+  assert.equal(fetched.id, id)
+
+  assert.deepStrictEqual(fetched, { id, ...formData })
+  return id
 }
 
 async function sleepMs (ms) {
@@ -186,9 +220,9 @@ describe('API Integration', function () {
       describe('refresh', function () {
         it('should result in empty content list with empty database', async function () {
           const stream = new ContentStream()
-          assert.deepStrictEqual(stream.content, [])
+          assert.deepStrictEqual(stream.cache.children, [])
           await stream.refresh()
-          assert.deepStrictEqual(stream.content, [])
+          assert.deepStrictEqual(stream.cache.children, [])
         })
 
         it('should fetch and render all content correctly', async function () {
@@ -222,10 +256,13 @@ describe('API Integration', function () {
           expected.reverse()
 
           const stream = new ContentStream()
-          assert.deepStrictEqual(stream.content, [])
+          assert.deepStrictEqual(stream.cache.children, [])
 
           await stream.refresh()
-          assert.deepStrictEqual(stream.content, expected)
+          assert.deepStrictEqual(
+            stream.cache.children,
+            expected.map(deserializeWidget)
+          )
 
           const out = stream.render()
           assert.equal(out.tagName, 'DIV')
@@ -245,6 +282,107 @@ describe('API Integration', function () {
           )
           checkRenderedRemoteImage(out.children[3], expected[3].src)
         }).timeout(5000)
+      })
+    })
+  })
+
+  describe('/api/lecturers', function () {
+    describe('Lecturer', function () {
+      it('uploads', async function () {
+        const formData = {
+          department: 'testDept',
+          email: 'myemail@example.com',
+          name: 'John Doe',
+          office_hours: '10am-9pm on Wednesdays',
+          office_location: 'CS302',
+          phone: '021 111 1111',
+          position: 'Professor',
+          title: 'Prof'
+        }
+
+        await checkUploadLecturer(formData)
+      })
+
+      it('edits', async function () {
+        const formData = {
+          department: 'testDept',
+          email: 'myemail@example.com',
+          name: 'John Doe',
+          office_hours: '10am-9pm on Wednesdays',
+          office_location: 'CS302',
+          phone: '021 111 1111',
+          position: 'Professor',
+          title: 'Prof'
+        }
+
+        const id = await checkUploadLecturer(formData)
+
+        let newId = await checkUploadLecturer({ id, ...formData })
+        assert.equal(id, newId, 'id should be unchanged after edit')
+
+        formData.department = 'otherDept'
+        formData.email = 'otherEmail@example.com'
+
+        newId = await checkUploadLecturer({ id, ...formData })
+        assert.equal(id, newId, 'id should be unchanged after edit')
+      })
+    })
+
+    describe('Department', function () {
+      describe('refresh', function () {
+        it('should result in empty lecturers list with empty database', async function () {
+          const dept = new Department()
+          assert.deepStrictEqual(dept.cache.children, [])
+          await dept.refresh()
+          assert.deepStrictEqual(dept.cache.children, [])
+        })
+
+        it('should fetch and render all lecturers correctly', async function () {
+          const lecturers = [
+            {
+              department: 'CS',
+              email: 'myemail@example.com',
+              name: 'John Doe',
+              office_hours: '10am-9pm on Wednesdays',
+              office_location: 'CS302',
+              phone: '021 111 1111',
+              position: 'Professor',
+              title: 'Prof'
+            },
+            {
+              department: 'Maths',
+              email: 'notmyemail@example.org',
+              name: 'Jamie Doe',
+              office_hours: '11am-10pm on Thursdays',
+              office_location: 'Maths 301',
+              phone: '021 222 22222',
+              position: 'Teaching Assistant',
+              title: 'Ms'
+            }
+          ]
+
+          for (const lecturer of lecturers) {
+            await uploadLecturer(lecturer)
+          }
+
+          const dept = new Department()
+          assert.deepStrictEqual(dept.cache.children, [])
+
+          await dept.refresh()
+
+          const out = dept.render()
+          assert.equal(out.tagName, 'DIV')
+          assert.equal(out.children.length, 2)
+
+          for (let i = 0; i < 2; i++) {
+            const expected = {
+              officeHours: lecturers[i].office_hours,
+              officeLocation: lecturers[i].office_location,
+              ...lecturers[i]
+            }
+            checkRenderedLecturer(out.children[i], expected)
+          }
+        })
       })
     })
   })

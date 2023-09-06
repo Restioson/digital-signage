@@ -9,9 +9,11 @@
   </head>
 
   <body>
+    {# The layout json here is weird since it gets converted from str to json to str to json, but this is needed to
+       make sure that the JSON is html-safe and not going to escape and break something weirdly. #}
     <script type="module">
       import { main } from "{{ url_for('static', filename='display.mjs') }}";
-      main();
+      main(`{{ layout_json|tojson }}`);
     </script>
 
     <div id="root"></div>

@@ -1,0 +1,131 @@
+{% extends "base.j2" %}
+
+{% block title %}
+  {%- if lecturer.id -%}Edit{%- else -%}Add{%- endif -%}
+  a lecturer
+{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('config/department/lecturers') }}
+{% endblock %}
+
+{% block content %}
+  <script type="module">
+    import { main } from "{{ url_for('static', filename='config.mjs') }}";
+    main();
+  </script>
+
+  <form action="/api/lecturers" method="post" class="post-form">
+    <label
+      >Name:
+      <input
+        type="text"
+        id="name"
+        name="name"
+        required
+        value="{{ lecturer.name }}"
+      />
+    </label>
+
+    {%- if lecturer.id -%}
+      <input type="hidden" name="id" value="{{ lecturer.id }}" />
+    {%- endif -%}
+
+    <label
+      >Title:
+      <select id="title" name="title" required>
+        {%- macro title(val, desc) -%}
+          {%- set desc = desc|default(val) -%}
+          {%- if lecturer.title == val -%}
+            {%- set selected = "selected" -%}
+          {%- endif -%}
+
+          <option value="{{ val }}" {{ selected }}>{{ desc }}</option>
+        {%- endmacro -%}
+
+        {{ title("Mr") }}
+        {{ title("Mrs") }}
+        {{ title("Ms") }}
+        {{ title("Mx") }}
+        {{ title("Prof", "Professor") }}
+        {{ title("A/Prof", "Associate Professor") }}
+        {{ title("Dr") }}
+      </select>
+    </label>
+
+    <label
+      >Position:
+      <input
+        type="text"
+        id="position"
+        name="position"
+        required
+        value="{{ lecturer.position }}"
+      />
+    </label>
+
+    <label
+      >Office Location:
+      <input
+        type="text"
+        id="office_location"
+        name="office_location"
+        value="{{ lecturer.office_location }}"
+      />
+    </label>
+
+    <label
+      >Email Address:
+      <input
+        type="email"
+        id="email"
+        name="email"
+        required
+        value="{{ lecturer.email }}"
+      />
+    </label>
+
+    <label
+      >Telephone Number:
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        required
+        value="{{ lecturer.phone }}"
+      />
+    </label>
+
+    <label
+      >Office Hours:
+      <input
+        type="text"
+        id="office_hours"
+        name="office_hours"
+        value="{{ lecturer.office_hours }}"
+        required
+      />
+    </label>
+
+    <label
+      >Department:
+      <select id="department" name="department">
+        {#- TODO: https://github.com/Restioson/digital-signage/issues/74 -#}
+
+        {%- macro dept(val) -%}
+          {%- if lecturer.title == val -%}
+            {%- set selected = "selected" -%}
+          {%- endif -%}
+          <option value="{{ val }}" {{ selected }}>{{ val }}</option>
+        {%- endmacro -%}
+
+        {{ dept("Computer Science") }}
+        {{ dept("Mathematics") }}
+        {{ dept("Chemistry") }}
+      </select>
+    </label>
+
+    <button type="submit">Submit</button>
+    <p hidden class="status-message"></p>
+  </form>
+{% endblock %}

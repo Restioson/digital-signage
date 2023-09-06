@@ -1,14 +1,14 @@
-import { Widget } from './widget.mjs'
 import { WithClasses } from './with_classes.mjs'
 import { Container } from './containers/container.mjs'
 import { Visibility } from './visibility.mjs'
+import { DeserializableWidget } from './deserializable/deserializable_widget.mjs'
 
 /**
  * A {@link Widget} to display a caption with a title and body. The title may be null, but the body may not.
  *
  * @augments Widget
  */
-export class Caption extends Widget {
+export class Caption extends DeserializableWidget {
   /**
    * @param {?string} title the title of the caption
    * @param {string} body the body of the caption

@@ -1,18 +1,26 @@
 import { Lecturer } from './lecturer.mjs'
-import { Container } from '../containers/container.mjs'
-import { Widget } from '../widget.mjs'
 import { WithClasses } from '../with_classes.mjs'
-import { WithRefresh } from '../with_refresh.mjs'
+import { WithRefresh } from '../dynamic/with_refresh.mjs'
+import { CachingContainer } from '../dynamic/caching_container.mjs'
+import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
 
 /**
  * A {@link Widget} which displays a live view of all the {@link Lecturer}s on the server.
  */
-export class Department extends Widget {
+export class Department extends DeserializableWidget {
   constructor () {
     super()
-    this.lecturers = []
+
+    /**
+     * The caching container to store the content. This is kept in order to prevent constantly rebuilding child lecturers
+     * widgets.
+     *
+     * @type {CachingContainer}
+     * @private
+     */
+    this.cache = new CachingContainer({ getId: lecturer => lecturer.id })
   }
 
   /**
@@ -23,7 +31,7 @@ export class Department extends Widget {
    */
   async refresh () {
     const update = await fetch('/api/lecturers').then(res => res.json())
-    this.lecturers = update.lecturers
+    this.cache.children = update.lecturers.map(Lecturer.fromJSON)
   }
 
   build () {
@@ -33,10 +41,12 @@ export class Department extends Widget {
       builder: () =>
         new WithClasses({
           classList: ['department'],
-          child: new Container({
-            children: this.lecturers.map(Lecturer.fromJSON)
-          })
+          child: this.cache
         })
     })
+  }
+
+  static fromJSON (obj) {
+    return new Department()
   }
 }

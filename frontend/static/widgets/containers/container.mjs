@@ -1,11 +1,13 @@
 import { Widget } from '../widget.mjs'
+import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
+import { deserializeWidget } from '../deserializable/widget_deserialization_factory.mjs'
 
 /**
  * A {@link Widget} which just displays its children as children of an {@link HTMLDivElement}.
  */
-export class Container extends Widget {
+export class Container extends DeserializableWidget {
   /**
-   * @param {HTMLElement | Widget} children the children to display
+   * @param {(HTMLElement | Widget)[]} children the children to display
    */
   constructor ({ children }) {
     super()
@@ -16,9 +18,13 @@ export class Container extends Widget {
     const container = document.createElement('div')
 
     for (const child of this.children) {
-      container.append(child instanceof Widget ? child.render() : child)
+      container.appendChild(Widget.renderIfWidget(child))
     }
 
     return container
+  }
+
+  static fromJSON (obj) {
+    return new Container({ children: obj.children.map(deserializeWidget) })
   }
 }

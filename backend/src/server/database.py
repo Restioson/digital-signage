@@ -4,8 +4,9 @@ import time
 from typing import Optional
 import flask
 from server import free_form_content
+from server.display_group import DisplayGroup
 from server.free_form_content import FreeFormContent, BinaryContent
-from server.department import Lecturer
+from server.department import Lecturer, Department
 
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
@@ -44,6 +45,10 @@ class DatabaseController:
         # Create necessary tables
         with app.open_resource("sql/schema.sql", mode="r") as f:
             self.db.cursor().executescript(f.read())
+
+        if len(self.fetch_all_departments()) == 0:
+            with app.open_resource("sql/add_default_data.sql", mode="r") as f:
+                self.db.cursor().executescript(f.read())
 
     def post_content(self, content: FreeFormContent) -> (int, int):
         """Insert the given FreeFormContent and returns the inserted row id"""
@@ -114,18 +119,98 @@ class DatabaseController:
             None,
         )
 
-    def insert_lecturer(self, lecturer: Lecturer) -> int:
-        """Insert the given lecturer into the lecturer database
+    def create_department(self, department: Department, insert_lecturers=False) -> int:
+        """Create a department and return its row id. If `insert_lecturers` is `True`,
+        the lecturers in the `Department` object will also be inserted."""
+
+        assert (
+            department.id is None
+        ), "Department ID should only be set in create_department"
+
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "INSERT INTO department (name, bio) VALUES (?, ?)",
+                (department.name, department.bio),
+            )
+            dept_id = cursor.lastrowid
+
+            if insert_lecturers:
+                for lecturer in department.lecturers:
+                    self.insert_lecturer(lecturer)
+
+            return dept_id
+
+    # TODO(https://github.com/Restioson/digital-signage/issues/74): once we
+    # associate lecturers with depts, we can fetch a dept's lecturers here, too
+    def fetch_all_departments(self) -> list[Department]:
+        cursor = self.db.cursor()
+        cursor.row_factory = Department.from_sql
+        return list(cursor.execute("SELECT id, name, bio FROM department ORDER BY id"))
+
+    def create_display_group(self, group: DisplayGroup) -> int:
+        """Create a display ground and return its row id."""
+
+        assert group.id is None, "Department ID should only be set in create_department"
+
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "INSERT INTO display_groups (name, department, layout_json)"
+                " VALUES (?, ?, ?)",
+                (group.name, group.department_id, json.dumps(group.layout_json)),
+            )
+        return cursor.lastrowid
+
+    def fetch_all_display_groups(self) -> list[DisplayGroup]:
+        """Fetch all display groups from the database"""
+        cursor = self.db.cursor()
+        cursor.row_factory = DisplayGroup.from_sql
+        return list(
+            cursor.execute(
+                "SELECT id, name, department, layout_json FROM display_groups"
+            )
+        )
+
+    def fetch_display_group_by_id(self, group_id: int) -> list[DisplayGroup]:
+        """Fetch the given display group from the database"""
+        cursor = self.db.cursor()
+        cursor.row_factory = DisplayGroup.from_sql
+        return next(
+            cursor.execute(
+                "SELECT id, name, department, layout_json FROM display_groups"
+                " WHERE id = ?",
+                (group_id,),
+            ),
+            None,
+        )
+
+    def fetch_all_lecturers(self) -> list[Lecturer]:
+        """Fetch all the departments lecturers from the database"""
+        cursor = self.db.cursor()
+        cursor.row_factory = Lecturer.from_sql
+        return list(
+            cursor.execute(
+                "SELECT id, department, title, "
+                "full_name, position, office_hours,"
+                "office_location,email,phone FROM lecturers "
+                " ORDER BY id"
+            )
+        )
+
+    def upsert_lecturer(self, lecturer: Lecturer) -> int:
+        """Insert (or update) the given lecturer into the database
         and returns the inserted row id"""
 
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO lecturers "
-                "(department, title, full_name, position, "
+                "REPLACE INTO lecturers "
+                "(id, department, title, full_name, position, "
                 "office_hours, office_location, email, phone)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
+                    lecturer.id,
                     lecturer.department,
                     lecturer.title,
                     lecturer.name,
@@ -138,18 +223,13 @@ class DatabaseController:
             )
         return cursor.lastrowid
 
-    def fetch_all_departments(self) -> list[Lecturer]:
-        """Fetch all the departments lecturers from the database"""
-        cursor = self.db.cursor()
-        cursor.row_factory = Lecturer.from_sql
-        return list(
-            cursor.execute(
-                "SELECT id, department, title, "
-                "full_name, position, office_hours,"
-                "office_location,email,phone FROM lecturers "
-                " ORDER BY id"
-            )
-        )
+    def delete_lecturer(self, lecturer_id: int) -> bool:
+        """Delete the given lecturer, returning whether it was in the
+        database before deletion."""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute("DELETE FROM lecturers WHERE id = ?", (lecturer_id,))
+        return cursor.rowcount == 1
 
     def fetch_lecturer_by_id(self, lecturer_id: int) -> Optional[Lecturer]:
         """Fetch a specific lecturer from the database based on their ID"""

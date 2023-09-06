@@ -1,3 +1,4 @@
+import json
 from http import HTTPStatus
 
 import flask
@@ -6,6 +7,7 @@ from flask import Blueprint, Response
 from server import free_form_content
 from server.department import Lecturer
 from server.database import DatabaseController
+from server.display_group import DisplayGroup
 from server.free_form_content import BinaryContent
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
@@ -60,15 +62,27 @@ def lecturers_route():
         return {
             "lecturers": [
                 lecturer.to_http_json()
-                for lecturer in DatabaseController.get().fetch_all_departments()
+                for lecturer in DatabaseController.get().fetch_all_lecturers()
             ]
         }
     else:
-        lecturer_id = DatabaseController.get().insert_lecturer(
+        lecturer_id = DatabaseController.get().upsert_lecturer(
             Lecturer.from_form(flask.request.form)
         )
 
         return {"id": lecturer_id}
+
+
+@blueprint.route("/lecturers/<int:lecturer_id>", methods=["DELETE"])
+def lecturer(lecturer_id):
+    """The /api/lecturers/<id> endpoint.
+
+    DELETEing this endpoint deletes the given lecturer in the database.
+    """
+    if DatabaseController.get().delete_lecturer(lecturer_id):
+        return {"deleted": True}
+    else:
+        flask.abort(404)
 
 
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])
@@ -85,3 +99,14 @@ def content_blob(content_id: int):
         )
     else:
         flask.abort(404)
+
+
+@blueprint.route("/display_groups", methods=["POST"])
+def display_groups():
+    try:
+        group_id = DatabaseController.get().create_display_group(
+            DisplayGroup.from_form(flask.request.form)
+        )
+        return {"id": group_id}
+    except json.JSONDecodeError as err:
+        return flask.abort(400, description=f"Error in layout JSON: {err}")

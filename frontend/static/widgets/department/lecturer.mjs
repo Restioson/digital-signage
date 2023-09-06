@@ -1,23 +1,25 @@
-import { Widget } from '../widget.mjs'
 import { Container } from '../containers/container.mjs'
+import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 
 /**
- * A {@link Widget} which displays a lecturer and all of their details.
+ * A {@link Widget} which displays a lecturers and all of their details.
  *
  * @augments Widget
  */
-export class Lecturer extends Widget {
+export class Lecturer extends DeserializableWidget {
   /**
-   * @param {string} department the department in which the lecturer works
-   * @param {string} position the lecturer's position
-   * @param {string} title the lecturer's title
-   * @param {string} name the lecturer's name
-   * @param {string} officeHours the lecturer's office hours
-   * @param {string} officeLocation the lecturer's office location
-   * @param {string} email the lecturer's email address
-   * @param {string} phone the lecturer's phone number
+   * @param {int} id the lecturers's id
+   * @param {string} department the department in which the lecturers works
+   * @param {string} position the lecturers's position
+   * @param {string} title the lecturers's title
+   * @param {string} name the lecturers's name
+   * @param {string} officeHours the lecturers's office hours
+   * @param {string} officeLocation the lecturers's office location
+   * @param {string} email the lecturers's email address
+   * @param {string} phone the lecturers's phone number
    */
   constructor ({
+    id,
     department,
     position,
     title,
@@ -28,6 +30,7 @@ export class Lecturer extends Widget {
     phone
   }) {
     super()
+    this.id = id
     this.department = department
     this.position = position
     this.title = title
@@ -46,6 +49,7 @@ export class Lecturer extends Widget {
    */
   static fromJSON (obj) {
     return new Lecturer({
+      id: obj.id,
       department: obj.department,
       position: obj.position,
       title: obj.title,
@@ -63,7 +67,8 @@ export class Lecturer extends Widget {
 
     title.innerText = `${this.title} ${this.name}`
     body.innerText =
-      `Position: ${this.position} in the ${this.department} department\n` +
+      `Department: ${this.department}\n` +
+      `Position: ${this.position}\n` +
       `Office Hours: ${this.officeHours}\n` +
       `Office Location: ${this.officeLocation}\n` +
       `Email: ${this.email}\n` +

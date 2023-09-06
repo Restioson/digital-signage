@@ -2,22 +2,6 @@ import sqlite3
 from typing import Optional
 
 
-# TODO: add more functionality and use in display group development
-class Department:
-    """A unversity department that has lecturers and are to be the users of this app.
-    Currently unused but need for later functionality."""
-
-    def __init__(self, name):
-        self.name = name
-        self.lecturers = []
-
-    def add_lecturer(self, lecturer):
-        if isinstance(lecturer, Lecturer):
-            self.lecturers.append(lecturer)
-        else:
-            raise ValueError("Invalid Lecturer object")
-
-
 class Lecturer:
     def __init__(
         self,
@@ -56,6 +40,22 @@ class Lecturer:
         }
 
     @staticmethod
+    def empty():
+        """Create an empty Lecturer object for use in the
+        Flask form (it will prefill with nothing)"""
+        return Lecturer(
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            None,
+        )
+
+    @staticmethod
     def from_form(form: dict):
         """forms lecturer from data inputted in the configuration form"""
         return Lecturer(
@@ -67,6 +67,7 @@ class Lecturer:
             form["office_location"],
             form["email"],
             form["phone"],
+            lecturer_id=form.get("id"),
         )
 
     @staticmethod

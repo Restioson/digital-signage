@@ -1,20 +1,28 @@
-import { Widget } from '../widget.mjs'
-import { Container } from '../containers/container.mjs'
-import { deserializeFreeFormContent } from './free_form_content_factory.mjs'
 import { WithClasses } from '../with_classes.mjs'
-import { WithRefresh } from '../with_refresh.mjs'
+import { WithRefresh } from '../dynamic/with_refresh.mjs'
+import { CachingContainer } from '../dynamic/caching_container.mjs'
+import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
+import { deserializeWidget } from '../deserializable/widget_deserialization_factory.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
 
 /**
  * A container which displays a live view of all the {@link FreeFormContent} on the server.
  *
- * @augments Widget
+ * @augments DeserializableWidget
  */
-export class ContentStream extends Widget {
+export class ContentStream extends DeserializableWidget {
   constructor () {
     super()
-    this.content = []
+
+    /**
+     * The caching container to store the content. This is kept in order to prevent constantly rebuilding child post
+     * widgets.
+     *
+     * @type {CachingContainer}
+     * @private
+     */
+    this.cache = new CachingContainer({ getId: post => post.id })
   }
 
   /**
@@ -24,8 +32,14 @@ export class ContentStream extends Widget {
    * @returns {Promise<void>}
    */
   async refresh () {
-    const contentUpdate = await fetch('/api/content').then(res => res.json())
-    this.content = contentUpdate.content
+    const update = await fetch('/api/content').then(res => res.json())
+    this.cache.children = update.content.map(content =>
+      deserializeWidget(content)
+    )
+  }
+
+  static fromJson (obj) {
+    return new ContentStream()
   }
 
   build () {
@@ -35,11 +49,7 @@ export class ContentStream extends Widget {
       builder: () =>
         new WithClasses({
           classList: ['content-stream'],
-          child: new Container({
-            children: this.content.map(content =>
-              deserializeFreeFormContent(content)
-            )
-          })
+          child: this.cache
         })
     })
   }

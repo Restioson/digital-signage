@@ -26,5 +26,8 @@
       "it",
       "expect"
     ]
+  },
+  "dependencies": {
+    "moment": "^2.29.4"
   }
 }
