@@ -21,4 +21,3 @@ class User:
         user_fields.append(form["screen_name"])
         user_fields.append(form["password"])
         return user_fields
-

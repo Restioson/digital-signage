@@ -15,7 +15,6 @@ from server.free_form_content import BinaryContent
 from server.user import User
 
 
-
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
 
@@ -90,12 +89,14 @@ def lecturer(lecturer_id):
     else:
         flask.abort(404)
 
-        
+
 @blueprint.route("/user", methods=["POST"])
 def user_route():
     # TODO
     """The /api/user end point
     GETing this endpoint fetches all the users from the database"""
+
+
 @blueprint.route("/register", methods=["POST"])
 def registration_route():
     # recieves list of user info
