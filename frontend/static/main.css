@@ -46,6 +46,13 @@ header a {
   padding: 10px 20px;
 }
 
+/* Style for the logout button */
+.user-info a {
+  color: white;
+  text-decoration: none;
+  padding: 5px 10px;
+}
+
 nav a:hover,
 header a:hover {
   background-color: #444;
@@ -90,4 +97,28 @@ button:hover {
 
 select {
   font-size: 12pt;
+}
+
+/* Style for the header content container */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Style for the title */
+h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+/* Style for the user information and logout button */
+.user-info {
+  text-align: right;
+  align-items: right;
+}
+
+/* Style for the welcome message */
+.user-info p {
+  margin: 0;
 }

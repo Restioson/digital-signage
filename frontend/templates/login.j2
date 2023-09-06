@@ -1,0 +1,34 @@
+{% extends "base.j2" %}
+
+{% block title %}Login to Campusign{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('main') }}
+{% endblock %}
+
+{% block content %}
+  <script type="module">
+    import { main } from "{{ url_for('static', filename='config.mjs') }}";
+    main();
+  </script>
+
+  <form action="/api/login" method="post" name="login">
+    <label
+      >Email Address:
+      <input type="email" id="email" name="email" required />
+    </label>
+
+    <label
+      >screen Name:
+      <input type="text" id="screen_name" name="screen_name" required />
+    </label>
+
+    <label
+      >Password:
+      <input type="text" id="password" name="password" required />
+    </label>
+
+    <button type="submit" name="login">Login</button>
+    <p hidden class="post-status-message"></p>
+  </form>
+{% endblock %}

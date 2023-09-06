@@ -39,4 +39,4 @@ lint-frontend:
     npx html-validate "frontend/**/*.j2"
 
 server:
-    ./venv/bin/flask --app server.main run
+    ./venv/bin/flask --app server.main run --debug

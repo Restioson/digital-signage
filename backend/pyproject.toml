@@ -22,4 +22,5 @@ test = [
   "flake8~=6.1",
   "pep8-naming~=0.13",
   "pytest~=7.4",
+  "flask-login~=0.6.2",
 ]

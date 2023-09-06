@@ -1,0 +1,41 @@
+{% extends "base.j2" %}
+
+{% block title %}Register a new user{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('main') }}
+{% endblock %}
+
+{% block content %}
+  <script type="module">
+    import { main } from "{{ url_for('static', filename='config.mjs') }}";
+    main();
+  </script>
+
+  <form action="/api/register" method="post" name="register">
+    <label
+      >Email Address:
+      <input type="email" id="email" name="email" required />
+    </label>
+
+    <label
+      >screen Name:
+      <input type="text" id="screen_name" name="screen_name" required />
+    </label>
+
+    <label
+      >Password:
+      <input
+        type="text"
+        id="password"
+        name="password"
+        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{12,}"
+        title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+        required
+      />
+    </label>
+
+    <button type="submit" name="register">Create Account</button>
+    <p hidden class="post-status-message"></p>
+  </form>
+{% endblock %}
