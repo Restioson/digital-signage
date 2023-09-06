@@ -100,5 +100,30 @@
       <button type="submit">Submit</button>
       <p hidden class="status-message"></p>
     </form>
+
+    <form action="/api/content" method="post" class="post-form">
+      <h3>Post a QRcode</h3>
+      <input
+        type="hidden"
+        id="qrcode_content_type"
+        name="type"
+        value="qrcode_content"
+      />
+      <label for="qrcode_content_url">Url:</label>
+      <input type="url" id="qrcode_content_url" name="url" />
+
+      <label
+        >Caption title:
+        <input type="text" name="caption_title" />
+      </label>
+
+      <label
+        >Caption body:
+        <input type="text" name="caption_body" />
+      </label>
+
+      <button type="submit">Submit</button>
+      <p hidden class="status-message"></p>
+    </form>
   </div>
 {% endblock %}

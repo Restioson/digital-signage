@@ -9,3 +9,4 @@ node_modules/
 .vscode/launch.json
 campusign.db
 campusign.test.db
+.vscode/settings.json

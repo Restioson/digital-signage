@@ -1,16 +1,19 @@
 import { FreeFormContent } from './free_form_content.mjs'
 import { ContentAndCaption } from '../containers/content_and_caption.mjs'
+import { Container } from '../containers/container.mjs'
 import { Caption } from '../caption.mjs'
+import { Qrcode } from '../qrcode.mjs'
+import { WithClasses } from '../with_classes.mjs'
 
 /**
- * A piece of {@link FreeFormContent} which displays a link.
+ * A piece of {@link FreeFormContent} which displays the embedded content of a link along with its QRcode and a potential caption.
  *
  * @augments FreeFormContent
  */
 export class Link extends FreeFormContent {
   /**
    * @param {int} id the content's ID
-   * @param {URL} url the URL to display
+   * @param {URL} url the URL to embed in the iFrame
    * @param {?Caption} caption the link's caption
    */
   constructor ({ id, url, caption }) {
@@ -34,13 +37,19 @@ export class Link extends FreeFormContent {
   }
 
   build () {
-    const link = document.createElement('a')
-    link.innerText = this.url
-    link.href = this.url
-
-    return new ContentAndCaption({
-      content: link,
-      caption: this.caption
+    const iframe = document.createElement('iframe')
+    iframe.src = this.url
+    return new WithClasses({
+      classList: ['link'],
+      child: new Container({
+        children: [
+          iframe,
+          new ContentAndCaption({
+            content: new Qrcode({ url: this.url }),
+            caption: this.caption
+          })
+        ]
+      })
     })
   }
 }

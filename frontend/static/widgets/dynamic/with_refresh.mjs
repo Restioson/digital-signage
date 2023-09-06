@@ -11,7 +11,8 @@ import { Root } from '../root.mjs'
  */
 export class WithRefresh extends Widget {
   /**
-   * @param {function(): Promise<void>} refresh called every refresh period and should update the state
+   * @param {function(): Promise<boolean>} refresh called every refresh period and should update the state.
+   * Returns true if child needs rebuild.
    * @param period how often to call refresh
    * @param {function(): (Widget|HTMLElement)} builder rebuild the visual representation of the widget
    */
@@ -33,9 +34,13 @@ export class WithRefresh extends Widget {
       return // Widget no longer exists in DOM; stop refreshing
     }
 
-    await this.refresh()
-    const newElement = this.renderChild()
-    element.replaceWith(newElement)
+    const dirty = await this.refresh()
+
+    let newElement = element
+    if (dirty) {
+      newElement = this.renderChild()
+      element.replaceWith(newElement)
+    }
 
     setTimeout(() => this.refreshForever(newElement), this.period)
   }

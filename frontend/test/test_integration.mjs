@@ -13,6 +13,7 @@ import { Container } from '../static/widgets/containers/container.mjs'
 import {
   checkRenderedLinkCaptionedTitleBody,
   checkRenderedLocalImage,
+  checkRenderedQrcodeCaptionedTitleBody,
   checkRenderedRemoteImage,
   checkRenderedText
 } from './test_free_form_content.mjs'
@@ -220,9 +221,9 @@ describe('API Integration', function () {
       describe('refresh', function () {
         it('should result in empty content list with empty database', async function () {
           const stream = new ContentStream()
-          assert.deepStrictEqual(stream.cache.children, [])
+          assert.deepStrictEqual(stream.children, [])
           await stream.refresh()
-          assert.deepStrictEqual(stream.cache.children, [])
+          assert.deepStrictEqual(stream.children, [])
         })
 
         it('should fetch and render all content correctly', async function () {
@@ -233,6 +234,12 @@ describe('API Integration', function () {
             },
             {
               type: 'link',
+              url: 'https://example.com/',
+              caption_title: 'title hello',
+              caption_body: 'body hello'
+            },
+            {
+              type: 'qrcode_content',
               url: 'https://example.com/',
               caption_title: 'title hello',
               caption_body: 'body hello'
@@ -256,17 +263,17 @@ describe('API Integration', function () {
           expected.reverse()
 
           const stream = new ContentStream()
-          assert.deepStrictEqual(stream.cache.children, [])
+          assert.deepStrictEqual(stream.children, [])
 
           await stream.refresh()
           assert.deepStrictEqual(
-            stream.cache.children,
+            stream.children,
             expected.map(deserializeWidget)
           )
 
           const out = stream.render()
           assert.equal(out.tagName, 'DIV')
-          assert.equal(out.children.length, 4)
+          assert.equal(out.children.length, 5)
 
           checkRenderedLocalImage(out.children[0], expected[0].id)
           checkRenderedText(
@@ -275,12 +282,19 @@ describe('API Integration', function () {
             expected[1].body
           )
           checkRenderedLinkCaptionedTitleBody(
+            out.children[3],
+            expected[3].url,
+            expected[3].caption.title,
+            expected[3].caption.body
+          )
+          checkRenderedQrcodeCaptionedTitleBody(
             out.children[2],
             expected[2].url,
             expected[2].caption.title,
             expected[2].caption.body
           )
-          checkRenderedRemoteImage(out.children[3], expected[3].src)
+
+          checkRenderedRemoteImage(out.children[4], expected[4].src)
         }).timeout(5000)
       })
     })
@@ -332,9 +346,9 @@ describe('API Integration', function () {
       describe('refresh', function () {
         it('should result in empty lecturers list with empty database', async function () {
           const dept = new Department()
-          assert.deepStrictEqual(dept.cache.children, [])
+          assert.deepStrictEqual(dept.children, [])
           await dept.refresh()
-          assert.deepStrictEqual(dept.cache.children, [])
+          assert.deepStrictEqual(dept.children, [])
         })
 
         it('should fetch and render all lecturers correctly', async function () {
@@ -366,7 +380,7 @@ describe('API Integration', function () {
           }
 
           const dept = new Department()
-          assert.deepStrictEqual(dept.cache.children, [])
+          assert.deepStrictEqual(dept.children, [])
 
           await dept.refresh()
 

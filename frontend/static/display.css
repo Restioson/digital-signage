@@ -37,3 +37,43 @@
   padding: 15px;
   font-size: 24pt;
 }
+
+.content-stream > div.link {
+  display: inline-block;
+  flex-direction: column;
+}
+
+.link > iframe {
+  display: inline-block;
+  width: 100%;
+  height: 70%;
+  object-fit: contain;
+}
+
+.link > div {
+  display: inline-block;
+  height: 30%;
+  width: 100%;
+  object-fit: contain;
+}
+
+.qrcode-content > a,
+.qrcode-content > div.content-caption {
+  display: inline-block;
+  width: 50%;
+  object-fit: contain;
+}
+
+.link > div > a,
+.link > div > div.content-caption {
+  display: inline-block;
+  width: 50%;
+  object-fit: contain;
+}
+
+.content-stream > div.qrcode-content {
+  display: inline-block;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}

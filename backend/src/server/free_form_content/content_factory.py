@@ -5,7 +5,14 @@ from datetime import datetime
 
 import PIL.Image
 
-from server.free_form_content import RemoteImage, Text, LocalImage, Link, Caption
+from server.free_form_content import (
+    RemoteImage,
+    Text,
+    LocalImage,
+    Link,
+    Caption,
+    QRcodeContent,
+)
 from server.free_form_content.free_form_content import FreeFormContent
 
 
@@ -55,6 +62,8 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
         return LocalImage(mime, image_data, caption)
     elif content_type == "link":
         return Link(form["url"], caption)
+    elif content_type == "qrcode_content":
+        return QRcodeContent(form["url"], caption)
     else:
         raise UnknownContentError("Unknown content type", form["type"])
 
@@ -89,6 +98,8 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
         return RemoteImage(data["src"], caption, content_id=content_id, posted=posted)
     elif content_type == "link":
         return Link(data["url"], caption, content_id=content_id, posted=posted)
+    elif content_type == "qrcode_content":
+        return QRcodeContent(data["url"], caption, content_id=content_id, posted=posted)
     else:
         raise UnknownContentError("Unknown content type", content_type)
 
