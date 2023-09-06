@@ -45,11 +45,11 @@ CREATE TABLE IF NOT EXISTS display_groups (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
   department INTEGER NOT NULL REFERENCES department(id) ON DELETE CASCADE,
-  layout_json TEXT NOT NULL
+  layout_json TEXT NOT NULL);
 
 CREATE TABLE IF NOT EXISTS users (
   --make email primary key
   email TEXT PRIMARY KEY,
   screen_name TEXT NOT NULL,
-  password TEXT NOT NULL
+  password_hash TEXT NOT NULL
 );

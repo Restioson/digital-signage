@@ -284,7 +284,7 @@ class DatabaseController:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "SELECT email, screen_name, password FROM users WHERE email = ?",
+                "SELECT email, screen_name, password_hash FROM users WHERE email = ?",
                 (user[0],),
             )
             db_user_data = cursor.fetchone()  # Fetch the user data from the database
@@ -307,7 +307,7 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.execute(
                 "INSERT INTO users "
-                "(email, screen_name, password)"
+                "(email, screen_name, password_hash)"
                 " VALUES (?, ?, ?)",
                 (
                     user[0],
