@@ -16,26 +16,37 @@ export class Qrcode extends Widget {
     this.url = url
   }
 
+  static showError (canvas) {
+    const imageElement = document.createElement('img')
+    imageElement.src = '/static/QRcode_failure.jpg'
+
+    imageElement.addEventListener('load', () => {
+      console.log('drawing')
+      canvas.getContext('2d').drawImage(imageElement, 0, 0, 100, 100)
+      console.log('drawn')
+    })
+  }
+
   build () {
     const qrCodeContainer = document.createElement('A')
+    const canvas = document.createElement('canvas')
+    qrCodeContainer.append(canvas)
+
     try {
-      const canvas = document.createElement('canvas')
       const options = {
         width: 100,
         height: 100
       }
-      QRCode.toCanvas(canvas, this.url, options, function (error) {
-        if (error) console.error(error)
-        console.log('success!')
+
+      QRCode.toCanvas(canvas, null, options, function (error) {
+        if (error) {
+          console.error('An error occurred with the QRCode:', error.message)
+          Qrcode.showError(canvas)
+        }
       })
-      qrCodeContainer.append(canvas)
     } catch (error) {
-      console.error('A error with the QRcode occurred:', error.message)
-      const imageElement = document.createElement('img')
-      imageElement.src = '/static/QRcode_failure.jpg'
-      imageElement.width = 100
-      imageElement.height = 100
-      qrCodeContainer.append(imageElement)
+      console.error('An error occurred with the QRCode:', error.message)
+      Qrcode.showError(canvas)
     }
     return qrCodeContainer
   }
