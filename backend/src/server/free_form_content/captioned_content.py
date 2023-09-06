@@ -14,10 +14,11 @@ class CaptionedContent(FreeFormContent, ABC):
     def __init__(
         self,
         caption: Optional[Caption],
+        stream_id: int,
         content_id: Optional[int],
         posted: Optional[datetime],
     ):
-        super().__init__(content_id, posted)
+        super().__init__(stream_id, content_id, posted)
         self.caption = caption
 
     def to_db_json(self) -> dict:

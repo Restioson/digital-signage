@@ -8,6 +8,8 @@ from server.display_group import DisplayGroup
 from server.free_form_content import FreeFormContent, BinaryContent
 from server.department import Department, File
 from server.department import Person, Department
+from server.free_form_content.content_stream import ContentStream
+from server.grouped_content_streams import GroupedContentStreams
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -74,9 +76,11 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.execute(
                 "INSERT INTO content "
-                "(posted, content_type, content_json, blob_mime_type, content_blob)"
-                " VALUES (?, ?, ?, ?, ?)",
+                "(stream, posted, content_type, content_json,"
+                " blob_mime_type, content_blob)"
+                " VALUES (?, ?, ?, ?, ?, ?)",
                 (
+                    content.stream,
                     post_timestamp,
                     content.type(),
                     json.dumps(content.to_db_json()),
@@ -86,8 +90,10 @@ class DatabaseController:
             )
         return cursor.lastrowid, post_timestamp
 
-    def fetch_all_content(self, fetch_blob=False) -> list[FreeFormContent]:
-        """Fetch all content from the database. By default, the blob
+    def fetch_content_in_streams(
+        self, streams: list[int], fetch_blob=False
+    ) -> list[FreeFormContent]:
+        """Fetch all content in the given streams. By default, the blobs
         will not be fetched from the database."""
         cursor = self.db.cursor()
         cursor.row_factory = free_form_content.from_sql
@@ -97,9 +103,12 @@ class DatabaseController:
         return list(
             cursor.execute(
                 "SELECT "
-                f"id, posted, content_type, content_json, blob_mime_type {with_blob} "
+                f"id, stream, posted, content_type, content_json,"
+                f" blob_mime_type {with_blob} "
                 "FROM content "
-                "ORDER BY posted DESC"
+                f"WHERE stream IN ({ ','.join(['?'] * len(streams)) }) "
+                "ORDER BY posted DESC",
+                streams,
             )
         )
 
@@ -116,7 +125,8 @@ class DatabaseController:
         return next(
             cursor.execute(
                 "SELECT "
-                f"id, posted, content_type, content_json, blob_mime_type {with_blob} "
+                f"id, stream, posted, content_type, content_json,"
+                f" blob_mime_type {with_blob} "
                 "FROM content"
                 " WHERE id = ?",
                 (content_id,),
@@ -146,10 +156,15 @@ class DatabaseController:
 
             return dept_id
 
-    def fetch_all_departments(self, fetch_display_groups=False) -> list[Department]:
+    def fetch_all_departments(
+        self, fetch_display_groups=False, fetch_content_streams=False
+    ) -> list[Department]:
         """Fetch all departments (but does not fetch their people).
 
         If fetch_display_groups is True, display groups for this
+        Department will also be fetched.
+
+        If fetch_content_streams is True, content streams for this
         Department will also be fetched.
         """
         cursor = self.db.cursor()
@@ -164,6 +179,16 @@ class DatabaseController:
                 department.display_groups = self.fetch_all_display_groups_in_dept(
                     department.id
                 )
+
+        if fetch_content_streams:
+            streams = self.fetch_all_content_streams()
+            for department in departments:
+                department.content_streams = streams.by_department.get(department.id)
+
+                for display_group in department.display_groups:
+                    display_group.content_streams = streams.by_display_group.get(
+                        display_group.id
+                    )
 
         return departments
 
@@ -387,5 +412,27 @@ class DatabaseController:
                     filename,
                 ),
             ),
-            None,
+            None,)
+    def create_content_stream(self, stream: ContentStream) -> int:
+        """Insert the given content stream into the database and return its ID"""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "INSERT INTO content_streams (name, department, display_group) "
+                "VALUES (?, ?, ?)",
+                (stream.name, stream.department, stream.display_group),
+            )
+        return cursor.lastrowid
+
+    def fetch_all_content_streams(self) -> GroupedContentStreams:
+        """Fetch all content streams from the database, grouping them
+        using GroupedContentStreams"""
+        cursor = self.db.cursor()
+        cursor.row_factory = ContentStream.from_sql
+        return GroupedContentStreams(
+            list(
+                cursor.execute(
+                    "SELECT id, name, display_group, department FROM content_streams"
+                )
+            )
         )

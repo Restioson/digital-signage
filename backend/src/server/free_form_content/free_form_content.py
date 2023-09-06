@@ -12,7 +12,10 @@ class FreeFormContent(ABC):
     such as through a calendar widget.
     """
 
-    def __init__(self, content_id: Optional[int], posted: Optional[datetime]):
+    def __init__(
+        self, stream: int, content_id: Optional[int], posted: Optional[datetime]
+    ):
+        self.stream = stream
         self.id = content_id
         self.posted = posted
 

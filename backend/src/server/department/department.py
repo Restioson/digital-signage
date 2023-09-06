@@ -3,6 +3,7 @@ from typing import Optional
 
 from server.department.person import Person
 from server.display_group import DisplayGroup
+from server.free_form_content.content_stream import ContentStream
 
 
 # TODO: add more functionality and use in display group development
@@ -17,12 +18,14 @@ class Department:
         people: Optional[list[Person]] = None,
         display_groups: Optional[list[DisplayGroup]] = None,
         files: Optional[str] = None,
+        content_streams: Optional[list[ContentStream]] = None,
         department_id: Optional[int] = None,
     ):
         self.name = name
         self.bio = bio
         self.people = people or []
         self.display_groups = display_groups or []
+        self.content_streams = content_streams or []
         self.id = department_id
         self.files = files
 
