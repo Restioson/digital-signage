@@ -50,7 +50,7 @@
 .link > div {
   display: inline-block;
   height: 30%;
-  width:100%;
+  width: 100%;
   object-fit: contain;
 }
 

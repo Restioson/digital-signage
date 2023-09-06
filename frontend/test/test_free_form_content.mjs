@@ -90,11 +90,14 @@ describe('Widget', function () {
         )
       })
     })
-    ///-------------------------------------------------
+
     describe('Qrcode', function () {
       it('render', function () {
         const url = 'https://example.com/'
-        const out = deserializeFreeFormContent({ type: 'qrcode_content', url }).render()
+        const out = deserializeWidget({
+          type: 'qrcode_content',
+          url
+        }).render()
         checkRenderedQrcode(out, url)
         assert(out.children[1].hidden)
       })
@@ -104,7 +107,7 @@ describe('Widget', function () {
         const title = 'Hello'
         const body = 'there'
         checkRenderedQrcodeCaptionedTitleBody(
-          deserializeFreeFormContent({
+          deserializeWidget({
             type: 'qrcode_content',
             url,
             caption: { title, body }
@@ -119,7 +122,7 @@ describe('Widget', function () {
         const url = 'https://example.com/'
         const body = 'body of caption'
         checkRenderedQrcodeCaptionedBody(
-          deserializeFreeFormContent({
+          deserializeWidget({
             type: 'qrcode_content',
             url,
             caption: { body }
@@ -129,9 +132,6 @@ describe('Widget', function () {
         )
       })
     })
-
-    ///--------------------------------------------------
-
   })
 })
 
@@ -232,7 +232,7 @@ export function checkRenderedQrcode (out, expectedUrl) {
   assert.equal(out.tagName, 'DIV')
   const a = out.children[0]
   assert.equal(a.tagName, 'A')
-  const aa= a.children[0]
+  const aa = a.children[0]
   assert.equal(aa.tagName, 'CANVAS')
 }
 

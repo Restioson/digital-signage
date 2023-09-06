@@ -17,7 +17,7 @@ export class QrcodeContent extends FreeFormContent {
    * @param {?Caption} caption the link's caption
    */
   constructor ({ id, url, caption }) {
-    super({id})
+    super({ id })
     this.url = url
     this.caption = caption
   }
@@ -37,11 +37,12 @@ export class QrcodeContent extends FreeFormContent {
   }
 
   build () {
-      return new WithClasses({
-        classList: ['qrcode-content'],
-        child: new ContentAndCaption({
-          content: new Qrcode({ url: this.url }), caption : this.caption
-        })
+    return new WithClasses({
+      classList: ['qrcode-content'],
+      child: new ContentAndCaption({
+        content: new Qrcode({ url: this.url }),
+        caption: this.caption
       })
+    })
   }
 }

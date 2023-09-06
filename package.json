@@ -4,6 +4,7 @@
   "type": "module",
   "devDependencies": {
     "html-validate": "^8.1.0",
+    "moment": "^2.29.4",
     "jsdom": "^22.1.0",
     "mocha": "^10.2.0",
     "prettier": "^2.8.8",
