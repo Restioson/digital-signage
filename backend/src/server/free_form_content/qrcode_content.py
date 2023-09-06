@@ -6,8 +6,8 @@ from server.free_form_content.captioned_content import CaptionedContent
 from server.util import combine
 
 
-class Link(CaptionedContent):
-    """A link to be embedded in an iframe on the board along with a caption."""
+class QRcodeContent(CaptionedContent):
+    """A link to be displayed as a QRcode on the board along with a caption."""
 
     def __init__(
         self,
@@ -21,7 +21,7 @@ class Link(CaptionedContent):
         self.caption = caption
 
     def type(self) -> str:
-        return "link"
+        return "qrcode_content"
 
     def to_db_json(self) -> dict:
         return combine(super().to_db_json(), {"url": self.url})

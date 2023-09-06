@@ -1,4 +1,3 @@
-//import { QRCode } from 'https://cdn.skypack.dev/qrcodejs_es_module'
 import { importFromNpm } from '../util.mjs'
 import { Widget } from './widget.mjs'
 const { default: QRCode } = await importFromNpm('qrcode')
