@@ -110,13 +110,6 @@ def lecturer(department_id: int, lecturer_id: int):
         flask.abort(404)
 
 
-@blueprint.route("/user", methods=["POST"])
-def user_route():
-    # TODO
-    """The /api/user end point
-    GETing this endpoint fetches all the users from the database"""
-
-
 @blueprint.route("/register", methods=["POST"])
 def registration_route():
     # Receives list of user info

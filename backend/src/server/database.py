@@ -8,7 +8,6 @@ from server.display_group import DisplayGroup
 from server.free_form_content import FreeFormContent, BinaryContent
 from server.department import Lecturer, Department
 
-# todo- use this to hash password
 from werkzeug.security import generate_password_hash, check_password_hash
 
 DATABASE = "campusign.db"
