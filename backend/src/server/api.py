@@ -9,7 +9,7 @@ from flask_login import (
     current_user,
 )
 from server import free_form_content
-from server.department import Lecturer
+from server.department import Person
 from server.database import DatabaseController
 from server.display_group import DisplayGroup
 from server.free_form_content import BinaryContent
@@ -60,15 +60,15 @@ def content():
         return {"id": content_id, "posted": posted}
 
 
-@blueprint.route("/departments/<int:department_id>/lecturers", methods=["POST", "GET"])
-def lecturers_route(department_id: int):
-    """The /api/departments/<id>/lecturers end point
-    GETing this endpoint fetches all the departments lecturers from the database
+@blueprint.route("/departments/<int:department_id>/people", methods=["POST", "GET"])
+def people_route(department_id: int):
+    """The /api/departments/<id>/people end point
+    GETing this endpoint fetches all the departments people from the database
 
-    POSTing to this end point inserts a new lecturer into the database
+    POSTing to this end point inserts a new person into the database
     """
     dept = DatabaseController.get().fetch_department_by_id(
-        department_id, fetch_lecturers=True
+        department_id, fetch_people=True
     )
 
     if not dept:
@@ -76,35 +76,35 @@ def lecturers_route(department_id: int):
         flask.abort(404)
 
     if flask.request.method == "GET":
-        return {"lecturers": [lecturer.to_http_json() for lecturer in dept.lecturers]}
+        return {"people": [person.to_http_json() for person in dept.people]}
     else:
         if not current_user.is_authenticated:
             return current_app.login_manager.unauthorized()
 
-        lecturer_id = DatabaseController.get().upsert_lecturer(
-            Lecturer.from_form(flask.request.form), department_id
+        person_id = DatabaseController.get().upsert_person(
+            Person.from_form(flask.request.form), department_id
         )
 
-        return {"id": lecturer_id}
+        return {"id": person_id}
 
 
 @blueprint.route(
-    "/departments/<int:department_id>/lecturers/<int:lecturer_id>", methods=["DELETE"]
+    "/departments/<int:department_id>/people/<int:person_id>", methods=["DELETE"]
 )
-def lecturer(department_id: int, lecturer_id: int):
-    """The /api/departments/<dept_id>/lecturers/<id> endpoint.
+def person(department_id: int, person_id: int):
+    """The /api/departments/<dept_id>/people/<id> endpoint.
 
-    DELETEing this endpoint deletes the given lecturer in the database.
+    DELETEing this endpoint deletes the given person in the database.
     """
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
     if not DatabaseController.get().fetch_department_by_id(
-        department_id, fetch_lecturers=True
+        department_id, fetch_people=True
     ):
         flask.abort(404)
 
-    if DatabaseController.get().delete_lecturer(lecturer_id):
+    if DatabaseController.get().delete_person(person_id):
         return {"deleted": True}
     else:
         flask.abort(404)

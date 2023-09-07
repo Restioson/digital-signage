@@ -2,7 +2,7 @@ import sqlite3
 from typing import Optional
 
 
-class Lecturer:
+class Person:
     def __init__(
         self,
         title: str,
@@ -40,7 +40,7 @@ class Lecturer:
     def empty():
         """Create an empty Lecturer object for use in the
         Flask form (it will prefill with nothing)"""
-        return Lecturer(
+        return Person(
             "",
             "",
             "",
@@ -53,8 +53,8 @@ class Lecturer:
 
     @staticmethod
     def from_form(form: dict):
-        """forms lecturer from data inputted in the configuration form"""
-        return Lecturer(
+        """forms person from data inputted in the configuration form"""
+        return Person(
             form["title"],
             form["name"],
             form["position"],
@@ -69,7 +69,7 @@ class Lecturer:
     def from_sql(cursor: sqlite3.Cursor, row: tuple):
         """Parse the given SQL row in the table Lecturer"""
         row = sqlite3.Row(cursor, row)
-        return Lecturer(
+        return Person(
             lecturer_id=row["id"],
             title=row["title"],
             name=row["full_name"],

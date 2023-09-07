@@ -2,21 +2,21 @@ import { Container } from '../containers/container.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 
 /**
- * A {@link Widget} which displays a lecturers and all of their details.
+ * A {@link Widget} which displays a people and all of their details.
  *
  * @augments Widget
  */
-export class Lecturer extends DeserializableWidget {
+export class Person extends DeserializableWidget {
   /**
-   * @param {int} id the lecturer's id
-   * @param {string} department the departments in which the lecturer works
-   * @param {string} position the lecturer's position
-   * @param {string} title the lecturer's title
-   * @param {string} name the lecturer's name
-   * @param {string} officeHours the lecturer's office hours
-   * @param {string} officeLocation the lecturer's office location
-   * @param {string} email the lecturer's email address
-   * @param {string} phone the lecturer's phone number
+   * @param {int} id the person's id
+   * @param {string} department the departments in which the person works
+   * @param {string} position the person's position
+   * @param {string} title the person's title
+   * @param {string} name the person's name
+   * @param {string} officeHours the person's office hours
+   * @param {string} officeLocation the person's office location
+   * @param {string} email the person's email address
+   * @param {string} phone the person's phone number
    */
   constructor ({
     id,
@@ -42,13 +42,13 @@ export class Lecturer extends DeserializableWidget {
   }
 
   /**
-   * Deserialize the Lecturer from its JSON API representation.
+   * Deserialize the Person from its JSON API representation.
    *
    * @param obj
-   * @returns {Lecturer}
+   * @returns {Person}
    */
   static fromJSON (obj) {
-    return new Lecturer({
+    return new Person({
       id: obj.id,
       position: obj.position,
       title: obj.title,
