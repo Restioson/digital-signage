@@ -233,6 +233,7 @@ export function checkRenderedQrcode (out, expectedUrl) {
   assert.equal(a.tagName, 'A')
   const aa = a.children[0]
   assert.equal(aa.tagName, 'CANVAS')
+  assert(!aa.classList.contains('error'))
 }
 
 export function checkRenderedQrcodeCaptionedTitleBody (
