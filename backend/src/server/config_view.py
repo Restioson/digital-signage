@@ -32,40 +32,40 @@ def list_departments():
     )
 
 
-@blueprint.route("/departments/<int:department_id>/persons")
-def list_persons(department_id: int):
-    """Return the persons page which lists all persons in the given department"""
+@blueprint.route("/departments/<int:department_id>/people")
+def list_people(department_id: int):
+    """Return the people page which lists all people in the given department"""
 
     dept = DatabaseController.get().fetch_department_by_id(
-        department_id, fetch_persons=True
+        department_id, fetch_people=True
     )
 
     if not dept:
         flask.abort(404)
 
     return render_template(
-        "config/departments/persons/index.j2",
+        "config/departments/people/index.j2",
         department=dept,
     )
 
 
-@blueprint.route("/departments/<int:department_id>/persons/add")
+@blueprint.route("/departments/<int:department_id>/people/add")
 def upload_person(department_id: int):
-    """Return the 'add persons' page"""
+    """Return the 'add people' page"""
 
     if not DatabaseController.get().fetch_department_by_id(department_id):
         flask.abort(404)
 
     return render_template(
-        "config/departments/persons/add.j2",
+        "config/departments/people/add.j2",
         person=Person.empty(),
         department_id=department_id,
     )
 
 
-@blueprint.route("/departments/<int:department_id>/persons/<int:person_id>")
+@blueprint.route("/departments/<int:department_id>/people/<int:person_id>")
 def edit_person(department_id: int, person_id: int):
-    """Return the 'edit persons' page for the given persons"""
+    """Return the 'edit people' page for the given people"""
     person = DatabaseController.get().fetch_person_by_id(person_id)
 
     if not person:
@@ -75,7 +75,7 @@ def edit_person(department_id: int, person_id: int):
         flask.abort(404)
 
     return render_template(
-        "config/departments/persons/add.j2",
+        "config/departments/people/add.j2",
         person=person,
         department_id=department_id,
     )
