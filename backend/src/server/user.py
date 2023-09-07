@@ -12,12 +12,3 @@ class User:
     # get id method changed
     def get_id(self) -> str:
         return self.user_id
-
-    @staticmethod
-    def from_form(form: dict):
-        """Deserializes user from data inputted in the registration form"""
-        user_fields = []
-        user_fields.append(form["email"])
-        user_fields.append(form["screen_name"])
-        user_fields.append(form["password"])
-        return user_fields

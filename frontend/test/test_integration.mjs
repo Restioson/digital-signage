@@ -132,10 +132,12 @@ describe('API Integration', function () {
     serverProcess = child_process.spawn('../venv/bin/flask', [
       '--app',
       'server.main:create_app(testing=True)',
-      'run'
+      'run',
+      '-p',
+      '5001'
     ])
 
-    const base = 'http://localhost:5000'
+    const base = 'http://localhost:5001'
 
     const dom = new JSDOM(
       `<html lang="en">
@@ -164,6 +166,26 @@ describe('API Integration', function () {
     }
 
     assert.ok(started, 'Server did not start')
+
+    const res = await fetch('/api/register', {
+      method: 'post',
+      body: new URLSearchParams({
+        email: 'example@example.com',
+        screen_name: 'User',
+        password: 'password123'
+      }),
+      redirect: 'manual'
+    })
+
+    assert.equal(res.status, 302)
+    const cookie = res.headers.get('set-cookie')
+
+    global.fetch = function (url, options) {
+      return oldFetch(new URL(url, base), {
+        headers: { Cookie: cookie },
+        ...options
+      })
+    }
 
     global.window = dom.window
     global.document = dom.window.document

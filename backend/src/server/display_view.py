@@ -9,7 +9,7 @@ blueprint = Blueprint("display_view", __name__, url_prefix="/display")
 @blueprint.route("/")
 def default_display_group():
     """Return the display view page for the default display group"""
-    return display_group(1)
+    return display_group(1, 1)
 
 
 @blueprint.route("/<int:department_id>/<int:group_id>")

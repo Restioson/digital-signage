@@ -1,6 +1,6 @@
 import flask
-from flask import Blueprint, render_template
-from flask_login import login_required
+from flask import Blueprint, render_template, current_app
+from flask_login import current_user
 
 from server.database import DatabaseController
 from server.department import Lecturer
@@ -8,8 +8,13 @@ from server.department import Lecturer
 blueprint = Blueprint("config_view", __name__, url_prefix="/config")
 
 
+@blueprint.before_request
+def check_logged_in():
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
+
 @blueprint.route("/")
-@login_required
 def index():
     """Return the config index page"""
     return render_template("config/index.j2")

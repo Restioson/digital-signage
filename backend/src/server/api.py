@@ -2,10 +2,11 @@ import json
 from http import HTTPStatus
 
 import flask
-from flask import Blueprint, Response, redirect, url_for
+from flask import Blueprint, Response, redirect, url_for, current_app
 from flask_login import (
     login_user,
     logout_user,
+    current_user,
 )
 from server import free_form_content
 from server.department import Lecturer
@@ -49,6 +50,9 @@ def content():
             ]
         }
     else:
+        if not current_user.is_authenticated:
+            return current_app.login_manager.unauthorized()
+
         content_id, posted = DatabaseController.get().post_content(
             free_form_content.from_form(flask.request.form, flask.request.files)
         )
@@ -74,6 +78,9 @@ def lecturers_route(department_id: int):
     if flask.request.method == "GET":
         return {"lecturers": [lecturer.to_http_json() for lecturer in dept.lecturers]}
     else:
+        if not current_user.is_authenticated:
+            return current_app.login_manager.unauthorized()
+
         lecturer_id = DatabaseController.get().upsert_lecturer(
             Lecturer.from_form(flask.request.form), department_id
         )
@@ -89,6 +96,9 @@ def lecturer(department_id: int, lecturer_id: int):
 
     DELETEing this endpoint deletes the given lecturer in the database.
     """
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
     if not DatabaseController.get().fetch_department_by_id(
         department_id, fetch_lecturers=True
     ):
@@ -100,21 +110,18 @@ def lecturer(department_id: int, lecturer_id: int):
         flask.abort(404)
 
 
-@blueprint.route("/user", methods=["POST"])
-def user_route():
-    # TODO
-    """The /api/user end point
-    GETing this endpoint fetches all the users from the database"""
-
-
 @blueprint.route("/register", methods=["POST"])
 def registration_route():
-    # recieves list of user info
-    form_user = User.from_form(flask.request.form)
+    form = flask.request.form
+
     if flask.request.method == "POST":
-        if not (DatabaseController.get().user_exists(form_user[0])):
-            DatabaseController.get().insert_user(form_user)
-            user = User(form_user[0], form_user[1])
+        if not (DatabaseController.get().user_exists(form["email"])):
+            DatabaseController.get().insert_user(
+                form["email"],
+                form["screen_name"],
+                form["password"],
+            )
+            user = User(form["email"], form["screen_name"])
             login_user(user)
             return redirect(url_for("config_view.index"))
 
@@ -124,11 +131,11 @@ def registration_route():
 
 @blueprint.route("/login", methods=["POST", "GET"])
 def login_route():
-    form_user = User.from_form(flask.request.form)
+    form = flask.request.form
 
-    if DatabaseController.get().user_exists(form_user[0]):
-        if DatabaseController.get().is_valid_user(form_user):
-            user = User(form_user[0], form_user[1])
+    if DatabaseController.get().user_exists(form["email"]):
+        user = DatabaseController.get().try_login(form["email"], form["password"])
+        if user:
             login_user(user)
             return redirect(url_for("config_view.index"))
         else:
@@ -141,7 +148,6 @@ def login_route():
 
 @blueprint.route("/logout", methods=["GET"])
 def logout_route():
-    print("made it here")
     logout_user()
     return redirect(url_for("login.login"))
 
@@ -164,6 +170,9 @@ def content_blob(content_id: int):
 
 @blueprint.route("/departments/<int:department_id>/display_groups", methods=["POST"])
 def display_groups(department_id: int):
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
     try:
         group_id = DatabaseController.get().create_display_group(
             DisplayGroup.from_form(flask.request.form), department_id

@@ -119,6 +119,27 @@ def test_post_captioned_link(client):
     assert content[0]["caption"]["body"] == "Body"
 
 
+def test_can_access_public_routes(client):
+    assert client.get("/").status == "200 OK"
+    assert client.get("/static/config.css").status == "200 OK"
+    assert client.get("/static/config.css").status == "200 OK"
+    assert client.get("/display/").status == "200 OK"
+
+
+def assert_redirects_login(res):
+    assert res.status == "302 FOUND"
+    assert res.location.startswith("/login/")
+
+
+def test_cant_access_private_routes(unauthorized_client):
+    client = unauthorized_client
+    assert_redirects_login(client.get("/config/"))
+    assert_redirects_login(client.post("/api/content", data={}))
+    assert_redirects_login(client.post("/api/departments/1/lecturers", data={}))
+    assert_redirects_login(client.delete("/api/departments/1/lecturers/1", data={}))
+    assert_redirects_login(client.post("/api/departments/1/display_groups", data={}))
+
+
 def test_post_text(client):
     """Test that content can be posted over the web API and then
     successfully retrieved"""

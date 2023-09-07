@@ -16,8 +16,23 @@ def app():
 
 
 @pytest.fixture()
-def client(app):
+def unauthorized_client(app):
     return app.test_client()
+
+
+@pytest.fixture()
+def client(app):
+    client = app.test_client()
+
+    client.post(
+        "/api/register",
+        data={
+            "email": "example@example.com",
+            "screen_name": "User",
+            "password": "password123",
+        },
+    )
+    return client
 
 
 @pytest.fixture()
