@@ -15,6 +15,7 @@ def app():
     yield app
 
 
+@pytest.fixture()
 def unauthorized_client(app):
     return app.test_client()
 

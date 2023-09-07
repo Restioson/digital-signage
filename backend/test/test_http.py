@@ -126,6 +126,24 @@ def test_can_access_public_routes(client):
     assert client.get("/display/").status == "200 OK"
 
 
+def test_cant_access_private_routes(unauthorized_client):
+    client = unauthorized_client
+    assert client.get("/config/").status == "401 UNAUTHORIZED"
+    assert client.post("/api/content", data={}).status == "401 UNAUTHORIZED"
+    assert (
+        client.post("/api/departments/1/lecturers", data={}).status
+        == "401 UNAUTHORIZED"
+    )
+    assert (
+        client.delete("/api/departments/1/lecturers/1", data={}).status
+        == "401 UNAUTHORIZED"
+    )
+    assert (
+        client.post("/api/departments/1/display_groups", data={}).status
+        == "401 UNAUTHORIZED"
+    )
+
+
 def test_post_text(client):
     """Test that content can be posted over the web API and then
     successfully retrieved"""
