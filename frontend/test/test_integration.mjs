@@ -17,7 +17,7 @@ import {
   checkRenderedRemoteImage,
   checkRenderedText
 } from './test_free_form_content.mjs'
-import { checkRenderedLecturer } from './test_department.mjs'
+import { checkRenderedPerson } from './test_department.mjs'
 import { Department } from '../static/widgets/department/department.mjs'
 import { deserializeWidget } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
 
@@ -91,8 +91,8 @@ async function checkUploadOne (content) {
   assert.deepStrictEqual(fetched, [expected])
 }
 
-async function uploadLecturer (formData) {
-  const res = await fetch('/api/departments/1/lecturers', {
+async function uploadPerson (formData) {
+  const res = await fetch('/api/departments/1/persons', {
     method: 'post',
     // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
     body: new URLSearchParams(formData)
@@ -101,8 +101,8 @@ async function uploadLecturer (formData) {
   return (await res.json()).id
 }
 
-async function checkUploadLecturer (formData) {
-  const res = await fetch('/api/departments/1/lecturers', {
+async function checkUploadPerson (formData) {
+  const res = await fetch('/api/departments/1/persons', {
     method: 'post',
     // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
     body: new URLSearchParams(formData)
@@ -110,12 +110,12 @@ async function checkUploadLecturer (formData) {
   assert.equal(res.status, 200)
   const id = (await res.json()).id
 
-  const fetchAllRes = await fetch('/api/departments/1/lecturers')
+  const fetchAllRes = await fetch('/api/departments/1/persons')
   assert.equal(fetchAllRes.status, 200)
-  const lecturers = (await fetchAllRes.json()).lecturers
+  const persons = (await fetchAllRes.json()).persons
 
-  assert.equal(lecturers.length, 1)
-  const fetched = lecturers[0]
+  assert.equal(persons.length, 1)
+  const fetched = persons[0]
   assert.equal(fetched.id, id)
 
   assert.deepStrictEqual(fetched, { id, ...formData })
@@ -323,8 +323,8 @@ describe('API Integration', function () {
     })
   })
 
-  describe('/api/lecturers', function () {
-    describe('Lecturer', function () {
+  describe('/api/persons', function () {
+    describe('Person', function () {
       it('uploads', async function () {
         const formData = {
           email: 'myemail@example.com',
@@ -336,7 +336,7 @@ describe('API Integration', function () {
           title: 'Prof'
         }
 
-        await checkUploadLecturer(formData)
+        await checkUploadPerson(formData)
       })
 
       it('edits', async function () {
@@ -350,29 +350,29 @@ describe('API Integration', function () {
           title: 'Prof'
         }
 
-        const id = await checkUploadLecturer(formData)
+        const id = await checkUploadPerson(formData)
 
-        let newId = await checkUploadLecturer({ id, ...formData })
+        let newId = await checkUploadPerson({ id, ...formData })
         assert.equal(id, newId, 'id should be unchanged after edit')
 
         formData.email = 'otherEmail@example.com'
 
-        newId = await checkUploadLecturer({ id, ...formData })
+        newId = await checkUploadPerson({ id, ...formData })
         assert.equal(id, newId, 'id should be unchanged after edit')
       })
     })
 
     describe('Department', function () {
       describe('refresh', function () {
-        it('should result in empty lecturers list with empty database', async function () {
+        it('should result in empty persons list with empty database', async function () {
           const dept = new Department()
           assert.deepStrictEqual(dept.children, [])
           await dept.refresh()
           assert.deepStrictEqual(dept.children, [])
         })
 
-        it('should fetch and render all lecturers correctly', async function () {
-          const lecturers = [
+        it('should fetch and render all persons correctly', async function () {
+          const persons = [
             {
               email: 'myemail@example.com',
               name: 'John Doe',
@@ -393,8 +393,8 @@ describe('API Integration', function () {
             }
           ]
 
-          for (const lecturer of lecturers) {
-            await uploadLecturer(lecturer)
+          for (const person of persons) {
+            await uploadPerson(person)
           }
 
           const dept = new Department()
@@ -408,11 +408,11 @@ describe('API Integration', function () {
 
           for (let i = 0; i < 2; i++) {
             const expected = {
-              officeHours: lecturers[i].office_hours,
-              officeLocation: lecturers[i].office_location,
-              ...lecturers[i]
+              officeHours: persons[i].office_hours,
+              officeLocation: persons[i].office_location,
+              ...persons[i]
             }
-            checkRenderedLecturer(out.children[i], expected)
+            checkRenderedPerson(out.children[i], expected)
           }
         })
       })

@@ -6,7 +6,7 @@ import flask
 from server import free_form_content
 from server.display_group import DisplayGroup
 from server.free_form_content import FreeFormContent, BinaryContent
-from server.department import Lecturer, Department
+from server.department import Person, Department
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -123,9 +123,9 @@ class DatabaseController:
             None,
         )
 
-    def create_department(self, department: Department, insert_lecturers=False) -> int:
-        """Create a department and return its row id. If `insert_lecturers` is `True`,
-        the lecturers in the `Department` object will also be inserted."""
+    def create_department(self, department: Department, insert_persons=False) -> int:
+        """Create a department and return its row id. If `insert_persons` is `True`,
+        the persons in the `Department` object will also be inserted."""
 
         assert (
             department.id is None
@@ -139,14 +139,14 @@ class DatabaseController:
             )
             dept_id = cursor.lastrowid
 
-            if insert_lecturers:
-                for lecturer in department.lecturers:
-                    self.upsert_lecturer(lecturer, dept_id)
+            if insert_persons:
+                for person in department.persons:
+                    self.upsert_person(person, dept_id)
 
             return dept_id
 
     def fetch_all_departments(self, fetch_display_groups=False) -> list[Department]:
-        """Fetch all departments (but does not fetch their lecturers).
+        """Fetch all departments (but does not fetch their persons).
 
         If fetch_display_groups is True, display groups for this
         Department will also be fetched.
@@ -167,7 +167,7 @@ class DatabaseController:
         return departments
 
     def fetch_department_by_id(
-        self, department_id: int, fetch_lecturers=False, fetch_display_groups=False
+        self, department_id: int, fetch_persons=False, fetch_display_groups=False
     ) -> Optional[Department]:
         """Fetch the given Department by its ID"""
         cursor = self.db.cursor()
@@ -179,14 +179,14 @@ class DatabaseController:
             None,
         )
 
-        if dept and fetch_lecturers:
+        if dept and fetch_persons:
             cursor = self.db.cursor()
-            cursor.row_factory = Lecturer.from_sql
-            dept.lecturers = list(
+            cursor.row_factory = Person.from_sql
+            dept.persons = list(
                 cursor.execute(
                     "SELECT id, department, title, "
                     "full_name, position, office_hours,"
-                    "office_location,email,phone FROM lecturers "
+                    "office_location,email,phone FROM persons "
                     " WHERE department = ?"
                     " ORDER BY id",
                     (department_id,),
@@ -238,50 +238,50 @@ class DatabaseController:
             None,
         )
 
-    def upsert_lecturer(self, lecturer: Lecturer, department_id: int) -> int:
-        """Insert (or update) the given lecturer into the database
+    def upsert_person(self, person: Person, department_id: int) -> int:
+        """Insert (or update) the given person into the database
         in the given department and returns the inserted row id"""
 
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "REPLACE INTO lecturers "
+                "REPLACE INTO persons "
                 "(id, department, title, full_name, position, "
                 "office_hours, office_location, email, phone)"
                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
-                    lecturer.id,
+                    person.id,
                     department_id,
-                    lecturer.title,
-                    lecturer.name,
-                    lecturer.position,
-                    lecturer.office_hours,
-                    lecturer.office_location,
-                    lecturer.email,
-                    lecturer.phone,
+                    person.title,
+                    person.name,
+                    person.position,
+                    person.office_hours,
+                    person.office_location,
+                    person.email,
+                    person.phone,
                 ),
             )
         return cursor.lastrowid
 
-    def delete_lecturer(self, lecturer_id: int) -> bool:
-        """Delete the given lecturer, returning whether it was in the
+    def delete_person(self, person_id: int) -> bool:
+        """Delete the given person, returning whether it was in the
         database before deletion."""
         with self.db:
             cursor = self.db.cursor()
-            cursor.execute("DELETE FROM lecturers WHERE id = ?", (lecturer_id,))
+            cursor.execute("DELETE FROM persons WHERE id = ?", (person_id,))
         return cursor.rowcount == 1
 
-    def fetch_lecturer_by_id(self, lecturer_id: int) -> Optional[Lecturer]:
-        """Fetch a specific lecturer from the database based on their ID"""
+    def fetch_person_by_id(self, person_id: int) -> Optional[Person]:
+        """Fetch a specific person from the database based on their ID"""
         cursor = self.db.cursor()
-        cursor.row_factory = Lecturer.from_sql
+        cursor.row_factory = Person.from_sql
         return next(
             cursor.execute(
                 "SELECT id, department, title,"
                 "full_name, position, office_hours,"
-                "office_location, email, phone FROM lecturers"
+                "office_location, email, phone FROM persons"
                 " WHERE id = ?",
-                (lecturer_id,),
+                (person_id,),
             ),
             None,
         )

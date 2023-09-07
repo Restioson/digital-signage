@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom'
-import { Lecturer } from '../static/widgets/department/lecturer.mjs'
+import { Person } from '../static/widgets/department/person.mjs'
 import assert from 'assert'
 
 describe('Widget', function () {
@@ -16,7 +16,7 @@ describe('Widget', function () {
     global.document = dom.window.document
   })
 
-  describe('Lecturer', function () {
+  describe('Person', function () {
     it('renders', function () {
       const expectedProps = {
         email: 'myemail@example.com',
@@ -28,13 +28,13 @@ describe('Widget', function () {
         title: 'Prof'
       }
 
-      const out = new Lecturer(expectedProps).render()
-      checkRenderedLecturer(out, expectedProps)
+      const out = new Person(expectedProps).render()
+      checkRenderedPerson(out, expectedProps)
     })
   })
 })
 
-export function checkRenderedLecturer (out, expected) {
+export function checkRenderedPerson (out, expected) {
   assert.equal(out.tagName, 'DIV')
   assert.equal(out.children.length, 2)
 

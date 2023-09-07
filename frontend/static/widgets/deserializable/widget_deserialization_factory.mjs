@@ -9,7 +9,7 @@ import { Caption } from '../caption.mjs'
 import { Clock } from '../clock.js'
 import { Department } from '../department/department.mjs'
 import { ContentStream } from '../free_form_content/content_stream.mjs'
-import { Lecturer } from '../department/lecturer.mjs'
+import { Person } from '../department/person.mjs'
 import { ContentAndCaption } from '../containers/content_and_caption.mjs'
 import { Container } from '../containers/container.mjs'
 
@@ -44,8 +44,8 @@ export function deserializeWidget (obj) {
       return Clock.fromJSON(obj)
     case 'department':
       return Department.fromJSON(obj)
-    case 'lecturer':
-      return Lecturer.fromJSON(obj)
+    case 'person':
+      return Person.fromJSON(obj)
     case 'content_stream':
       return ContentStream.fromJson(obj)
     default:

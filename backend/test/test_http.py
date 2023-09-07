@@ -135,8 +135,8 @@ def test_cant_access_private_routes(unauthorized_client):
     client = unauthorized_client
     assert_redirects_login(client.get("/config/"))
     assert_redirects_login(client.post("/api/content", data={}))
-    assert_redirects_login(client.post("/api/departments/1/lecturers", data={}))
-    assert_redirects_login(client.delete("/api/departments/1/lecturers/1", data={}))
+    assert_redirects_login(client.post("/api/departments/1/persons", data={}))
+    assert_redirects_login(client.delete("/api/departments/1/persons/1", data={}))
     assert_redirects_login(client.post("/api/departments/1/display_groups", data={}))
 
 
@@ -195,7 +195,7 @@ def test_post_text(client):
 
 
 def test_invalid_dept_should_404(client):
-    for route in ["lecturers", "lecturers/add", "lecturers/20", "display_group/add"]:
+    for route in ["persons", "persons/add", "persons/20", "display_group/add"]:
         path = f"/config/departments/10000/{route}"
         assert client.get(path).status == "404 NOT FOUND", f"Expected 404 from {path}"
 

@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS content (
     )
   )
 );
-CREATE TABLE IF NOT EXISTS lecturers (
+CREATE TABLE IF NOT EXISTS persons (
   id INTEGER PRIMARY KEY,
   department INTEGER NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS lecturers (
   email TEXT NOT NULL,
   phone TEXT NOT NULL
 );
-CREATE INDEX IF NOT EXISTS lecturer_by_department ON lecturers(department);
+CREATE INDEX IF NOT EXISTS person_by_department ON persons(department);
 CREATE TABLE IF NOT EXISTS departments (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,

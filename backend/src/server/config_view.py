@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, current_app
 from flask_login import current_user
 
 from server.database import DatabaseController
-from server.department import Lecturer
+from server.department import Person
 
 blueprint = Blueprint("config_view", __name__, url_prefix="/config")
 
@@ -32,51 +32,51 @@ def list_departments():
     )
 
 
-@blueprint.route("/departments/<int:department_id>/lecturers")
-def list_lecturers(department_id: int):
-    """Return the lecturers page which lists all lecturers in the given department"""
+@blueprint.route("/departments/<int:department_id>/persons")
+def list_persons(department_id: int):
+    """Return the persons page which lists all persons in the given department"""
 
     dept = DatabaseController.get().fetch_department_by_id(
-        department_id, fetch_lecturers=True
+        department_id, fetch_persons=True
     )
 
     if not dept:
         flask.abort(404)
 
     return render_template(
-        "config/departments/lecturers/index.j2",
+        "config/departments/persons/index.j2",
         department=dept,
     )
 
 
-@blueprint.route("/departments/<int:department_id>/lecturers/add")
-def upload_lecturer(department_id: int):
-    """Return the 'add lecturers' page"""
+@blueprint.route("/departments/<int:department_id>/persons/add")
+def upload_person(department_id: int):
+    """Return the 'add persons' page"""
 
     if not DatabaseController.get().fetch_department_by_id(department_id):
         flask.abort(404)
 
     return render_template(
-        "config/departments/lecturers/add.j2",
-        lecturer=Lecturer.empty(),
+        "config/departments/persons/add.j2",
+        person=Person.empty(),
         department_id=department_id,
     )
 
 
-@blueprint.route("/departments/<int:department_id>/lecturers/<int:lecturer_id>")
-def edit_lecturer(department_id: int, lecturer_id: int):
-    """Return the 'edit lecturers' page for the given lecturers"""
-    lecturer = DatabaseController.get().fetch_lecturer_by_id(lecturer_id)
+@blueprint.route("/departments/<int:department_id>/persons/<int:person_id>")
+def edit_person(department_id: int, person_id: int):
+    """Return the 'edit persons' page for the given persons"""
+    person = DatabaseController.get().fetch_person_by_id(person_id)
 
-    if not lecturer:
+    if not person:
         flask.abort(404)
 
     if not DatabaseController.get().fetch_department_by_id(department_id):
         flask.abort(404)
 
     return render_template(
-        "config/departments/lecturers/add.j2",
-        lecturer=lecturer,
+        "config/departments/persons/add.j2",
+        person=person,
         department_id=department_id,
     )
 
