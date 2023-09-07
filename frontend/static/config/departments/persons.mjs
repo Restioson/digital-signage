@@ -1,6 +1,6 @@
 export function main () {
   for (const button of document.getElementsByClassName('delete-button')) {
-    button.addEventListener('click', deleteLecturer)
+    button.addEventListener('click', deletePerson)
   }
 }
 
@@ -13,13 +13,13 @@ class ApiError extends Error {
 }
 
 /**
- * Delete a lecturer. This can't be a form since HTML doesn't allow
+ * Delete a person. This can't be a form since HTML doesn't allow
  * `DELETE` as the method of a form.
  *
  * @param event the HTML button click event
  * @returns {Promise<void>}
  */
-async function deleteLecturer (event) {
+async function deletePerson (event) {
   event.preventDefault()
   const button = event.target
 
@@ -27,12 +27,12 @@ async function deleteLecturer (event) {
   statusMessage.className = 'status-message' // Clear success/error class
 
   const row = button.parentElement.parentElement
-  const lecturerName = row.children[0].innerText
-  const id = button.dataset.lecturerId
+  const personName = row.children[0].innerText
+  const id = button.dataset.personId
   const deptId = button.dataset.departmentId
 
   try {
-    const res = await fetch(`/api/departments/${deptId}/lecturers/${id}`, {
+    const res = await fetch(`/api/departments/${deptId}/persons/${id}`, {
       method: 'delete'
     })
 
@@ -43,12 +43,12 @@ async function deleteLecturer (event) {
     row.remove()
 
     statusMessage.classList.add('success')
-    statusMessage.innerText = `Successfully deleted lecturer (name: ${lecturerName})`
+    statusMessage.innerText = `Successfully deleted person (name: ${personName})`
   } catch (err) {
     statusMessage.classList.add('error')
     const errorBox = document.createElement('pre')
     errorBox.innerText = err instanceof ApiError ? err.response : err.message
-    statusMessage.innerText = 'Error deleting lecturer:'
+    statusMessage.innerText = 'Error deleting person:'
     statusMessage.append(errorBox)
   }
 

@@ -1,14 +1,14 @@
 {% extends "base.j2" %}
 
-{% block title %}Lecturers{% endblock %}
+{% block title %}Persons{% endblock %}
 {% block head %}
   {{ super() }}
-  {{ css('config/departments/lecturers') }}
+  {{ css('config/departments/persons') }}
 {% endblock %}
 
 {% block content %}
   <script type="module">
-    import { main } from "{{ url_for('static', filename='config/departments/lecturers.mjs') }}";
+    import { main } from "{{ url_for('static', filename='config/departments/persons.mjs') }}";
     main();
   </script>
 
@@ -28,20 +28,20 @@
       </thead>
 
       <tbody>
-        {%- for lecturer in department.lecturers -%}
+        {%- for person in department.persons -%}
           <tr>
-            <td>{{ lecturer.name }}</td>
-            <td>{{ lecturer.title }}</td>
-            <td>{{ lecturer.position }}</td>
-            <td>{{ lecturer.office_location }}</td>
-            <td>{{ lecturer.email }}</td>
-            <td>{{ lecturer.telephone }}</td>
-            <td>{{ lecturer.office_hours }}</td>
-            <td>{{ lecturer.department }}</td>
+            <td>{{ person.name }}</td>
+            <td>{{ person.title }}</td>
+            <td>{{ person.position }}</td>
+            <td>{{ person.office_location }}</td>
+            <td>{{ person.email }}</td>
+            <td>{{ person.telephone }}</td>
+            <td>{{ person.office_hours }}</td>
+            <td>{{ person.department }}</td>
             <td>
               {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
               <form
-                action="/config/departments/{{ department.id }}/lecturers/{{ lecturer.id }}"
+                action="/config/departments/{{ department.id }}/persons/{{ person.id }}"
                 method="get"
                 class="redirect-form"
               >
@@ -53,7 +53,7 @@
                 type="button"
                 class="delete-button"
                 data-department-id="{{ department.id }}"
-                data-lecturer-id="{{ lecturer.id }}"
+                data-person-id="{{ person.id }}"
               >
                 Delete
               </button>
@@ -65,11 +65,11 @@
 
     {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
     <form
-      action="/config/departments/{{ department.id }}/lecturers/add"
+      action="/config/departments/{{ department.id }}/persons/add"
       method="get"
       class="redirect-form"
     >
-      <button type="submit">Add a lecturer</button>
+      <button type="submit">Add a person</button>
     </form>
 
     <p hidden class="status-message"></p>

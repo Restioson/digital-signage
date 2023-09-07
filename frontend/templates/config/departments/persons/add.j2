@@ -1,12 +1,12 @@
 {% extends "base.j2" %}
 
 {% block title %}
-  {%- if lecturer.id -%}Edit{%- else -%}Add{%- endif -%}
-  a lecturer
+  {%- if person.id -%}Edit{%- else -%}Add{%- endif -%}
+  a person
 {% endblock %}
 {% block head %}
   {{ super() }}
-  {{ css('config/departments/lecturers') }}
+  {{ css('config/departments/persons') }}
 {% endblock %}
 
 {% block content %}
@@ -18,12 +18,12 @@
 
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
   <form
-    action="/api/departments/{{ department_id }}/lecturers"
+    action="/api/departments/{{ department_id }}/persons"
     method="post"
     class="post-form"
   >
-    {%- if lecturer.id -%}
-      <input type="hidden" name="id" value="{{ lecturer.id }}" />
+    {%- if person.id -%}
+      <input type="hidden" name="id" value="{{ person.id }}" />
     {%- endif -%}
 
     <label
@@ -33,7 +33,7 @@
         id="name"
         name="name"
         required
-        value="{{ lecturer.name }}"
+        value="{{ person.name }}"
       />
     </label>
 
@@ -42,7 +42,7 @@
       <select id="title" name="title" required>
         {%- macro title(val, desc) -%}
           {%- set desc = desc|default(val) -%}
-          {%- if lecturer.title == val -%}
+          {%- if person.title == val -%}
             {%- set selected = "selected" -%}
           {%- endif -%}
 
@@ -66,7 +66,7 @@
         id="position"
         name="position"
         required
-        value="{{ lecturer.position }}"
+        value="{{ person.position }}"
       />
     </label>
 
@@ -76,7 +76,7 @@
         type="text"
         id="office_location"
         name="office_location"
-        value="{{ lecturer.office_location }}"
+        value="{{ person.office_location }}"
       />
     </label>
 
@@ -87,7 +87,7 @@
         id="email"
         name="email"
         required
-        value="{{ lecturer.email }}"
+        value="{{ person.email }}"
       />
     </label>
 
@@ -98,7 +98,7 @@
         id="phone"
         name="phone"
         required
-        value="{{ lecturer.phone }}"
+        value="{{ person.phone }}"
       />
     </label>
 
@@ -108,7 +108,7 @@
         type="text"
         id="office_hours"
         name="office_hours"
-        value="{{ lecturer.office_hours }}"
+        value="{{ person.office_hours }}"
         required
       />
     </label>

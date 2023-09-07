@@ -1,27 +1,27 @@
 import sqlite3
 from typing import Optional
 
-from server.department.lecturer import Lecturer
+from server.department.person import Person
 from server.display_group import DisplayGroup
 
 
 # TODO: add more functionality and use in display group development
 class Department:
-    """A university department that has lecturers and are to be the users of this app.
+    """A university department that has persons and are to be the users of this app.
     Currently unused but need for later functionality."""
 
     def __init__(
         self,
         name: str,
         bio: str,
-        lecturers: Optional[list[Lecturer]] = None,
+        persons: Optional[list[Person]] = None,
         display_groups: Optional[list[DisplayGroup]] = None,
         files: Optional[str] = None,
         department_id: Optional[int] = None,
     ):
         self.name = name
         self.bio = bio
-        self.lecturers = lecturers or []
+        self.persons = persons or []
         self.display_groups = display_groups or []
         self.id = department_id
         self.files = files
