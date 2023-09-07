@@ -60,15 +60,15 @@ def content():
         return {"id": content_id, "posted": posted}
 
 
-@blueprint.route("/departments/<int:department_id>/persons", methods=["POST", "GET"])
-def persons_route(department_id: int):
-    """The /api/departments/<id>/persons end point
-    GETing this endpoint fetches all the departments persons from the database
+@blueprint.route("/departments/<int:department_id>/people", methods=["POST", "GET"])
+def people_route(department_id: int):
+    """The /api/departments/<id>/people end point
+    GETing this endpoint fetches all the departments people from the database
 
     POSTing to this end point inserts a new person into the database
     """
     dept = DatabaseController.get().fetch_department_by_id(
-        department_id, fetch_persons=True
+        department_id, fetch_people=True
     )
 
     if not dept:
@@ -76,7 +76,7 @@ def persons_route(department_id: int):
         flask.abort(404)
 
     if flask.request.method == "GET":
-        return {"persons": [person.to_http_json() for person in dept.persons]}
+        return {"people": [person.to_http_json() for person in dept.people]}
     else:
         if not current_user.is_authenticated:
             return current_app.login_manager.unauthorized()
@@ -89,10 +89,10 @@ def persons_route(department_id: int):
 
 
 @blueprint.route(
-    "/departments/<int:department_id>/persons/<int:person_id>", methods=["DELETE"]
+    "/departments/<int:department_id>/people/<int:person_id>", methods=["DELETE"]
 )
 def person(department_id: int, person_id: int):
-    """The /api/departments/<dept_id>/persons/<id> endpoint.
+    """The /api/departments/<dept_id>/people/<id> endpoint.
 
     DELETEing this endpoint deletes the given person in the database.
     """
@@ -100,7 +100,7 @@ def person(department_id: int, person_id: int):
         return current_app.login_manager.unauthorized()
 
     if not DatabaseController.get().fetch_department_by_id(
-        department_id, fetch_persons=True
+        department_id, fetch_people=True
     ):
         flask.abort(404)
 

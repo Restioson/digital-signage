@@ -92,7 +92,7 @@ async function checkUploadOne (content) {
 }
 
 async function uploadPerson (formData) {
-  const res = await fetch('/api/departments/1/persons', {
+  const res = await fetch('/api/departments/1/people', {
     method: 'post',
     // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
     body: new URLSearchParams(formData)
@@ -102,7 +102,7 @@ async function uploadPerson (formData) {
 }
 
 async function checkUploadPerson (formData) {
-  const res = await fetch('/api/departments/1/persons', {
+  const res = await fetch('/api/departments/1/people', {
     method: 'post',
     // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
     body: new URLSearchParams(formData)
@@ -110,12 +110,12 @@ async function checkUploadPerson (formData) {
   assert.equal(res.status, 200)
   const id = (await res.json()).id
 
-  const fetchAllRes = await fetch('/api/departments/1/persons')
+  const fetchAllRes = await fetch('/api/departments/1/people')
   assert.equal(fetchAllRes.status, 200)
-  const persons = (await fetchAllRes.json()).persons
+  const people = (await fetchAllRes.json()).people
 
-  assert.equal(persons.length, 1)
-  const fetched = persons[0]
+  assert.equal(people.length, 1)
+  const fetched = people[0]
   assert.equal(fetched.id, id)
 
   assert.deepStrictEqual(fetched, { id, ...formData })
@@ -323,7 +323,7 @@ describe('API Integration', function () {
     })
   })
 
-  describe('/api/persons', function () {
+  describe('/api/people', function () {
     describe('Person', function () {
       it('uploads', async function () {
         const formData = {
@@ -364,15 +364,15 @@ describe('API Integration', function () {
 
     describe('Department', function () {
       describe('refresh', function () {
-        it('should result in empty persons list with empty database', async function () {
+        it('should result in empty people list with empty database', async function () {
           const dept = new Department()
           assert.deepStrictEqual(dept.children, [])
           await dept.refresh()
           assert.deepStrictEqual(dept.children, [])
         })
 
-        it('should fetch and render all persons correctly', async function () {
-          const persons = [
+        it('should fetch and render all people correctly', async function () {
+          const people = [
             {
               email: 'myemail@example.com',
               name: 'John Doe',
@@ -393,7 +393,7 @@ describe('API Integration', function () {
             }
           ]
 
-          for (const person of persons) {
+          for (const person of people) {
             await uploadPerson(person)
           }
 
@@ -408,9 +408,9 @@ describe('API Integration', function () {
 
           for (let i = 0; i < 2; i++) {
             const expected = {
-              officeHours: persons[i].office_hours,
-              officeLocation: persons[i].office_location,
-              ...persons[i]
+              officeHours: people[i].office_hours,
+              officeLocation: people[i].office_location,
+              ...people[i]
             }
             checkRenderedPerson(out.children[i], expected)
           }

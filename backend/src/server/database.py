@@ -123,9 +123,9 @@ class DatabaseController:
             None,
         )
 
-    def create_department(self, department: Department, insert_persons=False) -> int:
-        """Create a department and return its row id. If `insert_persons` is `True`,
-        the persons in the `Department` object will also be inserted."""
+    def create_department(self, department: Department, insert_people=False) -> int:
+        """Create a department and return its row id. If `insert_people` is `True`,
+        the people in the `Department` object will also be inserted."""
 
         assert (
             department.id is None
@@ -139,14 +139,14 @@ class DatabaseController:
             )
             dept_id = cursor.lastrowid
 
-            if insert_persons:
-                for person in department.persons:
+            if insert_people:
+                for person in department.people:
                     self.upsert_person(person, dept_id)
 
             return dept_id
 
     def fetch_all_departments(self, fetch_display_groups=False) -> list[Department]:
-        """Fetch all departments (but does not fetch their persons).
+        """Fetch all departments (but does not fetch their people).
 
         If fetch_display_groups is True, display groups for this
         Department will also be fetched.
@@ -167,7 +167,7 @@ class DatabaseController:
         return departments
 
     def fetch_department_by_id(
-        self, department_id: int, fetch_persons=False, fetch_display_groups=False
+        self, department_id: int, fetch_people=False, fetch_display_groups=False
     ) -> Optional[Department]:
         """Fetch the given Department by its ID"""
         cursor = self.db.cursor()
@@ -179,14 +179,14 @@ class DatabaseController:
             None,
         )
 
-        if dept and fetch_persons:
+        if dept and fetch_people:
             cursor = self.db.cursor()
             cursor.row_factory = Person.from_sql
-            dept.persons = list(
+            dept.people = list(
                 cursor.execute(
                     "SELECT id, department, title, "
                     "full_name, position, office_hours,"
-                    "office_location,email,phone FROM persons "
+                    "office_location,email,phone FROM people "
                     " WHERE department = ?"
                     " ORDER BY id",
                     (department_id,),
@@ -245,7 +245,7 @@ class DatabaseController:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "REPLACE INTO persons "
+                "REPLACE INTO people "
                 "(id, department, title, full_name, position, "
                 "office_hours, office_location, email, phone)"
                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -268,7 +268,7 @@ class DatabaseController:
         database before deletion."""
         with self.db:
             cursor = self.db.cursor()
-            cursor.execute("DELETE FROM persons WHERE id = ?", (person_id,))
+            cursor.execute("DELETE FROM people WHERE id = ?", (person_id,))
         return cursor.rowcount == 1
 
     def fetch_person_by_id(self, person_id: int) -> Optional[Person]:
@@ -279,7 +279,7 @@ class DatabaseController:
             cursor.execute(
                 "SELECT id, department, title,"
                 "full_name, position, office_hours,"
-                "office_location, email, phone FROM persons"
+                "office_location, email, phone FROM people"
                 " WHERE id = ?",
                 (person_id,),
             ),

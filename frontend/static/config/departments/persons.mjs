@@ -32,7 +32,7 @@ async function deletePerson (event) {
   const deptId = button.dataset.departmentId
 
   try {
-    const res = await fetch(`/api/departments/${deptId}/persons/${id}`, {
+    const res = await fetch(`/api/departments/${deptId}/people/${id}`, {
       method: 'delete'
     })
 

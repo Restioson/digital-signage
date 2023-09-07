@@ -1,14 +1,14 @@
 {% extends "base.j2" %}
 
-{% block title %}Persons{% endblock %}
+{% block title %}People{% endblock %}
 {% block head %}
   {{ super() }}
-  {{ css('config/departments/persons') }}
+  {{ css('config/departments/people') }}
 {% endblock %}
 
 {% block content %}
   <script type="module">
-    import { main } from "{{ url_for('static', filename='config/departments/persons.mjs') }}";
+    import { main } from "{{ url_for('static', filename='config/departments/people.mjs') }}";
     main();
   </script>
 
@@ -28,7 +28,7 @@
       </thead>
 
       <tbody>
-        {%- for person in department.persons -%}
+        {%- for person in department.people -%}
           <tr>
             <td>{{ person.name }}</td>
             <td>{{ person.title }}</td>
@@ -41,7 +41,7 @@
             <td>
               {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
               <form
-                action="/config/departments/{{ department.id }}/persons/{{ person.id }}"
+                action="/config/departments/{{ department.id }}/people/{{ person.id }}"
                 method="get"
                 class="redirect-form"
               >
@@ -65,7 +65,7 @@
 
     {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
     <form
-      action="/config/departments/{{ department.id }}/persons/add"
+      action="/config/departments/{{ department.id }}/people/add"
       method="get"
       class="redirect-form"
     >

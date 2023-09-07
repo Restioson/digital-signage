@@ -17,20 +17,20 @@ export class Department extends DeserializableWidget {
   }
 
   /**
-   * Fetch the latest persons and update the state.
+   * Fetch the latest people and update the state.
    *
    * @private
    * @returns {Promise<void>}
    */
   async refresh () {
-    const endpoint = `/api/departments/${Root.getInstance().getDepartment()}/persons`
+    const endpoint = `/api/departments/${Root.getInstance().getDepartment()}/people`
     const update = await fetch(endpoint).then(res => res.json())
 
-    let dirty = update.persons.length !== this.children.length
+    let dirty = update.people.length !== this.children.length
 
     if (!dirty) {
-      for (let i = 0; i < update.persons.length; i++) {
-        dirty |= update.persons[i].id === this.persons.id
+      for (let i = 0; i < update.people.length; i++) {
+        dirty |= update.people[i].id === this.people.id
 
         if (dirty) {
           break
@@ -39,7 +39,7 @@ export class Department extends DeserializableWidget {
     }
 
     if (dirty) {
-      this.children = update.persons.map(Person.fromJSON)
+      this.children = update.people.map(Person.fromJSON)
     }
 
     return dirty

@@ -2,7 +2,7 @@ import { Container } from '../containers/container.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 
 /**
- * A {@link Widget} which displays a persons and all of their details.
+ * A {@link Widget} which displays a people and all of their details.
  *
  * @augments Widget
  */
