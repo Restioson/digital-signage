@@ -10,6 +10,8 @@ from server.department import Lecturer, Department
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from server.user import User
+
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
 
@@ -290,6 +292,7 @@ class DatabaseController:
         user_fields = []
         with self.db:
             cursor = self.db.cursor()
+            cursor.row_factory = sqlite3.Row
             cursor.execute(
                 "SELECT email, screen_name FROM users WHERE email = ?",
                 (email,),
@@ -313,27 +316,23 @@ class DatabaseController:
             count = cursor.fetchone()[0]  # Fetch the count result
             return count > 0
 
-    def is_valid_user(self, user: list) -> bool:
-        """Checks if the provided user has the correct credentials."""
+    def try_login(self, email: str, password: str) -> Optional[User]:
+        """Checks if the provided user has the correct credentials,
+        returning their details if they do, or None otherwise."""
         with self.db:
             cursor = self.db.cursor()
+            cursor.row_factory = sqlite3.Row
             cursor.execute(
                 "SELECT email, screen_name, password_hash FROM users WHERE email = ?",
-                (user[0],),
+                (email,),
             )
-            db_user_data = cursor.fetchone()  # Fetch the user data from the database
-            is_valid = False
+            db_user_data = cursor.fetchone()
+            if check_password_hash(db_user_data["password_hash"], password):
+                return User(email, db_user_data["screen_name"])
+            else:
+                return None
 
-            if (
-                user[0] == db_user_data[0]
-                and user[1] == db_user_data[1]
-                and check_password_hash(db_user_data[2], user[2])
-            ):  # password hashing implemented
-                is_valid = True
-
-            return is_valid
-
-    def insert_user(self, user: list) -> int:
+    def insert_user(self, email: str, screen_name: str, password: str) -> int:
         """Insert the given user into the user table
         and returns the inserted row id"""
 
@@ -344,9 +343,9 @@ class DatabaseController:
                 "(email, screen_name, password_hash)"
                 " VALUES (?, ?, ?)",
                 (
-                    user[0],
-                    user[1],
-                    generate_password_hash(user[2]),
-                ),  # password hashing impemented
+                    email,
+                    screen_name,
+                    generate_password_hash(password),
+                ),
             )
         return cursor.lastrowid

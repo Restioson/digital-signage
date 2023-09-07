@@ -112,13 +112,16 @@ def lecturer(department_id: int, lecturer_id: int):
 
 @blueprint.route("/register", methods=["POST"])
 def registration_route():
-    # Receives list of user info
-    form_user = User.from_form(flask.request.form)
+    form = flask.request.form
 
     if flask.request.method == "POST":
-        if not (DatabaseController.get().user_exists(form_user[0])):
-            DatabaseController.get().insert_user(form_user)
-            user = User(form_user[0], form_user[1])
+        if not (DatabaseController.get().user_exists(form["email"])):
+            DatabaseController.get().insert_user(
+                form["email"],
+                form["screen_name"],
+                form["password"],
+            )
+            user = User(form["email"], form["screen_name"])
             login_user(user)
             return redirect(url_for("config_view.index"))
 
@@ -128,11 +131,11 @@ def registration_route():
 
 @blueprint.route("/login", methods=["POST", "GET"])
 def login_route():
-    form_user = User.from_form(flask.request.form)
+    form = flask.request.form
 
-    if DatabaseController.get().user_exists(form_user[0]):
-        if DatabaseController.get().is_valid_user(form_user):
-            user = User(form_user[0], form_user[1])
+    if DatabaseController.get().user_exists(form["email"]):
+        user = DatabaseController.get().try_login(form["email"], form["password"])
+        if user:
             login_user(user)
             return redirect(url_for("config_view.index"))
         else:
@@ -145,7 +148,6 @@ def login_route():
 
 @blueprint.route("/logout", methods=["GET"])
 def logout_route():
-    print("made it here")
     logout_user()
     return redirect(url_for("login.login"))
 
