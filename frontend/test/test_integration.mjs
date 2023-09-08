@@ -155,7 +155,7 @@ describe('API Integration', function () {
     }
 
     let started = false
-    for (let tries = 0; tries < 4; tries++) {
+    for (let tries = 0; tries < 8; tries++) {
       try {
         if ((await (await fetch('/api/health')).json()).healthy === true) {
           started = true
