@@ -32,6 +32,7 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
     form = dict(form)  # Make form mutable
 
     content_type = form["type"]
+    stream = int(form["content_stream"])
 
     # Replace captions with title only (empty or missing body) to be body only,
     # as this is probably what the user wanted
@@ -43,15 +44,15 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
 
     caption = None
     if form_has_field(form, "caption_body"):
-        caption = Text(
+        caption = Caption(
             form["caption_title"] if "caption_title" in form else None,
             form["caption_body"],
         )
 
     if content_type == "text":
-        return Text(form["title"], form["body"])
+        return Text(form["title"], form["body"], stream)
     elif content_type == "remote_image":
-        return RemoteImage(form["src"], caption)
+        return RemoteImage(form["src"], caption, stream)
     elif content_type == "local_image":
         # Load and verify the file, throwing an error if it isn't a valid image
         image_data = files["image_data"].read()
@@ -59,11 +60,11 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
         image.verify()
 
         mime = image.get_format_mimetype()
-        return LocalImage(mime, image_data, caption)
+        return LocalImage(mime, image_data, caption, stream)
     elif content_type == "link":
-        return Link(form["url"], caption)
+        return Link(form["url"], caption, stream)
     elif content_type == "qrcode_content":
-        return QRcodeContent(form["url"], caption)
+        return QRcodeContent(form["url"], caption, stream)
     else:
         raise UnknownContentError("Unknown content type", form["type"])
 
@@ -76,6 +77,7 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
 
     row = sqlite3.Row(cursor, row)
     content_type = row["content_type"]
+    stream = row["stream"]
     content_id = row["id"]
     posted = datetime.fromtimestamp(row["posted"])
     data = json.loads(row["content_json"])
@@ -89,17 +91,23 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
 
     if content_type == "text":
         assert blob_data is None, "Text content should not have any blob data"
-        return Text(data["title"], data["body"], content_id=content_id, posted=posted)
+        return Text(
+            data["title"], data["body"], stream, content_id=content_id, posted=posted
+        )
     elif content_type == "local_image":
         return LocalImage(
-            mime, blob_data, caption, content_id=content_id, posted=posted
+            mime, blob_data, caption, stream, content_id=content_id, posted=posted
         )
     elif content_type == "remote_image":
-        return RemoteImage(data["src"], caption, content_id=content_id, posted=posted)
+        return RemoteImage(
+            data["src"], caption, stream, content_id=content_id, posted=posted
+        )
     elif content_type == "link":
-        return Link(data["url"], caption, content_id=content_id, posted=posted)
+        return Link(data["url"], caption, stream, content_id=content_id, posted=posted)
     elif content_type == "qrcode_content":
-        return QRcodeContent(data["url"], caption, content_id=content_id, posted=posted)
+        return QRcodeContent(
+            data["url"], caption, stream, content_id=content_id, posted=posted
+        )
     else:
         raise UnknownContentError("Unknown content type", content_type)
 

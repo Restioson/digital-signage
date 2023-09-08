@@ -12,9 +12,13 @@ const REFRESH_INTERVAL_MS = 1000
  * @augments DeserializableWidget
  */
 export class ContentStream extends DeserializableWidget {
-  constructor () {
+  /**
+   * @param {number[]} streams which content streams this widget subscribes to
+   */
+  constructor ({ streams }) {
     super()
     this.children = []
+    this.streams = streams
   }
 
   /**
@@ -24,7 +28,10 @@ export class ContentStream extends DeserializableWidget {
    * @returns {Promise<boolean>}
    */
   async refresh () {
-    const update = await fetch('/api/content').then(res => res.json())
+    const params = this.streams.map(stream => `stream=${stream}`)
+    const update = await fetch(`/api/content?${params.join('&')}`).then(res =>
+      res.json()
+    )
 
     let dirty = update.content.length !== this.children.length
 
@@ -46,7 +53,7 @@ export class ContentStream extends DeserializableWidget {
   }
 
   static fromJson (obj) {
-    return new ContentStream()
+    return new ContentStream(obj)
   }
 
   build () {

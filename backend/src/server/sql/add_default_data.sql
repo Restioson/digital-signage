@@ -9,5 +9,9 @@ VALUES
     1,
     'Default',
     1,
-    '{ "type": "container", "children": [ {"type": "clock"}, {"type": "department"}, {"type": "content_stream"} ] }'
+    '{ "type": "container", "children": [ {"type": "clock"}, {"type": "department"}, {"type": "content_stream", "streams": [1]} ] }'
   );
+INSERT INTO
+  content_streams (id, name)
+VALUES
+  (1, 'UCT Announcements');

@@ -1,6 +1,7 @@
 PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS content (
   id INTEGER PRIMARY KEY,
+  stream INTEGER NOT NULL REFERENCES content_streams(id),
   posted INTEGER NOT NULL,
   content_type TEXT NOT NULL CHECK (
     content_type IN (
@@ -25,6 +26,19 @@ CREATE TABLE IF NOT EXISTS content (
       AND blob_mime_type IS NOT NULL
     )
   )
+);
+CREATE INDEX IF NOT EXISTS content_by_stream ON content(stream);
+CREATE TABLE IF NOT EXISTS content_streams (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  display_group INTEGER REFERENCES display_groups(id) ON DELETE CASCADE,
+  department INTEGER REFERENCES departments(id) ON DELETE CASCADE,
+  CHECK (
+    NOT (
+      department IS NOT NULL
+      AND display_group IS NOT NULL
+    )
+  ) -- Only one (or none, for public) must be present
 );
 CREATE TABLE IF NOT EXISTS people (
   id INTEGER PRIMARY KEY,

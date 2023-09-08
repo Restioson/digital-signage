@@ -13,10 +13,11 @@ class RemoteImage(CaptionedContent):
         self,
         src: str,
         caption: Optional[Caption],
+        stream_id: int,
         content_id: Optional[int] = None,
         posted: Optional[datetime] = None,
     ):
-        super().__init__(caption, content_id, posted)
+        super().__init__(caption, stream_id, content_id, posted)
         self.src = src
 
     def type(self) -> str:

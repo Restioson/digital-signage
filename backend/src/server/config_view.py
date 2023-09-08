@@ -17,7 +17,11 @@ def check_logged_in():
 @blueprint.route("/")
 def index():
     """Return the config index page"""
-    return render_template("config/index.j2")
+
+    return render_template(
+        "config/index.j2",
+        content_streams=DatabaseController.get().fetch_all_content_streams(),
+    )
 
 
 @blueprint.route("/departments/")
@@ -27,7 +31,8 @@ def list_departments():
     return render_template(
         "config/departments/index.j2",
         departments=DatabaseController.get().fetch_all_departments(
-            fetch_display_groups=True
+            fetch_display_groups=True,
+            fetch_content_streams=True,
         ),
     )
 
@@ -91,3 +96,34 @@ def add_display_group(department_id: int):
         "config/display_group/add.j2",
         department_id=department_id,
     )
+
+
+@blueprint.route("/content_stream/add")
+def add_content_stream():
+    """Return the page to add a content stream"""
+
+    db = DatabaseController.get()
+    group = flask.request.args.get("group")
+    department = flask.request.args.get("department")
+
+    if group and department:
+        flask.abort(400)
+
+    if group:
+        group = db.fetch_display_group_by_id(int(group))
+        if not group:
+            flask.abort(404)
+        return render_template(
+            "config/content_stream/add.j2", display_group=group, department=None
+        )
+    elif department:
+        department = db.fetch_department_by_id(int(department))
+        if not department:
+            flask.abort(404)
+        return render_template(
+            "config/content_stream/add.j2", display_group=None, department=department
+        )
+    else:
+        return render_template(
+            "config/content_stream/add.j2", display_group=None, department=None
+        )

@@ -1,0 +1,35 @@
+{% extends "base.j2" %}
+
+{% block title %}Add content stream{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('config') }}
+{% endblock %}
+
+{% block content %}
+  <script type="module">
+    import { main } from "{{ url_for('static', filename='config.mjs') }}";
+    main();
+  </script>
+
+  <form action="/api/content_streams" method="post" class="post-form">
+    {% if display_group %}
+      {% set dest = "to group " + display_group.name %}
+    {% elif department %}
+      {% set dest = "to " + department.name + " department" %}
+    {% else %}
+      {% set dest = "(public)" %}
+    {% endif %}
+
+    <h3>Add a content stream {{ dest }}</h3>
+    <input type="hidden" name="display_group" value="{{ display_group.id }}" />
+
+    <input type="hidden" name="department" value="{{ department.id }}" />
+
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" />
+
+    <button type="submit">Submit</button>
+    <p hidden class="status-message"></p>
+  </form>
+{% endblock %}

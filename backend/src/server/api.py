@@ -13,6 +13,7 @@ from server.department import Person
 from server.database import DatabaseController
 from server.display_group import DisplayGroup
 from server.free_form_content import BinaryContent
+from server.free_form_content.content_stream import ContentStream
 from server.user import User
 
 
@@ -29,24 +30,44 @@ def health():
     return {"healthy": True}
 
 
+@blueprint.route("/content_streams", methods=["POST", "GET"])
+def list_content_streams():
+    """The /api/content_streams endpoint.
+
+    POSTing to this endpoint with a form representing a new content stream
+    will create the content stream and return its id.
+    """
+
+    db = DatabaseController.get()
+
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
+    stream_id = db.create_content_stream(ContentStream.from_form(flask.request.form))
+
+    return {"id": stream_id}
+
+
 @blueprint.route("/content", methods=["POST", "GET"])
 def content():
     """The /api/content endpoint.
 
-    GETting this endpoint will return a list of all the content on the server
-    in the reverse order of posting (most recent to least recent). Binary blobs
-    will not be fetched and must be fetched separately using the /api/content/<id>/blob
-    endpoint.
+    GETting this endpoint will return a list of all the content in the given streams
+    (which are given by query parameters) in the reverse order of posting
+    (most recent to least recent). Binary blobs will not be fetched and must be
+    fetched separately using the /api/content/<id>/blob endpoint.
 
     POSTing to this endpoint with a form representing a new content post will create
-    the post on the server and return the ID and post time upon success.
+    the post in the given stream and return the ID and post time upon success.
     """
+
+    streams = flask.request.args.getlist("stream")
 
     if flask.request.method == "GET":
         return {
             "content": [
                 post.to_http_json()
-                for post in DatabaseController.get().fetch_all_content()
+                for post in DatabaseController.get().fetch_content_in_streams(streams)
             ]
         }
     else:
@@ -72,7 +93,6 @@ def people_route(department_id: int):
     )
 
     if not dept:
-        print("Not dept")
         flask.abort(404)
 
     if flask.request.method == "GET":

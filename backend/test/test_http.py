@@ -1,6 +1,8 @@
 import time
 from pathlib import Path
 
+from server.util import combine
+
 data_folder = Path(__file__).parent / "data"
 
 
@@ -12,6 +14,7 @@ def test_post_local_image(client, test_png_data, test_jpg_data):
         data={
             "type": "local_image",
             "image_data": open(data_folder / "test.jpg", "rb"),
+            "content_stream": "1",
         },
     )
 
@@ -25,6 +28,7 @@ def test_post_local_image(client, test_png_data, test_jpg_data):
         data={
             "type": "local_image",
             "image_data": open(data_folder / "test.png", "rb"),
+            "content_stream": "1",
         },
     )
 
@@ -33,7 +37,7 @@ def test_post_local_image(client, test_png_data, test_jpg_data):
         png_res.json["posted"] > jpg_res.json["posted"]
     ), "PNG should be posted after JPG"
 
-    res = client.get("/api/content")
+    res = client.get("/api/content?stream=1")
     content = res.json["content"]
     assert len(content) == 2
 
@@ -55,11 +59,14 @@ def test_post_local_image(client, test_png_data, test_jpg_data):
 
 
 def test_post_remote_image(client):
-    res = client.post("/api/content", data={"type": "remote_image", "src": "testurl"})
+    res = client.post(
+        "/api/content",
+        data={"type": "remote_image", "src": "testurl", "content_stream": "1"},
+    )
     assert res.json["id"] is not None
     assert res.json["posted"] is not None
 
-    res = client.get("/api/content")
+    res = client.get("/api/content?stream=1")
     content = res.json["content"]
     assert len(content) == 1
 
@@ -67,11 +74,13 @@ def test_post_remote_image(client):
 
 
 def test_post_link(client):
-    res = client.post("/api/content", data={"type": "link", "url": "testurl"})
+    res = client.post(
+        "/api/content", data={"type": "link", "url": "testurl", "content_stream": "1"}
+    )
     assert res.json["id"] is not None
     assert res.json["posted"] is not None
 
-    res = client.get("/api/content")
+    res = client.get("/api/content?stream=1")
     content = res.json["content"]
     assert len(content) == 1
 
@@ -81,7 +90,12 @@ def test_post_link(client):
 def test_post_captioned_link(client):
     res = client.post(
         "/api/content",
-        data={"type": "link", "url": "testurl", "caption_body": "Test caption"},
+        data={
+            "type": "link",
+            "url": "testurl",
+            "caption_body": "Test caption",
+            "content_stream": "1",
+        },
     )
     assert res.json["id"] is not None
     assert res.json["posted"] is not None
@@ -90,7 +104,12 @@ def test_post_captioned_link(client):
 
     res = client.post(
         "/api/content",
-        data={"type": "link", "url": "testurl", "caption_title": "Becomes body"},
+        data={
+            "type": "link",
+            "url": "testurl",
+            "caption_title": "Becomes body",
+            "content_stream": "1",
+        },
     )
     assert res.json["id"] is not None
     assert res.json["posted"] is not None
@@ -104,12 +123,13 @@ def test_post_captioned_link(client):
             "url": "testurl",
             "caption_title": "Title",
             "caption_body": "Body",
+            "content_stream": "1",
         },
     )
     assert res.json["id"] is not None
     assert res.json["posted"] is not None
 
-    res = client.get("/api/content")
+    res = client.get("/api/content?stream=1")
     content = res.json["content"]
     assert len(content) == 3
 
@@ -138,12 +158,13 @@ def test_cant_access_private_routes(unauthorized_client):
     assert_redirects_login(client.post("/api/departments/1/people", data={}))
     assert_redirects_login(client.delete("/api/departments/1/people/1", data={}))
     assert_redirects_login(client.post("/api/departments/1/display_groups", data={}))
+    assert_redirects_login(client.post("/api/content_streams", data={}))
 
 
 def test_post_text(client):
     """Test that content can be posted over the web API and then
     successfully retrieved"""
-    res = client.get("/api/content")
+    res = client.get("/api/content?stream=1")
 
     assert res.json == {"content": []}
 
@@ -152,11 +173,13 @@ def test_post_text(client):
             "type": "text",
             "title": "title1",
             "body": "body1",
+            "content_stream": "1",
         },
         {
             "type": "text",
             "title": "title2",
             "body": "body2",
+            "content_stream": "1",
         },
     ]
 
@@ -179,7 +202,7 @@ def test_post_text(client):
     assert res2.json["id"] != res1.json["id"]
     assert res2.json["posted"] > res1.json["posted"]
 
-    res = client.get("/api/content")
+    res = client.get("/api/content?stream=1")
     content = res.json["content"]
     assert len(content) == 2
 
@@ -202,3 +225,50 @@ def test_invalid_dept_should_404(client):
     assert (
         client.get("/display/10000/1").status == "404 NOT FOUND"
     ), "Expected 404 from /display/10000/1"
+
+
+def test_post_content_stream(client):
+    stream_ids = []
+    for target in [{"department": 1}, {"display_group": 1}, dict()]:
+        res = client.post(
+            "/api/content_streams", data=combine(target, {"name": "stream"})
+        )
+        assert res.status == "200 OK"
+        stream_ids.append(res.json["id"])
+
+    content_ids = dict()
+    for stream in stream_ids:
+        data = {
+            "type": "text",
+            "title": "title1",
+            "body": "body1",
+            "content_stream": stream,
+        }
+        res = client.post("/api/content", data=data)
+        assert res.status == "200 OK"
+        content_ids[stream] = res.json["id"]
+
+    assert len(client.get("/api/content").json["content"]) == 0
+
+    for stream, content_id in content_ids.items():
+        res = client.get(f"/api/content?stream={stream}")
+        assert res.status == "200 OK"
+        stream_content = res.json["content"]
+        assert len(stream_content) == 1
+        assert stream_content[0]["id"] == content_id
+
+    stream_1_and_2 = client.get(
+        f"/api/content?stream={stream_ids[0]}&stream={stream_ids[1]}"
+    ).json["content"]
+    assert len(stream_1_and_2) == 2
+    assert any(
+        content["id"] == content_ids[stream_ids[0]] for content in stream_1_and_2
+    )
+    assert any(
+        content["id"] == content_ids[stream_ids[1]] for content in stream_1_and_2
+    )
+
+    all_streams = client.get(
+        f"/api/content?{'&'.join(f'stream={stream}' for stream in stream_ids)}"
+    ).json["content"]
+    assert len(all_streams) == 3
