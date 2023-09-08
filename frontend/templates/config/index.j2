@@ -12,6 +12,7 @@
     main();
   </script>
 
+  <a href="/config/content_stream/add">Add public content stream</a>
 
   {%- macro content_stream() -%}
     {# <!--  [html-validate-disable-next multiple-labeled-controls] --> Doesn't understand J2 syntax #}
@@ -24,7 +25,7 @@
           {%- endfor -%}
         </optgroup>
 
-        {%- for dept, streams in content_streams.by_department -%}
+        {%- for dept, streams in content_streams.by_department.items() -%}
           <optgroup label="Department: {{ dept }}">
             {%- for stream in streams -%}
               <option value="{{ stream.id }}">{{ stream.name }}</option>
@@ -32,7 +33,7 @@
           </optgroup>
         {%- endfor -%}
 
-        {%- for group, streams in content_streams.by_display_group -%}
+        {%- for group, streams in content_streams.by_display_group.items() -%}
           <optgroup label="Display group: {{ group }}">
             {%- for stream in streams -%}
               <option value="{{ stream.id }}">{{ stream.name }}</option>

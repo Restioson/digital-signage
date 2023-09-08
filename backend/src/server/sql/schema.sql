@@ -34,9 +34,10 @@ CREATE TABLE IF NOT EXISTS content_streams (
   display_group INTEGER REFERENCES display_groups(id) ON DELETE CASCADE,
   department INTEGER REFERENCES departments(id) ON DELETE CASCADE,
   CHECK (
-    (
-      CAST(display_group IS NOT NULL AS INTEGER) + CAST(department IS NOT NULL AS INTEGER)
-    ) <= 1
+    NOT (
+      department IS NOT NULL
+      AND display_group IS NOT NULL
+    )
   ) -- Only one (or none, for public) must be present
 );
 CREATE TABLE IF NOT EXISTS people (
