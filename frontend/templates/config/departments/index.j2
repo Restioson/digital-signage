@@ -18,12 +18,44 @@
         {%- if department.display_groups -%}
           <ul>
             {%- for group in department.display_groups -%}
-              <li><a href="/display/{{ group.id }}">{{ group.name }}</a></li>
+              <li>
+                <a href="/display/{{ group.id }}">{{ group.name }}</a>
+                {%- if group.content_streams -%}
+                  <ul>
+                    {%- for stream in group.content_streams -%}
+                      <li>{{ stream.name }} (ID: {{ stream.id }})</li>
+                    {%- endfor -%}
+                  </ul>
+                {%- endif -%}
+                <p>
+                  <a href="/config/content_stream/add?group={{ group.id }}"
+                    >Add content stream</a
+                  >
+                </p>
+              </li>
             {%- endfor -%}
           </ul>
         {%- else -%}
           <p>This department has no display groups.</p>
         {%- endif -%}
+
+        <a href="/config/departments/{{ department.id }}/display_group/add"
+          >Add display group</a
+        >
+
+        <h4>Content streams:</h4>
+        {%- if department.content_streams -%}
+          <ul>
+            {%- for stream in department.content_streams -%}
+              <li>{{ stream.name }} (ID: {{ stream.id }})</li>
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          <p>This department owns no content streams.</p>
+        {%- endif -%}
+        <a href="/config/content_stream/add?department={{ department.id }}"
+          >Add content stream</a
+        >
       </div>
     {%- endfor -%}
   </div>

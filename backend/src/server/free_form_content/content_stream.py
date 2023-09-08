@@ -68,6 +68,6 @@ class ContentStream:
         """Parse the given form into a ContentStream object"""
         return ContentStream(
             name=form["name"],
-            display_group=form.get("display_group"),
-            department=form.get("department"),
+            display_group=int(group) if (group := form.get("display_group")) else None,
+            department=int(dept) if (dept := form.get("department")) else None,
         )
