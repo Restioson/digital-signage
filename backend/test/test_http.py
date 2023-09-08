@@ -1,6 +1,8 @@
 import time
 from pathlib import Path
 
+from server.util import combine
+
 data_folder = Path(__file__).parent / "data"
 
 
@@ -223,3 +225,50 @@ def test_invalid_dept_should_404(client):
     assert (
         client.get("/display/10000/1").status == "404 NOT FOUND"
     ), "Expected 404 from /display/10000/1"
+
+
+def test_post_content_stream(client):
+    stream_ids = []
+    for target in [{"department": 1}, {"display_group": 1}, dict()]:
+        res = client.post(
+            "/api/content_streams", data=combine(target, {"name": "stream"})
+        )
+        assert res.status == "200 OK"
+        stream_ids.append(res.json["id"])
+
+    content_ids = dict()
+    for stream in stream_ids:
+        data = {
+            "type": "text",
+            "title": "title1",
+            "body": "body1",
+            "content_stream": stream,
+        }
+        res = client.post("/api/content", data=data)
+        assert res.status == "200 OK"
+        content_ids[stream] = res.json["id"]
+
+    assert len(client.get("/api/content").json["content"]) == 0
+
+    for stream, content_id in content_ids.items():
+        res = client.get(f"/api/content?stream={stream}")
+        assert res.status == "200 OK"
+        stream_content = res.json["content"]
+        assert len(stream_content) == 1
+        assert stream_content[0]["id"] == content_id
+
+    stream_1_and_2 = client.get(
+        f"/api/content?stream={stream_ids[0]}&stream={stream_ids[1]}"
+    ).json["content"]
+    assert len(stream_1_and_2) == 2
+    assert any(
+        content["id"] == content_ids[stream_ids[0]] for content in stream_1_and_2
+    )
+    assert any(
+        content["id"] == content_ids[stream_ids[1]] for content in stream_1_and_2
+    )
+
+    all_streams = client.get(
+        f"/api/content?{'&'.join(f'stream={stream}' for stream in stream_ids)}"
+    ).json["content"]
+    assert len(all_streams) == 3
