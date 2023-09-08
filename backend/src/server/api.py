@@ -16,7 +16,7 @@ from server.display_group import DisplayGroup
 from server.free_form_content import BinaryContent
 from server.free_form_content.content_stream import ContentStream
 from server.user import User
-
+from server.valid_redirect import url_has_allowed_host_and_scheme
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
@@ -158,7 +158,14 @@ def login_route():
         user = DatabaseController.get().try_login(form["email"], form["password"])
         if user:
             login_user(user)
-            return redirect(url_for("config_view.index"))
+
+            redirect_to = flask.request.args.get("next")
+            # url_has_allowed_host_and_scheme should check if the url is safe
+            if not url_has_allowed_host_and_scheme(redirect_to, flask.request.host):
+                print(redirect_to, flask.request.host)
+                return flask.abort(400)
+
+            return flask.redirect(redirect_to or flask.url_for("config_view.index"))
         else:
             return flask.abort(401)
             # custom error
