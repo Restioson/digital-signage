@@ -12,9 +12,13 @@
     main();
   </script>
 
-  <form action="/api/display_groups" method="post" class="post-form">
-    <input type="hidden" name="department_id" value="department_id" />
 
+  {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
+  <form
+    action="/api/departments/{{ department_id }}/display_groups"
+    method="post"
+    class="post-form"
+  >
     <h3>Create display group</h3>
     <label for="name">Name:</label>
     <input id="name" name="name" type="text" />
