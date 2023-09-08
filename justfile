@@ -13,14 +13,14 @@ venv:
 
 setup: venv
     npm install
-    {{ pip }} install -e ./backend[test] --quiet
+    {{ pip }} install -e ./backend[test]
 
 alias fmt := format
 
 test: test-backend test-frontend
 
 test-backend:
-    ./venv/bin/pytest
+    ./venv/bin/pytest -W ignore::DeprecationWarning
 
 test-frontend:
     cd frontend && npx mocha
