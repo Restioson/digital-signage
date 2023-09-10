@@ -3,13 +3,13 @@ INSERT INTO
 VALUES
   (1, 'Default', 'Default department');
 INSERT INTO
-  display_groups (id, name, department, layout_json)
+  display_groups (id, name, department, layout_xml)
 VALUES
   (
     1,
     'Default',
     1,
-    '{ "type": "container", "children": [ {"type": "clock"}, {"type": "department"}, {"type": "content_stream", "streams": [1]} ] }'
+    '<container> <clock> <department> <content_stream><stream id="1"></content_stream> </container>'
   );
 INSERT INTO
   content_streams (id, name)

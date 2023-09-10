@@ -1,8 +1,8 @@
-import { WithClasses } from '../with_classes.mjs'
 import { WithRefresh } from '../dynamic/with_refresh.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
-import { deserializeWidget } from '../deserializable/widget_deserialization_factory.mjs'
 import { Container } from '../containers/container.mjs'
+import { WithClasses } from '../with_classes.mjs'
+import { deserializeFreeFormContent } from './free_form_content_factory.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
 
@@ -46,14 +46,18 @@ export class ContentStream extends DeserializableWidget {
     }
 
     if (dirty) {
-      this.children = update.content.map(content => deserializeWidget(content))
+      this.children = update.content.map(content =>
+        deserializeFreeFormContent(content)
+      )
     }
 
     return dirty
   }
 
-  static fromJson (obj) {
-    return new ContentStream(obj)
+  static fromXML (tag) {
+    return new ContentStream({
+      streams: tag.children().map(stream => parseInt(stream.attribute('id')))
+    })
   }
 
   build () {

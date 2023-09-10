@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { JSDOM } from 'jsdom'
-import { deserializeWidget } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
+import { deserializeFreeFormContent } from '../static/widgets/free_form_content/free_form_content_factory.mjs'
 
 describe('Widget', function () {
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe('Widget', function () {
         const title = 't'
         const body = 'b'
         checkRenderedText(
-          deserializeWidget({ type: 'text', title, body }).render(),
+          deserializeFreeFormContent({ type: 'text', title, body }).render(),
           title,
           body
         )
@@ -33,7 +33,7 @@ describe('Widget', function () {
       it('render', function () {
         const id = 1
         checkRenderedLocalImage(
-          deserializeWidget({ type: 'local_image', id }).render(),
+          deserializeFreeFormContent({ type: 'local_image', id }).render(),
           id
         )
       })
@@ -43,7 +43,7 @@ describe('Widget', function () {
       it('render', function () {
         const url = 'https://example.com/'
         checkRenderedRemoteImage(
-          deserializeWidget({
+          deserializeFreeFormContent({
             type: 'remote_image',
             src: url
           }).render(),
@@ -55,7 +55,7 @@ describe('Widget', function () {
     describe('Link', function () {
       it('render', function () {
         const url = 'https://example.com/'
-        const out = deserializeWidget({ type: 'link', url }).render()
+        const out = deserializeFreeFormContent({ type: 'link', url }).render()
         checkRenderedLink(out, url)
         assert(out.children[1].children[1].hidden)
       })
@@ -65,7 +65,7 @@ describe('Widget', function () {
         const title = 'Hello'
         const body = 'there'
         checkRenderedLinkCaptionedTitleBody(
-          deserializeWidget({
+          deserializeFreeFormContent({
             type: 'link',
             url,
             caption: { title, body }
@@ -80,7 +80,7 @@ describe('Widget', function () {
         const url = 'https://example.com/'
         const body = 'body of caption'
         checkRenderedLinkCaptionedBody(
-          deserializeWidget({
+          deserializeFreeFormContent({
             type: 'link',
             url,
             caption: { body }
@@ -94,7 +94,7 @@ describe('Widget', function () {
     describe('Qrcode', function () {
       it('render', function () {
         const url = 'https://example.com/'
-        const out = deserializeWidget({
+        const out = deserializeFreeFormContent({
           type: 'qrcode_content',
           url
         }).render()
@@ -107,7 +107,7 @@ describe('Widget', function () {
         const title = 'Hello'
         const body = 'there'
         checkRenderedQrcodeCaptionedTitleBody(
-          deserializeWidget({
+          deserializeFreeFormContent({
             type: 'qrcode_content',
             url,
             caption: { title, body }
@@ -122,7 +122,7 @@ describe('Widget', function () {
         const url = 'https://example.com/'
         const body = 'body of caption'
         checkRenderedQrcodeCaptionedBody(
-          deserializeWidget({
+          deserializeFreeFormContent({
             type: 'qrcode_content',
             url,
             caption: { body }

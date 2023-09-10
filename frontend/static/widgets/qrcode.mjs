@@ -23,9 +23,7 @@ export class Qrcode extends Widget {
     imageElement.src = '/static/QRcode_failure.jpg'
 
     imageElement.addEventListener('load', () => {
-      console.log('drawing')
       canvas.getContext('2d').drawImage(imageElement, 0, 0, 100, 100)
-      console.log('drawn')
     })
   }
 

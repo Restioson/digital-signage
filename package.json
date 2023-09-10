@@ -4,7 +4,6 @@
   "type": "module",
   "devDependencies": {
     "html-validate": "^8.1.0",
-    "moment": "^2.29.4",
     "jsdom": "^22.1.0",
     "mocha": "^10.2.0",
     "prettier": "^2.8.8",
@@ -12,8 +11,7 @@
     "prettier-standard": "^15.0.1",
     "standard": "^17.1.0",
     "stylelint": "^15.10.2",
-    "stylelint-config-standard": "^34.0.0",
-    "qrcode": "^1.5.3"
+    "stylelint-config-standard": "^34.0.0"
   },
   "standard": {
     "globals": [
@@ -28,6 +26,8 @@
     ]
   },
   "dependencies": {
+    "qrcode": "^1.5.3",
+    "fast-xml-parser": "^4.2.7",
     "moment": "^2.29.4"
   }
 }

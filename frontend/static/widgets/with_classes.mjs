@@ -1,8 +1,7 @@
 import { Widget } from './widget.mjs'
 import { WithRefresh } from './dynamic/with_refresh.mjs'
 import { AssertionError } from '../util.mjs'
-import { DeserializableWidget } from './deserializable/deserializable_widget.mjs'
-import { deserializeWidget } from './deserializable/widget_deserialization_factory.mjs'
+import { WithHTMLAttrs } from './deserializable/with_html_attrs.mjs'
 
 /**
  * A {@link Widget} which (additively) applies the given CSS classes to its child.
@@ -12,7 +11,7 @@ import { deserializeWidget } from './deserializable/widget_deserialization_facto
  *
  * @augments Widget
  */
-export class WithClasses extends DeserializableWidget {
+export class WithClasses extends Widget {
   /**
    * @param {HTMLElement | Widget} child
    * @param {string[]} classList
@@ -33,18 +32,9 @@ export class WithClasses extends DeserializableWidget {
   }
 
   build () {
-    const rendered = Widget.renderIfWidget(this.child)
-    if (this.classList) {
-      rendered.classList.add(...this.classList)
-    }
-
-    return rendered
-  }
-
-  static fromJSON (obj) {
-    return new WithClasses({
-      child: deserializeWidget(obj.child),
-      classList: obj.classList
+    return new WithHTMLAttrs({
+      child: this.child,
+      attributes: { class: this.classList.join(' ') }
     })
   }
 }

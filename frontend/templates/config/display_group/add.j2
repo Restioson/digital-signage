@@ -23,17 +23,17 @@
     <label for="name">Name:</label>
     <input id="name" name="name" type="text" />
 
-    <label for="layout_json">Layout JSON:</label>
-    <textarea id="layout_json" name="layout_json" rows="10">
-{
-    "type": "content_and_caption",
-    "content": {
-        "type": "clock"
-    },
-    "caption": {
-        "body": "Current time"
-    }
-}
+    <label for="layout_xml">Layout XML:</label>
+    <!-- [html-validate-disable no-unknown-elements, element-permitted-content, attr-spacing, close-attr, no-self-closing, element-name, element-permitted-parent] -->
+    <textarea id="layout_xml" name="layout_xml" rows="10">
+    <content_and_caption>
+        <content>
+            <clock/>
+        </content>
+        <caption>
+            <body>Current time</body>
+        </caption>
+    </content_and_caption>
     </textarea
     >
 

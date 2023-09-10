@@ -1,6 +1,6 @@
 import { Widget } from '../widget.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
-import { deserializeWidget } from '../deserializable/widget_deserialization_factory.mjs'
+import { deserializeWidgetFromTag } from '../deserializable/widget_deserialization_factory.mjs'
 
 /**
  * A {@link Widget} which just displays its children as children of an {@link HTMLDivElement}.
@@ -24,7 +24,9 @@ export class Container extends DeserializableWidget {
     return container
   }
 
-  static fromJSON (obj) {
-    return new Container({ children: obj.children.map(deserializeWidget) })
+  static fromXML (tag) {
+    return new Container({
+      children: tag.children().map(deserializeWidgetFromTag)
+    })
   }
 }

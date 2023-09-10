@@ -1,10 +1,9 @@
 import { Root } from './widgets/root.mjs'
-import { deserializeWidget } from './widgets/deserializable/widget_deserialization_factory.mjs'
+import { deserializeWidgetFromXML } from './widgets/deserializable/widget_deserialization_factory.mjs'
 
-export function main (configJson) {
-  const { department, layout } = JSON.parse(configJson)
+export function main ({ department, layout }) {
   Root.create({
-    child: deserializeWidget(layout),
+    child: deserializeWidgetFromXML(layout),
     targetElement: document.getElementById('root'),
     departmentId: department
   })

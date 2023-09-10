@@ -1,15 +1,16 @@
 import { JSDOM } from 'jsdom'
-import { WithClasses } from '../static/widgets/with_classes.mjs'
 import assert from 'assert'
 import { Caption } from '../static/widgets/caption.mjs'
 import { Container } from '../static/widgets/containers/container.mjs'
 import { Visibility } from '../static/widgets/visibility.mjs'
 import { ContentAndCaption } from '../static/widgets/containers/content_and_caption.mjs'
 import { WithRefresh } from '../static/widgets/dynamic/with_refresh.mjs'
-import { deserializeWidget } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
+import { deserializeWidgetFromXML } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
 import { Clock } from '../static/widgets/clock.js'
 import { main } from '../static/display.mjs'
 import { testExports } from '../static/widgets/root.mjs'
+import { WithClasses } from '../static/widgets/with_classes.mjs'
+import { WithHTMLAttrs } from '../static/widgets/deserializable/with_html_attrs.mjs'
 
 describe('Widget', function () {
   beforeEach(() => {
@@ -33,9 +34,11 @@ describe('Widget', function () {
     })
 
     it('loads entire layout and renders', function () {
-      main(
-        '{ "department": 1, "layout": { "type": "container", "children": [ {"type": "clock"}, {"type": "department"}, {"type": "content_stream", "streams": [1] } ] } }'
-      )
+      main({
+        department: 1,
+        layout:
+          "<container><clock> <department> <content_stream><stream id='1'></content_stream></container>"
+      })
       const root = document.getElementById('root')
       assert.equal(root.children.length, 1)
 
@@ -60,13 +63,14 @@ describe('Widget', function () {
     })
   })
 
-  describe('WithClasses', function () {
+  describe('WithHTMLAttrs', function () {
     const classList = ['test-class-1', 'test-class-2']
+    const attributes = { class: 'test-class-1 test-class-2' }
 
     it('adds classes', function () {
-      const widget = new WithClasses({
+      const widget = new WithHTMLAttrs({
         child: document.createElement('p'),
-        classList
+        attributes
       })
 
       assert.deepStrictEqual(Array.from(widget.render().classList), classList)
@@ -77,7 +81,7 @@ describe('Widget', function () {
       const child = document.createElement('p')
       child.className = preexisting
 
-      const widget = new WithClasses({ child, classList })
+      const widget = new WithHTMLAttrs({ child, attributes })
 
       assert.deepStrictEqual(
         Array.from(widget.render().classList),
@@ -87,7 +91,7 @@ describe('Widget', function () {
 
     it('works with widget children', function () {
       const child = new Caption({ title: 'Title', body: 'Body' })
-      const widget = new WithClasses({ child, classList })
+      const widget = new WithHTMLAttrs({ child, attributes })
 
       const expected = child.render()
       expected.classList.add(...classList)
@@ -107,17 +111,17 @@ describe('Widget', function () {
     })
 
     it('deserializes', function () {
-      const obj = {
-        type: 'with_classes',
-        classList: ['someClass1', 'someClass2'],
-        child: { type: 'clock', format: 'h:mm:ss' }
-      }
+      const xml = `
+        <clock html:id="1" html:class="someClass1 someClass2" format="h:mm:ss">
+      `
 
-      const widget = deserializeWidget(obj)
-      assert(widget instanceof WithClasses)
-      assert.deepStrictEqual(Array.from(widget.classList), obj.classList)
+      const widget = deserializeWidgetFromXML(xml)
+      assert(widget instanceof WithHTMLAttrs)
+      assert.equal(widget.attributes.id, '1')
+      assert.equal(widget.attributes.class, 'someClass1 someClass2')
+
       assert(widget.child instanceof Clock)
-      assert.equal(widget.child.format, obj.child.format)
+      assert.equal(widget.child.format, 'h:mm:ss')
     })
   })
 
@@ -146,20 +150,15 @@ describe('Widget', function () {
     })
 
     it('deserializes', function () {
-      const obj = {
-        type: 'container',
-        children: [
-          { type: 'clock', format: 'h:mm:ss' },
-          { type: 'clock', format: 'h:mm:ss a' }
-        ]
-      }
+      const xml =
+        '<container><clock format="h:mm:ss"/> <clock format="h:mm:ss a"/></container>'
 
-      const widget = deserializeWidget(obj)
+      const widget = deserializeWidgetFromXML(xml)
       assert(widget instanceof Container)
       assert(widget.children[0] instanceof Clock)
-      assert.equal(widget.children[0].format, obj.children[0].format)
+      assert.equal(widget.children[0].format, 'h:mm:ss')
       assert(widget.children[1] instanceof Clock)
-      assert.equal(widget.children[1].format, obj.children[1].format)
+      assert.equal(widget.children[1].format, 'h:mm:ss a')
     })
   })
 
@@ -189,16 +188,13 @@ describe('Widget', function () {
     })
 
     it('deserializes', function () {
-      const obj = {
-        type: 'caption',
-        title: 'myTitle',
-        body: 'myBody'
-      }
+      const xml =
+        '<caption><title>myTitle</title> <body>myBody</body></caption>'
 
-      const widget = deserializeWidget(obj)
+      const widget = deserializeWidgetFromXML(xml)
       assert(widget instanceof Caption)
-      assert.equal(widget.title, obj.title)
-      assert.equal(widget.body, obj.body)
+      assert.equal(widget.title, 'myTitle')
+      assert.equal(widget.body, 'myBody')
     })
   })
 
@@ -235,19 +231,25 @@ describe('Widget', function () {
     })
 
     it('deserializes', function () {
-      const obj = {
-        type: 'content_and_caption',
-        caption: { title: 'myTitle', body: 'myBody1' },
-        content: { type: 'clock', format: 'h:mm:ss' }
-      }
+      const xml = `
+        <content_and_caption>
+            <caption>
+                <title>myTitle</title>
+                <body>myBody</body>
+            </caption>
+            <content>
+                <clock format='h:mm:ss'>
+            </content>
+        </content_and_caption>
+      `
 
-      const widget = deserializeWidget(obj)
+      const widget = deserializeWidgetFromXML(xml)
       assert(widget instanceof ContentAndCaption)
       assert(widget.content instanceof Clock)
-      assert.equal(widget.content.format, obj.content.format)
+      assert.equal(widget.content.format, 'h:mm:ss')
       assert(widget.caption instanceof Caption)
-      assert.equal(widget.caption.title, obj.caption.title)
-      assert.equal(widget.caption.body, obj.caption.body)
+      assert.equal(widget.caption.title, 'myTitle')
+      assert.equal(widget.caption.body, 'myBody')
     })
   })
 })
