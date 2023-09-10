@@ -8,6 +8,7 @@ import { Container } from '../containers/container.mjs'
 import { WithHTMLAttrs } from './with_html_attrs.mjs'
 import { XMLTag } from './xml_tag.mjs'
 import { HtmlWidget } from '../html.mjs'
+import { ScriptWidget } from '../script.mjs'
 const { XMLParser } = await importFromNpm('fast-xml-parser')
 
 /**
@@ -25,7 +26,7 @@ export function deserializeWidgetFromXML (xml) {
     allowBooleanAttributes: true,
     parseAttributeValue: true,
     processEntities: false,
-    stopNodes: ['*.html'],
+    stopNodes: ['*.html', '*.style', '*.script'],
     unpairedTags: ['clock', 'department', 'stream']
   }
 
@@ -79,6 +80,8 @@ function deserializeWidgetRaw (tag) {
       return Department.fromXML(tag)
     case 'content_stream':
       return ContentStream.fromXML(tag)
+    case 'script':
+      return ScriptWidget.fromXML(tag)
     case 'html':
       return HtmlWidget.fromXML(tag)
     default:
