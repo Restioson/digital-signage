@@ -48,6 +48,7 @@ export function deserializeWidgetFromTag (tag) {
   const htmlAttrs = Object.getOwnPropertyNames(tag.attributes).filter(attr =>
     attr.startsWith('html:')
   )
+
   if (htmlAttrs.length > 0) {
     return new WithHTMLAttrs({
       attributes: Object.fromEntries(

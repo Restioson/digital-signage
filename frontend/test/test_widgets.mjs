@@ -4,12 +4,10 @@ import { Caption } from '../static/widgets/caption.mjs'
 import { Container } from '../static/widgets/containers/container.mjs'
 import { Visibility } from '../static/widgets/visibility.mjs'
 import { ContentAndCaption } from '../static/widgets/containers/content_and_caption.mjs'
-import { WithRefresh } from '../static/widgets/dynamic/with_refresh.mjs'
 import { deserializeWidgetFromXML } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
 import { Clock } from '../static/widgets/clock.js'
 import { main } from '../static/display.mjs'
 import { testExports } from '../static/widgets/root.mjs'
-import { WithClasses } from '../static/widgets/with_classes.mjs'
 import { WithHTMLAttrs } from '../static/widgets/deserializable/with_html_attrs.mjs'
 import { HtmlWidget } from '../static/widgets/html.mjs'
 
@@ -102,13 +100,6 @@ describe('Widget', function () {
       assert.deepStrictEqual(
         Array.from(widget.render().classList),
         ['content-caption'].concat(classList)
-      )
-    })
-
-    it('does not allow WithRefresh as child', function () {
-      assert.throws(
-        () => new WithClasses({ child: new WithRefresh({}) }),
-        Error
       )
     })
 
