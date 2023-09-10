@@ -7,6 +7,7 @@ import { ContentAndCaption } from '../containers/content_and_caption.mjs'
 import { Container } from '../containers/container.mjs'
 import { WithHTMLAttrs } from './with_html_attrs.mjs'
 import { XMLTag } from './xml_tag.mjs'
+import { HtmlWidget } from '../html.mjs'
 const { XMLParser } = await importFromNpm('fast-xml-parser')
 
 /**
@@ -78,6 +79,8 @@ function deserializeWidgetRaw (tag) {
       return Department.fromXML(tag)
     case 'content_stream':
       return ContentStream.fromXML(tag)
+    case 'html':
+      return HtmlWidget.fromXML(tag)
     default:
       throw new UnknownWidgetTypeError(tag.type)
   }

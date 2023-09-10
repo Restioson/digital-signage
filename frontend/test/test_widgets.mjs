@@ -11,6 +11,7 @@ import { main } from '../static/display.mjs'
 import { testExports } from '../static/widgets/root.mjs'
 import { WithClasses } from '../static/widgets/with_classes.mjs'
 import { WithHTMLAttrs } from '../static/widgets/deserializable/with_html_attrs.mjs'
+import { HtmlWidget } from '../static/widgets/html.mjs'
 
 describe('Widget', function () {
   beforeEach(() => {
@@ -25,6 +26,7 @@ describe('Widget', function () {
 
     global.window = dom.window
     global.document = dom.window.document
+    global.DOMParser = dom.window.DOMParser
   })
 
   describe('DeserializableWidget', function () {
@@ -250,6 +252,29 @@ describe('Widget', function () {
       assert(widget.caption instanceof Caption)
       assert.equal(widget.caption.title, 'myTitle')
       assert.equal(widget.caption.body, 'myBody')
+    })
+  })
+
+  describe('HtmlWidget', function () {
+    it('renders', function () {
+      const element = document.createElement('p')
+      element.textContent = 'h'
+      assert.deepStrictEqual(new HtmlWidget({ element }).render(), element)
+    })
+
+    it('deserializes', function () {
+      const deser = deserializeWidgetFromXML('<html><p>h</p></html>').render()
+      assert.equal(deser.tagName, 'P')
+      assert.equal(deser.textContent, 'h')
+
+      const deserDiv = deserializeWidgetFromXML(
+        '<html><p>Ah</p> Text <p>Eh</p></html>'
+      ).render()
+      assert.equal(deserDiv.tagName, 'DIV')
+      assert.equal(deserDiv.children.length, 2)
+      assert.equal(deserDiv.children[0].textContent, 'Ah')
+      assert.equal(deserDiv.children[1].textContent, 'Eh')
+      assert.equal(deserDiv.textContent, 'Ah Text Eh')
     })
   })
 })
