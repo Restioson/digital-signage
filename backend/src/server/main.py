@@ -1,8 +1,17 @@
 from flask import Flask
-from server import config_view, display_view, index, api, login, registration
+from server import (
+    config_view,
+    display_view,
+    index,
+    api,
+    login,
+    registration,
+)
+from server.loadshedding import Loadshedding
 from flask_login import LoginManager
 from server.database import DatabaseController
 from server.user import User
+import threading
 
 
 def create_app(testing=False):
@@ -44,4 +53,13 @@ def create_app(testing=False):
     def teardown_db(exception):
         DatabaseController.teardown()
 
+    repeat_update_loadshedding(Loadshedding.interval, app.app_context())
     return app
+
+
+def repeat_update_loadshedding(interval, app):
+    app.push()
+    timer = threading.Timer(interval, repeat_update_loadshedding, args=[interval, app])
+    timer.daemon = True
+    timer.start()
+    Loadshedding.update_loadsheding_schedule(1, app)

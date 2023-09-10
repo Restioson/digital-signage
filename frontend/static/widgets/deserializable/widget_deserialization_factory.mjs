@@ -1,6 +1,7 @@
 import { importFromNpm, UnknownWidgetTypeError } from '../../util.mjs'
 import { Caption } from '../caption.mjs'
 import { Clock } from '../clock.js'
+import { Loadshedding } from '../loadshedding.mjs'
 import { Department } from '../department/department.mjs'
 import { ContentStream } from '../free_form_content/content_stream.mjs'
 import { ContentAndCaption } from '../containers/content_and_caption.mjs'
