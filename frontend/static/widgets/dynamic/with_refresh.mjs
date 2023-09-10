@@ -1,5 +1,6 @@
 import { Widget } from '../widget.mjs'
 import { Root } from '../root.mjs'
+import { WithHTMLAttrs } from '../deserializable/with_html_attrs.mjs'
 
 /**
  * A {@link Widget} which is refreshed at regular intervals. It is completely rebuilt and replaced in-place upon
@@ -38,7 +39,13 @@ export class WithRefresh extends Widget {
 
     let newElement = element
     if (dirty) {
-      newElement = this.renderChild()
+      const attributes = {}
+
+      for (const attr of element.getAttributeNames()) {
+        attributes[attr] = element.getAttribute(attr)
+      }
+
+      newElement = this.renderChild(attributes)
       element.replaceWith(newElement)
     }
 
@@ -51,8 +58,11 @@ export class WithRefresh extends Widget {
    * @private
    * @returns {HTMLElement}
    */
-  renderChild () {
-    return Widget.renderIfWidget(this.builder())
+  renderChild (oldAttributes) {
+    return new WithHTMLAttrs({
+      child: Widget.renderIfWidget(this.builder()),
+      attributes: oldAttributes
+    }).render()
   }
 
   build () {
