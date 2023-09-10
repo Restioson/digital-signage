@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS display_groups (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
   department INTEGER NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
-  layout_json TEXT NOT NULL
+  layout_xml TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS group_by_department ON display_groups(department);
 CREATE TABLE IF NOT EXISTS users (

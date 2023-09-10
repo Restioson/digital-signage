@@ -27,6 +27,6 @@ def display_group(department_id: int, group_id: int):
         "display.j2",
         display_config={
             "department": department_id,
-            "layout": group.layout_json,
+            "layout": group.layout_xml,
         },
     )

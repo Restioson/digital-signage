@@ -161,7 +161,6 @@ def login_route():
             redirect_to = flask.request.args.get("next")
             # url_has_allowed_host_and_scheme should check if the url is safe
             if not url_has_allowed_host_and_scheme(redirect_to, flask.request.host):
-                print(redirect_to, flask.request.host)
                 return flask.abort(400)
 
             return flask.redirect(redirect_to or flask.url_for("config_view.index"))

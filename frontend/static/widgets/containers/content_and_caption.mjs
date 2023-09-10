@@ -1,7 +1,7 @@
 import { Container } from './container.mjs'
 import { Visibility } from '../visibility.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
-import { deserializeWidget } from '../deserializable/widget_deserialization_factory.mjs'
+import { deserializeWidgetFromTag } from '../deserializable/widget_deserialization_factory.mjs'
 import { Caption } from '../caption.mjs'
 
 /**
@@ -19,10 +19,10 @@ export class ContentAndCaption extends DeserializableWidget {
     this.caption = caption
   }
 
-  static fromJSON (obj) {
+  static fromXML (tag) {
     return new ContentAndCaption({
-      content: deserializeWidget(obj.content),
-      caption: Caption.fromJSON(obj.caption)
+      content: deserializeWidgetFromTag(tag.namedChild('content')),
+      caption: Caption.fromXML(tag.typedChild('caption'))
     })
   }
 
