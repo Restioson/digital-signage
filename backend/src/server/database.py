@@ -234,7 +234,7 @@ class DatabaseController:
             cursor.execute(
                 "INSERT INTO display_groups (name, department, layout_xml)"
                 " VALUES (?, ?, ?)",
-                (group.name, department_id, json.dumps(group.layout_xml)),
+                (group.name, department_id, group.layout_xml),
             )
         return cursor.lastrowid
 
