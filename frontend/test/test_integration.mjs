@@ -129,6 +129,8 @@ async function sleepMs (ms) {
 
 describe('API Integration', function () {
   beforeEach(async function () {
+    this.timeout(10000)
+
     // eslint-disable-next-line camelcase
     serverProcess = child_process.spawn('../venv/bin/flask', [
       '--app',
