@@ -9,6 +9,7 @@ import { WithHTMLAttrs } from './with_html_attrs.mjs'
 import { XMLTag } from './xml_tag.mjs'
 import { HtmlWidget } from '../html.mjs'
 import { ScriptWidget } from '../script.mjs'
+import { StyleWidget } from '../style.mjs'
 const { XMLParser } = await importFromNpm('fast-xml-parser')
 
 /**
@@ -83,6 +84,8 @@ function deserializeWidgetRaw (tag) {
       return ContentStream.fromXML(tag)
     case 'script':
       return ScriptWidget.fromXML(tag)
+    case 'style':
+      return StyleWidget.fromXML(tag)
     case 'html':
       return HtmlWidget.fromXML(tag)
     default:
