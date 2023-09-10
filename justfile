@@ -1,3 +1,5 @@
+set dotenv-load := true
+
 python := "./venv/bin/python"
 pip := "./venv/bin/python -m pip"
 ruff := "./venv/bin/ruff"

@@ -76,4 +76,7 @@ CREATE TABLE IF NOT EXISTS files (
   file_content BLOB NOT NULL,
   mime_type TEXT NOT NULL,
   PRIMARY KEY (department_id, filename)
+CREATE TABLE IF NOT EXISTS loadshedding_schedules (
+  id INTEGER PRIMARY KEY,
+  schedule_json TEXT NOT NULL
 );
