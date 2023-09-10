@@ -26,6 +26,12 @@ export class XMLTag {
     return child ? child._children : undefined
   }
 
+  /**
+   * Returns the text inside this element.
+   */
+  text () {
+    return this._children.find(child => child['#text'])['#text']
+  }
 
   /**
    * Takes a child of this tag of the given type.
