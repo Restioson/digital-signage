@@ -1,7 +1,29 @@
-export function main () {
+export function setupPostForms () {
   for (const form of document.getElementsByClassName('post-form')) {
     form.addEventListener('submit', submitPost)
   }
+}
+
+export function choiceOfFieldset (selectorId, fieldsetClass, fieldsetIdPrefix) {
+  const selector = document.getElementById(selectorId)
+  const form = selector.closest('form')
+
+  selector.addEventListener('change', function (event) {
+    for (const element of form.querySelectorAll(`fieldset.${fieldsetClass}`)) {
+      element.hidden = true
+      element.disabled = true
+    }
+
+    const enabled = document.getElementById(
+      `${fieldsetIdPrefix}-${event.target.value}`
+    )
+    enabled.hidden = false
+    enabled.disabled = false
+  })
+
+  const first = document.getElementById(`${fieldsetIdPrefix}-${selector.value}`)
+  first.hidden = false
+  first.disabled = false
 }
 
 class ApiError extends Error {
