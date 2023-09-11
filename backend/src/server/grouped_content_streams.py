@@ -24,3 +24,12 @@ class GroupedContentStreams:
                 )
             else:
                 self.public.append(stream)
+
+    def filter_to_department(self, dept_id: int):
+        """Filter this collection to only the content streams accessible by a new
+        display group in the given department. This modifies this object."""
+
+        self.by_display_group = dict()
+        for_dept = self.by_department.get(dept_id)
+        self.by_department = {dept_id: for_dept} if for_dept else dict()
+        return self
