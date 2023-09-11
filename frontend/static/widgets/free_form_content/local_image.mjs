@@ -38,4 +38,8 @@ export class LocalImage extends FreeFormContent {
       caption: this.caption
     })
   }
+
+  className () {
+    return 'image'
+  }
 }

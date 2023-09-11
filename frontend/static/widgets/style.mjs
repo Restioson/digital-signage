@@ -23,4 +23,8 @@ export class StyleWidget extends DeserializableWidget {
   build () {
     return this.element
   }
+
+  className () {
+    return null
+  }
 }

@@ -1,7 +1,6 @@
 import { WithRefresh } from '../dynamic/with_refresh.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 import { Container } from '../containers/container.mjs'
-import { WithClasses } from '../with_classes.mjs'
 import { deserializeFreeFormContent } from './free_form_content_factory.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
@@ -64,11 +63,11 @@ export class ContentStream extends DeserializableWidget {
     return new WithRefresh({
       refresh: () => this.refresh(),
       period: REFRESH_INTERVAL_MS,
-      builder: () =>
-        new WithClasses({
-          classList: ['content-stream'],
-          child: new Container({ children: this.children })
-        })
+      builder: () => new Container({ children: this.children })
     })
+  }
+
+  className () {
+    return 'content-stream'
   }
 }

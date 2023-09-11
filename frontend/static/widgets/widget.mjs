@@ -35,7 +35,21 @@ export class Widget {
    * @returns {HTMLElement}
    */
   render () {
-    return Widget.renderIfWidget(this.build())
+    const elem = Widget.renderIfWidget(this.build())
+    const className = this.className()
+    if (className) {
+      elem.classList.add(className)
+    }
+    return elem
+  }
+
+  /**
+   * Returns the classname of the widget for CSS styling.
+   * @abstract
+   * @returns ?string the widget's classname
+   */
+  className () {
+    throw new AbstractClassError('Widget', 'className()')
   }
 
   /**

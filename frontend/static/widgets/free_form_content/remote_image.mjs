@@ -42,4 +42,8 @@ export class RemoteImage extends FreeFormContent {
       caption: this.caption
     })
   }
+
+  className () {
+    return 'image'
+  }
 }
