@@ -31,8 +31,8 @@ export class TextWidget extends FreeFormContent {
   build () {
     const title = document.createElement('h3')
     const body = document.createElement('p')
-    title.innerText = this.title
-    body.innerText = this.body
+    title.innerHTML = this.title
+    body.innerHTML = this.body
 
     return new Container({ children: [title, body] })
   }

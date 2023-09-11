@@ -58,12 +58,12 @@ export class Caption extends DeserializableWidget {
     if (this.title) {
       title = document.createElement('p')
       title.className = 'caption-title'
-      title.innerText = this.title
+      title.innerHTML = this.title
     }
 
     const body = document.createElement('p')
     body.className = 'caption-body'
-    body.innerText = this.body
+    body.innerHTML = this.body
 
     return new WithClasses({
       classList: ['content-caption'],
