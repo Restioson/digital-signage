@@ -141,11 +141,11 @@ export function checkRenderedText (out, expectedTitle, expectedBody) {
 
   const title = out.children[0]
   assert.equal(title.tagName, 'H3')
-  assert.equal(title.innerText, expectedTitle)
+  assert.equal(title.innerHTML, expectedTitle)
 
   const body = out.children[1]
   assert.equal(body.tagName, 'P')
-  assert.equal(body.innerText, expectedBody)
+  assert.equal(body.innerHTML, expectedBody)
 
   return out
 }
@@ -198,12 +198,12 @@ export function checkRenderedLinkCaptionedTitleBody (
   const title = caption.children[0]
   assert.equal(title.tagName, 'P')
   assert.equal(title.className, 'caption-title')
-  assert.equal(title.innerText, expectedTitle)
+  assert.equal(title.innerHTML, expectedTitle)
 
   const body = caption.children[1]
   assert.equal(body.tagName, 'P')
   assert.equal(body.className, 'caption-body')
-  assert.equal(body.innerText, expectedBody)
+  assert.equal(body.innerHTML, expectedBody)
 }
 
 export function checkRenderedLinkCaptionedBody (
@@ -222,7 +222,7 @@ export function checkRenderedLinkCaptionedBody (
   const body = caption.children[1]
   assert.equal(body.tagName, 'P')
   assert.equal(body.className, 'caption-body')
-  assert.equal(body.innerText, expectedBody)
+  assert.equal(body.innerHTML, expectedBody)
 
   return out
 }
@@ -252,12 +252,12 @@ export function checkRenderedQrcodeCaptionedTitleBody (
   const title = caption.children[0]
   assert.equal(title.tagName, 'P')
   assert.equal(title.className, 'caption-title')
-  assert.equal(title.innerText, expectedTitle)
+  assert.equal(title.innerHTML, expectedTitle)
 
   const body = caption.children[1]
   assert.equal(body.tagName, 'P')
   assert.equal(body.className, 'caption-body')
-  assert.equal(body.innerText, expectedBody)
+  assert.equal(body.innerHTML, expectedBody)
 }
 
 export function checkRenderedQrcodeCaptionedBody (
@@ -277,7 +277,7 @@ export function checkRenderedQrcodeCaptionedBody (
   const body = caption.children[1]
   assert.equal(body.tagName, 'P')
   assert.equal(body.className, 'caption-body')
-  assert.equal(body.innerText, expectedBody)
+  assert.equal(body.innerHTML, expectedBody)
 
   return out
 }

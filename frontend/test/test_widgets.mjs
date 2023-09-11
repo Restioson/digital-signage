@@ -165,10 +165,10 @@ describe('Widget', function () {
       assert.equal(rendered.className, 'container caption')
       assert.equal(rendered.children[0].tagName, 'P')
       assert.equal(rendered.children[0].className, 'caption-title')
-      assert.equal(rendered.children[0].innerText, 'Title')
+      assert.equal(rendered.children[0].innerHTML, 'Title')
       assert.equal(rendered.children[1].tagName, 'P')
       assert.equal(rendered.children[1].className, 'caption-body')
-      assert.equal(rendered.children[1].innerText, 'Body')
+      assert.equal(rendered.children[1].innerHTML, 'Body')
     })
 
     it('renders without title', function () {
@@ -179,7 +179,7 @@ describe('Widget', function () {
       assert.equal(rendered.children[0].hidden, true)
       assert.equal(rendered.children[1].tagName, 'P')
       assert.equal(rendered.children[1].className, 'caption-body')
-      assert.equal(rendered.children[1].innerText, 'Body')
+      assert.equal(rendered.children[1].innerHTML, 'Body')
     })
 
     it('deserializes', function () {
