@@ -37,7 +37,7 @@ describe('Widget', function () {
       main({
         department: 1,
         layout:
-          "<container><clock> <department> <content_stream><stream id='1'></content_stream></container>"
+          "<container><clock> <department> <content-stream><stream id='1'></content-stream></container>"
       })
       const root = document.getElementById('root')
       assert.equal(root.children.length, 1)
@@ -225,7 +225,7 @@ describe('Widget', function () {
 
     it('deserializes', function () {
       const xml = `
-        <content_and_caption>
+        <content-and-caption>
             <caption>
                 <title>myTitle</title>
                 <body>myBody</body>
@@ -233,7 +233,7 @@ describe('Widget', function () {
             <content>
                 <clock format='h:mm:ss'>
             </content>
-        </content_and_caption>
+        </content-and-caption>
       `
 
       const widget = deserializeWidgetFromXML(xml)
