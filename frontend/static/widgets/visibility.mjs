@@ -24,4 +24,8 @@ export class Visibility extends Widget {
       return placeholder
     }
   }
+
+  className () {
+    return null
+  }
 }

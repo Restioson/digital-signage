@@ -1,7 +1,6 @@
 import { WithRefresh } from './dynamic/with_refresh.mjs'
 import { importFromNpm } from '../util.mjs'
 import { DeserializableWidget } from './deserializable/deserializable_widget.mjs'
-import { WithClasses } from './with_classes.mjs'
 const { default: moment } = await importFromNpm('moment')
 
 /**
@@ -23,12 +22,16 @@ export class Clock extends DeserializableWidget {
       builder: () => {
         const text = document.createElement('div')
         text.innerText = moment().format(this.format)
-        return new WithClasses({ classList: ['clock'], child: text })
+        return text
       }
     })
   }
 
   static fromXML (tag) {
     return new Clock({ format: tag.attribute('format') })
+  }
+
+  className () {
+    return 'clock'
   }
 }

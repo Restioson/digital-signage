@@ -23,4 +23,8 @@ export class HtmlWidget extends DeserializableWidget {
   build () {
     return this.element
   }
+
+  className () {
+    return 'html'
+  }
 }

@@ -48,4 +48,8 @@ export class Qrcode extends Widget {
     }
     return qrCodeContainer
   }
+
+  className () {
+    return 'qrcode'
+  }
 }

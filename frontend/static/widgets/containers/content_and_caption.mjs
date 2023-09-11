@@ -37,4 +37,8 @@ export class ContentAndCaption extends DeserializableWidget {
       ]
     })
   }
+
+  className () {
+    return 'content-and-caption'
+  }
 }

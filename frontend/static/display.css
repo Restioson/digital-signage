@@ -58,14 +58,14 @@
 }
 
 .qrcode-content > a,
-.qrcode-content > div.content-caption {
+.qrcode-content > div.caption {
   display: inline-block;
   width: 50%;
   object-fit: contain;
 }
 
 .link > div > a,
-.link > div > div.content-caption {
+.link > div > div.caption {
   display: inline-block;
   width: 50%;
   object-fit: contain;

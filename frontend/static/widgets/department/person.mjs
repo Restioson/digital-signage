@@ -74,4 +74,8 @@ export class Person extends Widget {
 
     return new Container({ children: [title, body] })
   }
+
+  className () {
+    return 'person'
+  }
 }

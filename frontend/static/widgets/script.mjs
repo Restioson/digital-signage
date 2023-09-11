@@ -23,4 +23,8 @@ export class ScriptWidget extends DeserializableWidget {
   build () {
     return this.element
   }
+
+  className () {
+    return null
+  }
 }

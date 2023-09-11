@@ -53,11 +53,13 @@ describe('Widget', function () {
 
       assert.equal(container.children[1].tagName, 'DIV')
       assert.deepStrictEqual(Array.from(container.children[1].classList), [
+        'container',
         'department'
       ])
 
       assert.equal(container.children[2].tagName, 'DIV')
       assert.deepStrictEqual(Array.from(container.children[2].classList), [
+        'container',
         'content-stream'
       ])
     })
@@ -99,7 +101,7 @@ describe('Widget', function () {
       assert.deepStrictEqual(widget.render(), expected)
       assert.deepStrictEqual(
         Array.from(widget.render().classList),
-        ['content-caption'].concat(classList)
+        ['container', 'caption'].concat(classList)
       )
     })
 
@@ -160,7 +162,7 @@ describe('Widget', function () {
       const widget = new Caption({ title: 'Title', body: 'Body' })
       const rendered = widget.render()
       assert.equal(rendered.children.length, 2)
-      assert.equal(rendered.className, 'content-caption')
+      assert.equal(rendered.className, 'container caption')
       assert.equal(rendered.children[0].tagName, 'P')
       assert.equal(rendered.children[0].className, 'caption-title')
       assert.equal(rendered.children[0].innerText, 'Title')
@@ -173,7 +175,7 @@ describe('Widget', function () {
       const widget = new Caption({ body: 'Body' })
       const rendered = widget.render()
       assert.equal(rendered.children.length, 2)
-      assert.equal(rendered.className, 'content-caption')
+      assert.equal(rendered.className, 'container caption')
       assert.equal(rendered.children[0].hidden, true)
       assert.equal(rendered.children[1].tagName, 'P')
       assert.equal(rendered.children[1].className, 'caption-body')
