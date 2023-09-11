@@ -72,15 +72,15 @@ export class Loadshedding extends DeserializableWidget {
           }
           return closest
         }, null)
-        // this region needs further testing
+        // 
         if (closestEvent) {
           const closestTimeFormatted = closestEvent.start.toISOString()
           // Calculate time until the closest event using moment
           const date = closestTimeFormatted
+          console.log(closestTimeFormatted)
           const dur = moment.duration(moment(date).diff(moment()))
-          const timetill = dur.format('M [minutes and] s [seconds]')
-
-          this.scheduleJson = `\nClosest loadshedding: ${closestTimeFormatted}\nTime until closest event: ${timetill}\n${schedule.join(
+          const timetill = dur.hours()+' hours and '+dur.minutes()+" minutes" 
+          this.scheduleJson = `Time until closest event: ${timetill}\n${schedule.join(
             '\n'
           )}`
         } else {
