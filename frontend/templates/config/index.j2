@@ -1,4 +1,5 @@
 {% extends "base.j2" %}
+{% from "macros.j2" import content_stream %}
 
 {% block title %}Config{% endblock %}
 {% block head %}
@@ -14,42 +15,12 @@
 
   <a href="/config/content_stream/add">Add public content stream</a>
 
-  {%- macro content_stream() -%}
-    {# <!--  [html-validate-disable-next multiple-labeled-controls] --> Doesn't understand J2 syntax #}
-    <label for="content_stream"
-      >Content stream
-      <select name="content_stream">
-        <optgroup label="Public">
-          {%- for stream in content_streams.public -%}
-            <option value="{{ stream.id }}">{{ stream.name }}</option>
-          {%- endfor -%}
-        </optgroup>
-
-        {%- for dept, streams in content_streams.by_department.items() -%}
-          <optgroup label="Department: {{ dept }}">
-            {%- for stream in streams -%}
-              <option value="{{ stream.id }}">{{ stream.name }}</option>
-            {%- endfor -%}
-          </optgroup>
-        {%- endfor -%}
-
-        {%- for group, streams in content_streams.by_display_group.items() -%}
-          <optgroup label="Display group: {{ group }}">
-            {%- for stream in streams -%}
-              <option value="{{ stream.id }}">{{ stream.name }}</option>
-            {%- endfor -%}
-          </optgroup>
-        {%- endfor -%}
-      </select>
-    </label>
-  {%- endmacro -%}
-
   <div class="column-list">
     <form action="/api/content" method="post" class="post-form">
       <h3>Post text</h3>
       <input type="hidden" id="text_post_type" name="type" value="text" />
 
-      {{ content_stream() }}
+      {{ content_stream(content_streams) }}
 
       <label for="title">Title:</label>
       <input id="title" name="title" type="text" />
@@ -75,7 +46,7 @@
         value="local_image"
       />
 
-      {{ content_stream() }}
+      {{ content_stream(content_streams) }}
 
       <label for="image_data">Attach file:</label>
       <input type="file" id="image_data" name="image_data" />
@@ -103,7 +74,7 @@
         value="remote_image"
       />
 
-      {{ content_stream() }}
+      {{ content_stream(content_streams) }}
 
       <label for="remote_image_url">Url:</label>
       <input type="url" id="remote_image_url" name="src" />
@@ -126,7 +97,7 @@
       <h3>Post a link</h3>
       <input type="hidden" id="link_type" name="type" value="link" />
 
-      {{ content_stream() }}
+      {{ content_stream(content_streams) }}
 
       <label for="link_url">Url:</label>
       <input type="url" id="link_url" name="url" />

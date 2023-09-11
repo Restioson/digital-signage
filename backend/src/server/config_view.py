@@ -4,6 +4,7 @@ from flask_login import current_user
 
 from server.database import DatabaseController
 from server.department import Person
+from server.display_group.template import TEMPLATES
 
 blueprint = Blueprint("config_view", __name__, url_prefix="/config")
 
@@ -92,8 +93,13 @@ def add_display_group(department_id: int):
     if not DatabaseController.get().fetch_department_by_id(department_id):
         flask.abort(404)
 
+    streams = DatabaseController.get().fetch_all_content_streams()
+    streams.filter_to_department(department_id)
+
     return render_template(
         "config/display_group/add.j2",
+        templates=TEMPLATES,
+        content_streams=streams,
         department_id=department_id,
     )
 

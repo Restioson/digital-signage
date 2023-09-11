@@ -66,10 +66,15 @@ form {
 }
 
 form,
+fieldset,
 .column-list {
   display: flex;
   flex-direction: column;
   gap: 1em;
+}
+
+*[hidden] {
+  display: none;
 }
 
 input[type="text"],
@@ -97,6 +102,10 @@ button:hover {
 
 select {
   font-size: 12pt;
+}
+
+select[multiple] {
+  display: block;
 }
 
 /* Style for the header content container */
