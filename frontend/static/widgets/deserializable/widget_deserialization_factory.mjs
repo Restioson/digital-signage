@@ -72,7 +72,7 @@ function deserializeWidgetRaw (tag) {
   switch (tag.type) {
     case 'container':
       return Container.fromXML(tag)
-    case 'content_and_caption':
+    case 'content-and-caption':
       return ContentAndCaption.fromXML(tag)
     case 'caption':
       return Caption.fromXML(tag)
@@ -80,7 +80,7 @@ function deserializeWidgetRaw (tag) {
       return Clock.fromXML(tag)
     case 'department':
       return Department.fromXML(tag)
-    case 'content_stream':
+    case 'content-stream':
       return ContentStream.fromXML(tag)
     case 'script':
       return ScriptWidget.fromXML(tag)
