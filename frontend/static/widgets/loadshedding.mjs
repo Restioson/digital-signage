@@ -9,11 +9,11 @@ const { default: moment } = await importFromNpm('moment')
  */
 export class Loadshedding extends DeserializableWidget {
   /**
-   * @param {json} scheduleJson the loadshedding schedule in json form
+   * @param {json} scheduleOutput the loadshedding schedule in json form
    */
-  constructor (scheduleJson) {
+  constructor (scheduleOutput) {
     super()
-    this.scheduleJson = scheduleJson
+    this.scheduleOutput = scheduleOutput
   }
 
   async refresh () {
@@ -26,15 +26,14 @@ export class Loadshedding extends DeserializableWidget {
       const jsonData = JSON.parse(data[0])
 
       // gets the days date
-      const today = new Date().toISOString().split('T')[0]
-      const now = new Date()
+      const today = moment().format('YYYY-MM-DD')
       const events = jsonData.events || []
 
       // find the 'events' for the days date
       const todayEvents = events.filter(event => event.start.startsWith(today))
 
       if (todayEvents.length === 0) {
-        this.scheduleJson = 'No more loadshedding scheduled for today.'
+        this.scheduleOutput = 'No more loadshedding scheduled for today.'
       } else {
         // gets the stage number
         const stage = todayEvents[0].note.match(/\d+/)[0]
@@ -42,52 +41,33 @@ export class Loadshedding extends DeserializableWidget {
         const schedule = [`Stage ${stage}`, 'Loadshedding today:']
         // gets the times for the day
         todayEvents.forEach(event => {
-          const startTime = new Date(event.start)
-          const endTime = new Date(event.end)
-          const startFormatted = `${startTime
-            .getHours()
-            .toString()
-            .padStart(2, '0')}:${startTime
-            .getMinutes()
-            .toString()
-            .padStart(2, '0')}`
-          const endFormatted = `${endTime
-            .getHours()
-            .toString()
-            .padStart(2, '0')}:${endTime
-            .getMinutes()
-            .toString()
-            .padStart(2, '0')}`
-          schedule.push(`${startFormatted} - ${endFormatted}`)
+          const startTime = moment(event.start).format('HH:mm')
+          const endTime = moment(event.end).format('HH:mm')
+          schedule.push(`${startTime} - ${endTime}`)
         })
 
         // Find the closest load shedding time slot
-        const closestEvent = todayEvents.reduce((closest, event) => {
-          const eventStartTime = new Date(event.start)
-          if (
-            eventStartTime > now &&
-            (!closest || eventStartTime < closest.start)
-          ) {
-            return { start: eventStartTime }
+        let mintimetill = moment()
+          .endOf('day')
+          .fromNow()
+        todayEvents.forEach(event => {
+          const startTime = moment(event.start)
+          const timetill = moment(startTime).fromNow()
+          if (mintimetill > timetill) {
+            mintimetill = timetill
           }
-          return closest
-        }, null)
-        // 
-        if (closestEvent) {
-          const closestTimeFormatted = closestEvent.start.toISOString()
-          // Calculate time until the closest event using moment
-          const date = closestTimeFormatted
-          console.log(closestTimeFormatted)
-          const dur = moment.duration(moment(date).diff(moment()))
-          const timetill = dur.hours()+' hours and '+dur.minutes()+" minutes" 
-          this.scheduleJson = `Time until closest event: ${timetill}\n${schedule.join(
+        })
+        if (mintimetill < moment().fromNow()) {
+          this.scheduleOutput = `Loadshedding started ${mintimetill}\n${schedule.join(
             '\n'
           )}`
         } else {
-          this.scheduleJson = `${schedule.join('\n')}\n`
+          this.scheduleOutput = `Loadshedding starts ${mintimetill}\n${schedule.join(
+            '\n'
+          )}`
         }
       }
-      this.scheduleJson = 'Loadshedding Schedule:\n' + this.scheduleJson
+      this.scheduleOutput = 'Loadshedding Schedule:\n' + this.scheduleOutput
       return true
     } catch (error) {
       console.error('Error fetching load shedding schedule:', error)
@@ -100,7 +80,7 @@ export class Loadshedding extends DeserializableWidget {
       period: 1000,
       builder: () => {
         const text = document.createElement('div')
-        text.innerText = this.scheduleJson
+        text.innerText = this.scheduleOutput
         return new WithClasses({ classList: ['loadshedding'], child: text })
       }
     })

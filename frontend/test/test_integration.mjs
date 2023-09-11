@@ -135,12 +135,10 @@ describe('API Integration', function () {
     serverProcess = child_process.spawn('../venv/bin/flask', [
       '--app',
       'server.main:create_app(testing=True)',
-      'run',
-      '-p',
-      '5001'
+      'run'
     ])
 
-    const base = 'http://localhost:5001'
+    const base = 'http://localhost:5000'
 
     const dom = new JSDOM(
       `<html lang="en">

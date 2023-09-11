@@ -12,11 +12,12 @@ from flask_login import LoginManager
 from server.database import DatabaseController
 from server.user import User
 import threading
+from dotenv import load_dotenv
 
 
 def create_app(testing=False):
     """Create and configure the flask app"""
-
+    load_dotenv()
     app = Flask(
         __name__,
         static_folder="../../../frontend/static",
