@@ -1,4 +1,5 @@
 {% extends "base.j2" %}
+{% from "macros.j2" import content_stream %}
 
 {% block title %}Add display group{% endblock %}
 {% block head %}
@@ -8,7 +9,7 @@
 
 {% block content %}
   <script type="module">
-    import { main } from "{{ url_for('static', filename='config.mjs') }}";
+    import { main } from "{{ url_for('static', filename='config/display_group/add.mjs') }}";
     main();
   </script>
 
@@ -23,19 +24,52 @@
     <label for="name">Name:</label>
     <input id="name" name="name" type="text" />
 
-    <label for="layout_xml">Layout XML:</label>
-    <!-- [html-validate-disable no-unknown-elements, element-permitted-content, attr-spacing, close-attr, no-self-closing, element-name, element-permitted-parent] -->
-    <textarea id="layout_xml" name="layout_xml" rows="10">
-    <content-and-caption>
-        <content>
-            <clock/>
-        </content>
-        <caption>
-            <body>Current time</body>
-        </caption>
-    </content-and-caption>
-    </textarea
-    >
+    <label for="template">Template:</label>
+    <select id="template" name="template">
+      {%- for name, template in templates -%}
+        <option value="{{ loop.index }}">{{ name }}</option>
+      {%- endfor -%}
+      <option value="custom">[Custom]</option>
+    </select>
+
+    {%- for name, template in templates -%}
+      {# <!-- [html-validate-disable-next attribute-allowed-values,valid-id] --> doesn't understand J2 syntax #}
+      <fieldset
+        id="template-{{ loop.index }}"
+        class="template-fieldset"
+        hidden
+        disabled
+      >
+        <legend>{{ name }} Template</legend>
+        {%- for property in template.properties -%}
+          {%- if property.type == "string" -%}
+            <label
+              >{{ property.pretty_name }}
+              <input type="text" name="template-{{ property.variable_name }}" />
+            </label>
+          {%- elif property.type == "content_streams" -%}
+            {{ content_stream(content_streams, "template-" + property.variable_name, true) }}
+          {%- endif -%}
+        {%- endfor -%}
+      </fieldset>
+    {%- endfor -%}
+
+    <fieldset id="template-custom" class="template-fieldset" hidden disabled>
+      <legend>Custom display</legend>
+      <label for="layout_xml">Layout XML:</label>
+      <!-- [html-validate-disable no-unknown-elements, element-permitted-content, attr-spacing, close-attr, no-self-closing, element-name, element-permitted-parent] -->
+      <textarea id="layout_xml" name="layout_xml" rows="10">
+        <content-and-caption>
+            <content>
+                <clock/>
+            </content>
+            <caption>
+                <body>Current time</body>
+            </caption>
+        </content-and-caption>
+        </textarea
+      >
+    </fieldset>
 
     <button type="submit">Submit</button>
     <p hidden class="status-message"></p>

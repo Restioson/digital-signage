@@ -1,6 +1,7 @@
 import sqlite3
 from typing import Optional
 
+from server.display_group.template import TEMPLATES
 from server.free_form_content.content_stream import ContentStream
 
 
@@ -23,9 +24,21 @@ class DisplayGroup:
 
     @staticmethod
     def from_form(form: dict):
+        if form.get("layout_xml"):
+            layout_xml = form["layout_xml"]
+        else:
+            template = TEMPLATES[int(form["template"]) - 1][1]
+            properties = {
+                prop[9:]: form[prop]
+                for prop in form.keys()
+                if prop.startswith("template-")
+            }
+            print(properties)
+            layout_xml = template.render_template(properties)
+
         return DisplayGroup(
             name=form["name"],
-            layout_xml=form["layout_xml"],
+            layout_xml=layout_xml,
         )
 
     @staticmethod
