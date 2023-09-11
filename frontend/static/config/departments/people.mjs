@@ -23,8 +23,8 @@ async function deletePerson (event) {
   event.preventDefault()
   const button = event.target
 
-  const statusMessage = document.querySelector('.status-message')
-  statusMessage.className = 'status-message' // Clear success/error class
+  const statusMessage = document.getElementById('status-message')
+  statusMessage.className = '' // Clear success/error class
 
   const row = button.parentElement.parentElement
   const personName = row.children[0].innerText
@@ -53,5 +53,13 @@ async function deletePerson (event) {
   }
 
   statusMessage.hidden = false
-  statusMessage.scrollIntoView()
+  window.location.replace('#status-message')
+
+  const effect = new window.KeyframeEffect(
+    statusMessage,
+    [{ background: 'yellow' }, { background: 'transparent' }],
+    { duration: 2000, direction: 'normal', easing: 'linear' }
+  )
+  const animation = new window.Animation(effect, document.timeline)
+  animation.play()
 }
