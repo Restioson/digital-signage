@@ -19,7 +19,7 @@ import {
 } from './test_free_form_content.mjs'
 import { checkRenderedPerson } from './test_department.mjs'
 import { Department } from '../static/widgets/department/department.mjs'
-import { deserializeWidget } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
+import { deserializeFreeFormContent } from '../static/widgets/free_form_content/free_form_content_factory.mjs'
 
 let serverProcess
 
@@ -129,6 +129,8 @@ async function sleepMs (ms) {
 
 describe('API Integration', function () {
   beforeEach(async function () {
+    this.timeout(10000)
+
     // eslint-disable-next-line camelcase
     serverProcess = child_process.spawn('../venv/bin/flask', [
       '--app',
@@ -292,7 +294,7 @@ describe('API Integration', function () {
           await stream.refresh()
           assert.deepStrictEqual(
             stream.children,
-            expected.map(deserializeWidget)
+            expected.map(deserializeFreeFormContent)
           )
 
           const out = stream.render()

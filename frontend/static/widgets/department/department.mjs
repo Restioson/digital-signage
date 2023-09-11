@@ -1,9 +1,9 @@
 import { Person } from './person.mjs'
-import { WithClasses } from '../with_classes.mjs'
 import { WithRefresh } from '../dynamic/with_refresh.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 import { Root } from '../root.mjs'
 import { Container } from '../containers/container.mjs'
+import { WithClasses } from '../with_classes.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
 
@@ -57,7 +57,7 @@ export class Department extends DeserializableWidget {
     })
   }
 
-  static fromJSON (obj) {
+  static fromXML (tag) {
     return new Department()
   }
 }

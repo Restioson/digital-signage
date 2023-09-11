@@ -1,12 +1,12 @@
 import { AbstractClassError } from '../../util.mjs'
-import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
+import { Widget } from '../widget.mjs'
 
 /**
  * A {@link Widget} displaying a piece of free form content.
  *
  * @abstract
  */
-export class FreeFormContent extends DeserializableWidget {
+export class FreeFormContent extends Widget {
   /**
    * @param {int} id the ID of the content
    */
@@ -18,5 +18,14 @@ export class FreeFormContent extends DeserializableWidget {
     }
 
     this.id = id
+  }
+
+  /**
+   * Deserialize this piece of content from its HTTP JSON API representation.
+   *
+   * @return {FreeFormContent} the deserialized content
+   */
+  static fromJSON (obj) {
+    throw new AbstractClassError('FreeFormContentWidget', 'fromJSON')
   }
 }

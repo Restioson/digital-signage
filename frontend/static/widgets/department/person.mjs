@@ -1,12 +1,12 @@
 import { Container } from '../containers/container.mjs'
-import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
+import { Widget } from '../widget.mjs'
 
 /**
  * A {@link Widget} which displays a people and all of their details.
  *
  * @augments Widget
  */
-export class Person extends DeserializableWidget {
+export class Person extends Widget {
   /**
    * @param {int} id the person's id
    * @param {string} department the departments in which the person works

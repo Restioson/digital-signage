@@ -1,4 +1,3 @@
-import json
 import sqlite3
 from typing import Optional
 
@@ -13,12 +12,12 @@ class DisplayGroup:
     def __init__(
         self,
         name: str,
-        layout_json: dict,
+        layout_xml: str,
         content_streams: Optional[list[ContentStream]] = None,
         group_id: Optional[int] = None,
     ):
         self.name = name
-        self.layout_json = layout_json
+        self.layout_xml = layout_xml
         self.content_streams = content_streams or []
         self.id = group_id
 
@@ -26,7 +25,7 @@ class DisplayGroup:
     def from_form(form: dict):
         return DisplayGroup(
             name=form["name"],
-            layout_json=json.loads(form["layout_json"]),
+            layout_xml=form["layout_xml"],
         )
 
     @staticmethod
@@ -37,5 +36,5 @@ class DisplayGroup:
         return DisplayGroup(
             group_id=row["id"],
             name=row["name"],
-            layout_json=json.loads(row["layout_json"]),
+            layout_xml=row["layout_xml"],
         )

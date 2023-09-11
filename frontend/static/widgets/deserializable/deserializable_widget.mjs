@@ -8,13 +8,13 @@ import { AbstractClassError } from '../../util.mjs'
  */
 export class DeserializableWidget extends Widget {
   /**
-   * Deserialize the `DeserializableWidget` from its JSON representation.
+   * Deserialize the `DeserializableWidget` from its XML object representation.
    *
    * @returns {DeserializableWidget}
-   * @param obj the JSON to deserialize
+   * @param {XMLTag} tag the XML tag to deserialize
    * @abstract
    */
-  static fromJSON (obj) {
-    throw new AbstractClassError('DeserializableWidget', 'fromJSON()')
+  static fromXML (tag) {
+    throw new AbstractClassError('DeserializableWidget', 'fromXML()')
   }
 }

@@ -213,7 +213,7 @@ def test_create_display_group(database: DatabaseController):
         len(database.fetch_all_display_groups_in_dept(1)) == 1
     ), "DB should start with 1 default display group"
 
-    group = DisplayGroup("Test Group", {"type": "clock"})
+    group = DisplayGroup("Test Group", "<clock/>")
     group_id = database.create_display_group(group, 1)
     groups = database.fetch_all_display_groups_in_dept(1)
     assert len(groups) == 2, "Only 1 department should be inserted"
@@ -223,7 +223,7 @@ def test_create_display_group(database: DatabaseController):
 
     assert groups[1].id == group_id, "group ids should match"
     assert groups[1].name == group.name, "names should match"
-    assert groups[1].layout_json == group.layout_json, "layout_jsons should match"
+    assert groups[1].layout_xml == group.layout_xml, "layout_xmls should match"
 
 
 def test_display_group_has_valid_dept(database: DatabaseController):

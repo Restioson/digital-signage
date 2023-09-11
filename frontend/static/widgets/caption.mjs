@@ -1,7 +1,7 @@
-import { WithClasses } from './with_classes.mjs'
 import { Container } from './containers/container.mjs'
 import { Visibility } from './visibility.mjs'
 import { DeserializableWidget } from './deserializable/deserializable_widget.mjs'
+import { WithClasses } from './with_classes.mjs'
 
 /**
  * A {@link Widget} to display a caption with a title and body. The title may be null, but the body may not.
@@ -20,6 +20,19 @@ export class Caption extends DeserializableWidget {
   }
 
   /**
+   * Deserialize this Caption from its given XML layout.
+   *
+   * @param {XMLTag} tag
+   * @return {Caption}
+   */
+  static fromXML (tag) {
+    return new Caption({
+      title: tag.childAttribute('title'),
+      body: tag.childAttribute('body')
+    })
+  }
+
+  /**
    * Deserialize the caption from its JSON API representation.
    *
    * @param obj
@@ -33,7 +46,7 @@ export class Caption extends DeserializableWidget {
    * Deserialize the caption from its JSON API representation if that is not null or undefined, otherwise returning
    * `null`.
    *
-   * @param {?Object} obj
+   * @param obj
    * @returns {?Caption}
    */
   static maybeFromJSON (obj) {
