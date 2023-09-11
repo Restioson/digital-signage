@@ -9,136 +9,89 @@
 
 {% block content %}
   <script type="module">
-    import { setupPostForms } from "{{ url_for('static', filename='config.mjs') }}";
+    import {
+      choiceOfFieldset,
+      setupPostForms,
+    } from "{{ url_for('static', filename='config.mjs') }}";
     setupPostForms();
+    choiceOfFieldset("type", "content-fieldset", "fields-for");
   </script>
 
   <a href="/config/content_stream/add">Add public content stream</a>
 
   <div class="column-list">
-    <form action="/api/content" method="post" class="post-form">
-      <h3>Post text</h3>
-      <input type="hidden" id="text_post_type" name="type" value="text" />
-
-      {{ content_stream(content_streams) }}
-
-      <label for="title">Title:</label>
-      <input id="title" name="title" type="text" />
-
-      <label for="body">Body:</label>
-      <input id="body" name="body" type="text" />
-
-      <button type="submit">Submit</button>
-      <p hidden class="status-message"></p>
-    </form>
-
     <form
       action="/api/content"
       method="post"
-      enctype="multipart/form-data"
       class="post-form"
+      enctype="multipart/form-data"
     >
-      <h3>Post an image</h3>
-      <input
-        type="hidden"
-        id="local_image_post_type"
-        name="type"
-        value="local_image"
-      />
+      <h3>Post content</h3>
+
+      <label
+        >Content type:
+        <select id="type" name="type">
+          <option value="text">Text</option>
+          <option value="local_image">Image (upload file)</option>
+          <option value="remote_image">Image (from URL)</option>
+          <option value="link">Link</option>
+          <option value="qrcode_content">QR Code</option>
+        </select>
+      </label>
 
       {{ content_stream(content_streams) }}
 
-      <label for="image_data">Attach file:</label>
-      <input type="file" id="image_data" name="image_data" />
+      {%- macro caption() -%}
+        <label
+          >Caption title:
+          <input type="text" name="caption_title" />
+        </label>
 
-      <label
-        >Caption title:
-        <input type="text" name="caption_title" />
-      </label>
+        <label
+          >Caption body:
+          <input type="text" name="caption_body" />
+        </label>
+      {%- endmacro -%}
 
-      <label
-        >Caption body:
-        <input type="text" name="caption_body" />
-      </label>
+      <fieldset class="content-fieldset" id="fields-for-text">
+        <legend>Text post</legend>
+        <label for="title">Title:</label>
+        <input id="title" name="title" type="text" />
+        <label for="body">Body:</label>
+        <input id="body" name="body" type="text" />
+      </fieldset>
 
-      <button type="submit">Submit</button>
-      <p hidden class="status-message"></p>
-    </form>
+      <fieldset class="content-fieldset" id="fields-for-local_image">
+        <legend>Image (upload file)</legend>
+        <label for="image_data">Attach file:</label>
+        <input type="file" id="image_data" name="image_data" required />
+        {{ caption() }}
+      </fieldset>
 
-    <form action="/api/content" method="post" class="post-form">
-      <h3>Post an image</h3>
-      <input
-        type="hidden"
-        id="remote_image_post_type"
-        name="type"
-        value="remote_image"
-      />
+      <fieldset class="content-fieldset" id="fields-for-remote_image">
+        <legend>Image (from URL)</legend>
+        <label for="remote_image_url">Url:</label>
+        <input type="url" id="remote_image_url" name="src" required />
+        {{ caption() }}
+      </fieldset>
 
-      {{ content_stream(content_streams) }}
+      <fieldset class="content-fieldset" id="fields-for-link">
+        <legend>Link</legend>
+        <label for="link_url">Url:</label>
+        <input type="url" id="link_url" name="url" />
+        {{ caption() }}
+      </fieldset>
 
-      <label for="remote_image_url">Url:</label>
-      <input type="url" id="remote_image_url" name="src" />
-
-      <label
-        >Caption title:
-        <input type="text" name="caption_title" />
-      </label>
-
-      <label
-        >Caption body:
-        <input type="text" name="caption_body" />
-      </label>
-
-      <button type="submit">Submit</button>
-      <p hidden class="status-message"></p>
-    </form>
-
-    <form action="/api/content" method="post" class="post-form">
-      <h3>Post a link</h3>
-      <input type="hidden" id="link_type" name="type" value="link" />
-
-      {{ content_stream(content_streams) }}
-
-      <label for="link_url">Url:</label>
-      <input type="url" id="link_url" name="url" />
-
-      <label
-        >Caption title:
-        <input type="text" name="caption_title" />
-      </label>
-
-      <label
-        >Caption body:
-        <input type="text" name="caption_body" />
-      </label>
+      <fieldset class="content-fieldset" id="fields-for-qrcode_content">
+        <legend>QR code post</legend>
+        <label for="qrcode_content_url">Url:</label>
+        {# <!-- [html-validate-disable-next form-dup-name] --> only one is enabled at a time #}
+        <input type="url" id="qrcode_content_url" name="url" required />
+        {{ caption() }}
+      </fieldset>
 
       <button type="submit">Submit</button>
-      <p hidden class="status-message"></p>
-    </form>
-
-    <form action="/api/content" method="post" class="post-form">
-      <h3>Post a QRcode</h3>
-      <input
-        type="hidden"
-        id="qrcode_content_type"
-        name="type"
-        value="qrcode_content"
-      />
-      <label for="qrcode_content_url">Url:</label>
-      <input type="url" id="qrcode_content_url" name="url" />
-
-      <label
-        >Caption title:
-        <input type="text" name="caption_title" />
-      </label>
-
-      <label
-        >Caption body:
-        <input type="text" name="caption_body" />
-      </label>
-
-      <button type="submit">Submit</button>
-      <p hidden class="status-message"></p>
+      <p hidden id="status-message"></p>
     </form>
   </div>
 {% endblock %}
