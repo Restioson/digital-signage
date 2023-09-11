@@ -9,8 +9,12 @@
 
 {% block content %}
   <script type="module">
-    import { main } from "{{ url_for('static', filename='config/display_group/add.mjs') }}";
-    main();
+    import {
+      setupPostForms,
+      choiceOfFieldset,
+    } from "{{ url_for('static', filename='config.mjs') }}";
+    setupPostForms();
+    choiceOfFieldset("template", "template-fieldset", "template");
   </script>
 
 
