@@ -29,4 +29,8 @@ export class Container extends DeserializableWidget {
       children: tag.children().map(deserializeWidgetFromTag)
     })
   }
+
+  className () {
+    return 'container'
+  }
 }

@@ -1,7 +1,6 @@
 import { Container } from './containers/container.mjs'
 import { Visibility } from './visibility.mjs'
 import { DeserializableWidget } from './deserializable/deserializable_widget.mjs'
-import { WithClasses } from './with_classes.mjs'
 
 /**
  * A {@link Widget} to display a caption with a title and body. The title may be null, but the body may not.
@@ -65,17 +64,18 @@ export class Caption extends DeserializableWidget {
     body.className = 'caption-body'
     body.innerText = this.body
 
-    return new WithClasses({
-      classList: ['content-caption'],
-      child: new Container({
-        children: [
-          new Visibility({
-            visible: Boolean(title),
-            child: title
-          }),
-          body
-        ]
-      })
+    return new Container({
+      children: [
+        new Visibility({
+          visible: Boolean(title),
+          child: title
+        }),
+        body
+      ]
     })
+  }
+
+  className () {
+    return 'caption'
   }
 }

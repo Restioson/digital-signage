@@ -70,4 +70,8 @@ export class WithRefresh extends Widget {
     Root.getInstance().addPostRenderCallback(() => this.refreshForever(element))
     return element
   }
+
+  className () {
+    return null
+  }
 }

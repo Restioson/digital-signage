@@ -3,7 +3,6 @@ import { WithRefresh } from '../dynamic/with_refresh.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 import { Root } from '../root.mjs'
 import { Container } from '../containers/container.mjs'
-import { WithClasses } from '../with_classes.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
 
@@ -49,15 +48,15 @@ export class Department extends DeserializableWidget {
     return new WithRefresh({
       refresh: () => this.refresh(),
       period: REFRESH_INTERVAL_MS,
-      builder: () =>
-        new WithClasses({
-          classList: ['department'],
-          child: new Container({ children: this.children })
-        })
+      builder: () => new Container({ children: this.children })
     })
   }
 
   static fromXML (tag) {
     return new Department()
+  }
+
+  className () {
+    return 'department'
   }
 }

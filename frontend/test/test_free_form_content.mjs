@@ -192,7 +192,7 @@ export function checkRenderedLinkCaptionedTitleBody (
   checkRenderedLink(out, expectedUrl)
   const caption = out.children[1].children[1]
   assert.equal(caption.tagName, 'DIV')
-  assert.equal(caption.className, 'content-caption')
+  assert.equal(caption.className, 'container caption')
   assert.equal(caption.children.length, 2)
 
   const title = caption.children[0]
@@ -214,7 +214,7 @@ export function checkRenderedLinkCaptionedBody (
   checkRenderedLink(out, expectedUrl)
   const caption = out.children[1].children[1]
   assert.equal(caption.tagName, 'DIV')
-  assert.equal(caption.className, 'content-caption')
+  assert.equal(caption.className, 'container caption')
   assert.equal(caption.children.length, 2)
 
   assert(caption.children[0].hidden, 'caption title should be hidden')
@@ -246,7 +246,7 @@ export function checkRenderedQrcodeCaptionedTitleBody (
   assert.equal(out.children.length, 2)
   const caption = out.children[1]
   assert.equal(caption.tagName, 'DIV')
-  assert.equal(caption.className, 'content-caption')
+  assert.equal(caption.className, 'container caption')
   assert.equal(caption.children.length, 2)
 
   const title = caption.children[0]
@@ -269,7 +269,7 @@ export function checkRenderedQrcodeCaptionedBody (
   assert.equal(out.children.length, 2)
   const caption = out.children[1]
   assert.equal(caption.tagName, 'DIV')
-  assert.equal(caption.className, 'content-caption')
+  assert.equal(caption.className, 'container caption')
   assert.equal(caption.children.length, 2)
 
   assert(caption.children[0].hidden, 'caption title should be hidden')

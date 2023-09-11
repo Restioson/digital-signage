@@ -32,4 +32,8 @@ export class WithHTMLAttrs extends Widget {
 
     return rendered
   }
+
+  className () {
+    return null
+  }
 }

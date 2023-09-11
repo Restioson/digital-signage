@@ -36,4 +36,8 @@ export class TextWidget extends FreeFormContent {
 
     return new Container({ children: [title, body] })
   }
+
+  className () {
+    return 'text'
+  }
 }
