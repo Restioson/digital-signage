@@ -19,7 +19,6 @@ class Template:
 
     def render_template(self, values: dict[str, typing.Any]) -> str:
         """Render the template to XML"""
-        print(self.layout_template, values)
         return render_template_string(self.layout_template, **values)
 
 
@@ -30,9 +29,14 @@ TEMPLATES = [
             layout_template="""
             <container>
                 <clock format="{{ clock_format }}">
+                <loadshedding>
                 <rotation secs-per-page="{{ secs_per_page }}">
                     <department>
-                    <content-stream fetch-amount="{{ fetch_amount }}">
+                    <content-stream
+                        fetch-amount="{{ fetch_amount }}"
+                        secs-per-page="{{ content_rotation_secs }}"
+                        page-size="{{ page_size }}"
+                    >
                         {% for stream in streams %}
                             <stream id="{{ stream }}">
                         {% endfor %}
@@ -54,6 +58,14 @@ TEMPLATES = [
                     default="30",
                 ),
                 TemplateProperty(
+                    "page_size",
+                    "Number of posts to display at a time (blank for all)",
+                    "string",
+                ),
+                TemplateProperty(
+                    "content_rotation_secs", "Time per page of content (secs)", "string"
+                ),
+                TemplateProperty(
                     "fetch_amount", "Number of content posts to fetch", "string"
                 ),
                 TemplateProperty("streams", "Content streams", "content_streams"),
@@ -64,14 +76,23 @@ TEMPLATES = [
         "Content Only",
         Template(
             layout_template="""
-            <content-stream>
+            <content-stream secs-per-page="{{ rotation_secs }}"
+                page-size="{{ page_size }}">
                 {% for stream in streams %}
                     <stream id="{{ stream }}">
                 {% endfor %}
             </content-stream>
             """,
             properties=[
-                TemplateProperty("streams", "Content streams", "content_streams")
+                TemplateProperty(
+                    "page_size",
+                    "Number of posts to display at a time (blank for all)",
+                    "string",
+                ),
+                TemplateProperty(
+                    "rotation_secs", "Time per page of content (secs)", "string"
+                ),
+                TemplateProperty("streams", "Content streams", "content_streams"),
             ],
         ),
     ),
