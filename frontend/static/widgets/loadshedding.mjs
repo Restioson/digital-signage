@@ -36,16 +36,16 @@ export class Loadshedding extends DeserializableWidget {
           builder: () => {
             // gets the days date
             const today = moment().format('YYYY-MM-DD')
+            let scheduleOutput = 'Loading loadshedding schedule'
             try {
               const events = this.scheduleJsonData.events || []
               // find the 'events' for the days date
               const todayEvents = events.filter(event =>
                 event.start.startsWith(today)
               )
-              const scheduleOutput = scheduleOutput
+
               if (todayEvents.length === 0) {
-                scheduleOutput =
-                  'No more loadshedding scheduled for today.'
+                scheduleOutput = 'No more loadshedding scheduled for today.'
               } else {
                 // gets the stage number
                 const stage = todayEvents[0].note.match(/\d+/)[0]
@@ -90,8 +90,7 @@ export class Loadshedding extends DeserializableWidget {
                   )}`
                 }
               }
-              scheduleOutput =
-                'Loadshedding Schedule:\n' + scheduleOutput
+              scheduleOutput = 'Loadshedding Schedule:\n' + scheduleOutput
             } catch (error) {
               scheduleOutput = 'Loading loadshedding schedule'
               console.error('Error fetching load shedding schedule:', error)
