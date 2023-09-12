@@ -12,7 +12,7 @@ def default_display_group():
     return display_group(1, 1)
 
 
-@blueprint.route("/<int:department_id>/<int:group_id>")
+@blueprint.route("/<int:department_id>/<int:group_id>/")
 def display_group(department_id: int, group_id: int):
     """Return the display view page for a given group"""
     group = DatabaseController.get().fetch_display_group_by_id(group_id)
