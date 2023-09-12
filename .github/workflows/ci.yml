@@ -56,6 +56,8 @@ jobs:
       - name: Lint
         run: just lint-backend
       - name: Test
+        env:
+            ESP_LICENSE_KEY: ${{ secrets.ESP_LICENSE_KEY }}
         run: just test-backend
 
   frontend:
@@ -69,12 +71,9 @@ jobs:
           python-version: "3.10"
       - name: Install project
         run: just setup
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 20
-          cache: "npm"
-      - run: npm ci
       - name: Lint
         run: just lint-frontend
       - name: Test
+        env:
+            ESP_LICENSE_KEY: ${{ secrets.ESP_LICENSE_KEY }}
         run: just test-frontend

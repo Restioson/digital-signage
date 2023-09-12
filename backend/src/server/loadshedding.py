@@ -15,7 +15,7 @@ class Loadshedding:
         # Add more regions as needed
     ]
     # load_dotenv()
-    key = os.environ.get("ESP_license_key")
+    key = os.environ.get("ESP_LICENSE_KEY")
 
     @staticmethod
     def update_loadsheding_schedule(region, app_current):
