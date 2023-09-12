@@ -16,6 +16,7 @@ class Department:
         bio: str,
         lecturers: Optional[list[Lecturer]] = None,
         display_groups: Optional[list[DisplayGroup]] = None,
+        files: Optional[str] = None,
         department_id: Optional[int] = None,
     ):
         self.name = name
@@ -23,6 +24,7 @@ class Department:
         self.lecturers = lecturers or []
         self.display_groups = display_groups or []
         self.id = department_id
+        self.files = files
 
     @staticmethod
     def from_sql(cursor: sqlite3.Cursor, row: tuple):

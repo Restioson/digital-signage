@@ -54,6 +54,7 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
         return RemoteImage(form["src"], caption)
     elif content_type == "local_image":
         # Load and verify the file, throwing an error if it isn't a valid image
+        print(files["image_data"].headers["Content-Type"])
         image_data = files["image_data"].read()
         image = PIL.Image.open(io.BytesIO(image_data))
         image.verify()
