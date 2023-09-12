@@ -13,10 +13,12 @@ const REFRESH_INTERVAL_MS = 1000
 export class ContentStream extends DeserializableWidget {
   /**
    * @param {number[]} streams which content streams this widget subscribes to
+   * @param {?number} the amount of posts to fetch
    */
-  constructor ({ streams }) {
+  constructor ({ fetchAmount, streams }) {
     super()
     this.children = []
+    this.fetchAmount = fetchAmount
     this.streams = streams
   }
 
@@ -28,8 +30,9 @@ export class ContentStream extends DeserializableWidget {
    */
   async refresh () {
     const params = this.streams.map(stream => `stream=${stream}`)
-    const update = await fetch(`/api/content?${params.join('&')}`).then(res =>
-      res.json()
+    const amt = this.fetchAmount ? `last=${this.fetchAmount}&` : ''
+    const update = await fetch(`/api/content?${amt}${params.join('&')}`).then(
+      res => res.json()
     )
 
     let dirty = update.content.length !== this.children.length
@@ -55,6 +58,7 @@ export class ContentStream extends DeserializableWidget {
 
   static fromXML (tag) {
     return new ContentStream({
+      fetchAmount: tag.attribute('fetch-amount'),
       streams: tag.children().map(stream => parseInt(stream.attribute('id')))
     })
   }

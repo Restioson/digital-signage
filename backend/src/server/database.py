@@ -91,13 +91,14 @@ class DatabaseController:
         return cursor.lastrowid, post_timestamp
 
     def fetch_content_in_streams(
-        self, streams: list[int], fetch_blob=False
+        self, streams: list[int], limit=None, fetch_blob=False
     ) -> list[FreeFormContent]:
         """Fetch all content in the given streams. By default, the blobs
         will not be fetched from the database."""
         cursor = self.db.cursor()
         cursor.row_factory = free_form_content.from_sql
         with_blob = ", content_blob" if fetch_blob else ""
+        with_limit = f"LIMIT {limit}" if limit else ""
 
         # SAFETY: this string substitution is okay since we don't use user data here
         return list(
@@ -107,7 +108,8 @@ class DatabaseController:
                 f" blob_mime_type {with_blob} "
                 "FROM content "
                 f"WHERE stream IN ({ ','.join(['?'] * len(streams)) }) "
-                "ORDER BY posted DESC",
+                "ORDER BY posted DESC "
+                f"{with_limit}",
                 streams,
             )
         )

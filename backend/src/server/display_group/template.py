@@ -31,7 +31,7 @@ TEMPLATES = [
             <container>
                 <clock format="{{ clock_format }}">
                 <department>
-                <content-stream>
+                <content-stream fetch-amount="{{ fetch_amount }}">
                     {% for stream in streams %}
                         <stream id="{{ stream }}">
                     {% endfor %}
@@ -40,6 +40,9 @@ TEMPLATES = [
         """,
             properties=[
                 TemplateProperty("clock_format", "Clock format", "string"),
+                TemplateProperty(
+                    "fetch_amount", "Number of content posts to fetch", "string"
+                ),
                 TemplateProperty("streams", "Content streams", "content_streams"),
             ],
         ),
