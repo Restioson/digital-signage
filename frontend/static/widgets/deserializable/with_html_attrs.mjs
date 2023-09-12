@@ -23,7 +23,7 @@ export class WithHTMLAttrs extends Widget {
     const rendered = Widget.renderIfWidget(this.child)
 
     for (const attribute in this.attributes) {
-      if (attribute === 'class') {
+      if (attribute === 'class' && this.attributes.class) {
         rendered.classList.add(...this.attributes.class.split(' '))
       } else {
         rendered[attribute] = this.attributes[attribute]
