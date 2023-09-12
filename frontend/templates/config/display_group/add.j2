@@ -42,7 +42,11 @@
           {%- if property.type == "string" -%}
             <label
               >{{ property.pretty_name }}
-              <input type="text" name="template-{{ property.variable_name }}" />
+              <input
+                type="text"
+                name="template-{{ property.variable_name }}"
+                value="{{ property.default or '' }}"
+              />
             </label>
           {%- elif property.type == "content_streams" -%}
             {{ content_stream(content_streams, "template-" + property.variable_name, true) }}
