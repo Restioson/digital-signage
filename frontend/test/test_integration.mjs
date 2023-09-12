@@ -1,5 +1,4 @@
 import child_process from 'child_process' // eslint-disable-line camelcase
-import { JSDOM } from 'jsdom'
 import assert from 'assert'
 import { URL } from 'url'
 import { open } from 'node:fs/promises'
@@ -144,15 +143,6 @@ describe('API Integration', function () {
 
     const base = 'http://127.0.0.1:5001'
 
-    const dom = new JSDOM(
-      `<html lang="en">
-         <body>
-            <div id="root"></div>
-         </body>
-       </html>`,
-      { url: base }
-    )
-
     const oldFetch = global.fetch
     global.fetch = function (url, ...rest) {
       return oldFetch(new URL(url, base), ...rest)
@@ -191,9 +181,6 @@ describe('API Integration', function () {
         ...options
       })
     }
-
-    global.window = dom.window
-    global.document = dom.window.document
 
     Root.create({
       child: new Container({ children: [] }),
@@ -299,7 +286,7 @@ describe('API Integration', function () {
             expected.map(deserializeFreeFormContent)
           )
 
-          const out = stream.render()
+          const out = stream.render().firstChild
           assert.equal(out.tagName, 'DIV')
           assert.equal(out.children.length, 5)
 
@@ -407,7 +394,7 @@ describe('API Integration', function () {
 
           await dept.refresh()
 
-          const out = dept.render()
+          const out = dept.render().firstChild
           assert.equal(out.tagName, 'DIV')
           assert.equal(out.children.length, 2)
 

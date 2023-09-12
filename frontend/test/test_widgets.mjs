@@ -1,4 +1,3 @@
-import { JSDOM } from 'jsdom'
 import assert from 'assert'
 import { Caption } from '../static/widgets/caption.mjs'
 import { Container } from '../static/widgets/containers/container.mjs'
@@ -12,21 +11,6 @@ import { WithHTMLAttrs } from '../static/widgets/deserializable/with_html_attrs.
 import { HtmlWidget } from '../static/widgets/html.mjs'
 
 describe('Widget', function () {
-  beforeEach(() => {
-    const dom = new JSDOM(
-      `<html>
-         <body>
-            <div id="root"></div>
-         </body>
-       </html>`,
-      { url: 'http://localhost' }
-    )
-
-    global.window = dom.window
-    global.document = dom.window.document
-    global.DOMParser = dom.window.DOMParser
-  })
-
   describe('DeserializableWidget', function () {
     afterEach(function () {
       document.getElementById('root').replaceChildren()
@@ -46,22 +30,26 @@ describe('Widget', function () {
       assert.equal(container.tagName, 'DIV')
       assert.equal(container.children.length, 3)
 
-      assert.equal(container.children[0].tagName, 'DIV')
-      assert.deepStrictEqual(Array.from(container.children[0].classList), [
-        'clock'
-      ])
+      assert.equal(container.children[0].tagName, 'WATCHING-ELEMENT')
+      assert.equal(container.children[0].firstChild.tagName, 'DIV')
+      assert.deepStrictEqual(
+        Array.from(container.children[0].firstChild.classList),
+        ['clock']
+      )
 
-      assert.equal(container.children[1].tagName, 'DIV')
-      assert.deepStrictEqual(Array.from(container.children[1].classList), [
-        'container',
-        'department'
-      ])
+      assert.equal(container.children[1].tagName, 'WATCHING-ELEMENT')
+      assert.equal(container.children[1].firstChild.tagName, 'DIV')
+      assert.deepStrictEqual(
+        Array.from(container.children[1].firstChild.classList),
+        ['container', 'department']
+      )
 
-      assert.equal(container.children[2].tagName, 'DIV')
-      assert.deepStrictEqual(Array.from(container.children[2].classList), [
-        'container',
-        'content-stream'
-      ])
+      assert.equal(container.children[1].tagName, 'WATCHING-ELEMENT')
+      assert.equal(container.children[2].firstChild.tagName, 'DIV')
+      assert.deepStrictEqual(
+        Array.from(container.children[2].firstChild.classList),
+        ['container', 'content-stream']
+      )
     })
   })
 

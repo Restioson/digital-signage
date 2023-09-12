@@ -1,6 +1,6 @@
 import { Widget } from '../widget.mjs'
-import { Root } from '../root.mjs'
 import { WithHTMLAttrs } from '../deserializable/with_html_attrs.mjs'
+import { WatchingElement } from './watching_element.mjs'
 
 /**
  * A {@link Widget} which is refreshed at regular intervals. It is completely rebuilt and replaced in-place upon
@@ -22,6 +22,8 @@ export class WithRefresh extends Widget {
     this.refresh = refresh
     this.builder = builder
     this.period = period
+    this.watcherElement = null
+    this.connected = false
   }
 
   /**
@@ -31,7 +33,7 @@ export class WithRefresh extends Widget {
    * @param {HTMLElement} element
    */
   async refreshForever (element) {
-    if (!element.isConnected) {
+    if (!this.connected) {
       return // Widget no longer exists in DOM; stop refreshing
     }
 
@@ -46,7 +48,7 @@ export class WithRefresh extends Widget {
       }
 
       newElement = this.renderChild(attributes)
-      element.replaceWith(newElement)
+      this.watcherElement.replaceChildren(newElement)
     }
 
     setTimeout(() => this.refreshForever(newElement), this.period)
@@ -66,9 +68,19 @@ export class WithRefresh extends Widget {
   }
 
   build () {
-    const element = this.renderChild()
-    Root.getInstance().addPostRenderCallback(() => this.refreshForever(element))
-    return element
+    const child = this.renderChild()
+
+    const watcher = new WatchingElement({
+      onConnect: () => {
+        this.connected = true
+        this.refreshForever(child)
+      },
+      onDisconnect: () => (this.connected = false)
+    })
+
+    this.watcherElement = watcher
+    watcher.appendChild(child)
+    return watcher
   }
 
   className () {

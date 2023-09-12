@@ -1,4 +1,5 @@
 import { RootAlreadyExistsError } from '../util.mjs'
+import { WatchingElement } from './dynamic/watching_element.mjs'
 
 let root
 
@@ -31,6 +32,10 @@ export class Root {
    * @param {number} departmentId the departments ID of this display group
    */
   static create ({ child, targetElement, departmentId }) {
+    try {
+      window.customElements.define('watching-element', WatchingElement)
+    } catch {}
+
     if (root) {
       throw new RootAlreadyExistsError()
     } else {
@@ -38,18 +43,10 @@ export class Root {
     }
 
     targetElement.replaceChildren(child.render())
-
-    for (const callback of root.postRenderCallbacks) {
-      callback()
-    }
   }
 
   static getInstance () {
     return root
-  }
-
-  addPostRenderCallback (callback) {
-    this.postRenderCallbacks.push(callback)
   }
 
   getDepartment () {
