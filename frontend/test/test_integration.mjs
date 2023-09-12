@@ -139,8 +139,10 @@ describe('API Integration', function () {
       '-p',
       '5001'
     ])
+    serverProcess.stdout.on('data', dat => console.log(dat.toString()))
+    serverProcess.stderr.on('data', dat => console.error(dat.toString()))
 
-    const base = 'http://localhost:5001'
+    const base = 'http://127.0.0.1:5001'
 
     const dom = new JSDOM(
       `<html lang="en">
@@ -157,7 +159,7 @@ describe('API Integration', function () {
     }
 
     let started = false
-    for (let tries = 0; tries < 8; tries++) {
+    for (let tries = 0; tries < 16; tries++) {
       try {
         if ((await (await fetch('/api/health')).json()).healthy === true) {
           started = true

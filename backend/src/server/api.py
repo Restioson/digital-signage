@@ -1,5 +1,5 @@
 from http import HTTPStatus
-
+import json
 import flask
 from flask import Blueprint, Response, redirect, url_for, current_app, render_template
 from flask_login import (
@@ -17,6 +17,19 @@ from server.user import User
 from server.valid_redirect import url_has_allowed_host_and_scheme
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
+
+
+@blueprint.route("/loadshedding_schedule", methods=["GET"])
+def loadshedding():
+    """
+    Returns the stored loadshedding schedule
+    Right now it is locked to the region of UCT
+    """
+    schedule_data = DatabaseController.get().fetch_loadshedding_schedule(1)
+    schedule_json = json.dumps(schedule_data, indent=4)
+    response = Response(schedule_json, content_type="application/json")
+
+    return response
 
 
 @blueprint.route("/health", methods=["GET"])

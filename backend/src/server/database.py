@@ -398,3 +398,28 @@ class DatabaseController:
                 )
             )
         )
+
+    def update_loadshedding_schedule(self, region, schedule):
+        """Updates the loadshedding schedule for the given region"""
+
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "UPDATE loadshedding_schedules SET schedule_json = ? WHERE id= ?",
+                (
+                    schedule,
+                    region,
+                ),
+            )
+
+    def fetch_loadshedding_schedule(self, region):
+        """fetches the loadshedding schedule for the given region"""
+
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "SELECT schedule_json FROM loadshedding_schedules WHERE id= ?",
+                (region,),
+            )
+            db_user_data = cursor.fetchone()
+            return db_user_data

@@ -9,9 +9,13 @@ VALUES
     1,
     'Default',
     1,
-    '<container> <clock> <department> <content-stream><stream id="1"></content-stream> </container>'
+    '<container> <clock> <loadshedding> <department> <content-stream><stream id="1"></content-stream> </container>'
   );
 INSERT INTO
   content_streams (id, name)
 VALUES
   (1, 'UCT Announcements');
+INSERT INTO
+  loadshedding_schedules (id, schedule_json)
+VALUES
+  (1, 'default text');

@@ -70,3 +70,7 @@ CREATE TABLE IF NOT EXISTS users (
   screen_name TEXT NOT NULL,
   password_hash TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS loadshedding_schedules (
+  id INTEGER PRIMARY KEY,
+  schedule_json TEXT NOT NULL
+);
