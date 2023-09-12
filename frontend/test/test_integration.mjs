@@ -131,8 +131,6 @@ describe('API Integration', function () {
   beforeEach(async function () {
     this.timeout(10000)
 
-    console.log(process.env.ESP_LICENSE_KEY !== undefined)
-
     // eslint-disable-next-line camelcase
     serverProcess = child_process.spawn('../venv/bin/flask', [
       '--app',
@@ -168,7 +166,6 @@ describe('API Integration', function () {
           break
         }
       } catch (e) {
-        console.error(e)
         await sleepMs(250)
       }
     }
