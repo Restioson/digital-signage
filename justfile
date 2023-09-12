@@ -25,7 +25,7 @@ test-backend:
     ./venv/bin/pytest -W ignore::DeprecationWarning
 
 test-frontend:
-    cd frontend && npx mocha
+    cd frontend && npx mocha --require test/setup_dom.mjs
 
 format:
     dprint fmt

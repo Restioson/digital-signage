@@ -1,21 +1,7 @@
 import assert from 'assert'
-import { JSDOM } from 'jsdom'
 import { deserializeFreeFormContent } from '../static/widgets/free_form_content/free_form_content_factory.mjs'
 
 describe('Widget', function () {
-  beforeEach(() => {
-    const dom = new JSDOM(
-      `<html lang="en">
-       <body>
-       </body>
-     </html>`,
-      { url: 'http://localhost' }
-    )
-
-    global.window = dom.window
-    global.document = dom.window.document
-  })
-
   describe('FreeFormContent', function () {
     describe('TextWidget', function () {
       it('renders', function () {
