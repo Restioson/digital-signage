@@ -1,21 +1,7 @@
-import { JSDOM } from 'jsdom'
 import { Person } from '../static/widgets/department/person.mjs'
 import assert from 'assert'
 
 describe('Widget', function () {
-  beforeEach(() => {
-    const dom = new JSDOM(
-      `<html lang="en">
-       <body>
-       </body>
-     </html>`,
-      { url: 'http://localhost' }
-    )
-
-    global.window = dom.window
-    global.document = dom.window.document
-  })
-
   describe('Person', function () {
     it('renders', function () {
       const expectedProps = {

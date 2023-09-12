@@ -30,12 +30,14 @@ TEMPLATES = [
             layout_template="""
             <container>
                 <clock format="{{ clock_format }}">
-                <department>
-                <content-stream fetch-amount="{{ fetch_amount }}">
-                    {% for stream in streams %}
-                        <stream id="{{ stream }}">
-                    {% endfor %}
-                </content_stream>
+                <rotation secs-per-page="{{ secs_per_page }}">
+                    <department>
+                    <content-stream fetch-amount="{{ fetch_amount }}">
+                        {% for stream in streams %}
+                            <stream id="{{ stream }}">
+                        {% endfor %}
+                    </content-stream>
+                </rotation>
             </container>
         """,
             properties=[
@@ -44,6 +46,12 @@ TEMPLATES = [
                     "Clock format",
                     "string",
                     default="MMMM Do, h:mm:ss a",
+                ),
+                TemplateProperty(
+                    "secs_per_page",
+                    "Time to display each page (secs)",
+                    "string",
+                    default="30",
                 ),
                 TemplateProperty(
                     "fetch_amount", "Number of content posts to fetch", "string"
@@ -60,7 +68,7 @@ TEMPLATES = [
                 {% for stream in streams %}
                     <stream id="{{ stream }}">
                 {% endfor %}
-            </content_stream>
+            </content-stream>
             """,
             properties=[
                 TemplateProperty("streams", "Content streams", "content_streams")
