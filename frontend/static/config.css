@@ -4,6 +4,6 @@
   margin-left: 15px;
 }
 
-#status-message.error {
+.error {
   color: red;
 }
