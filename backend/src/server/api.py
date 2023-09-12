@@ -74,12 +74,15 @@ def content():
     """
 
     streams = flask.request.args.getlist("stream")
+    limit = int(last if (last := flask.request.args.get("last")) else 0) or None
 
     if flask.request.method == "GET":
         return {
             "content": [
                 post.to_http_json()
-                for post in DatabaseController.get().fetch_content_in_streams(streams)
+                for post in DatabaseController.get().fetch_content_in_streams(
+                    streams, limit=limit
+                )
             ]
         }
     else:
