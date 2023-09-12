@@ -1,6 +1,7 @@
 import os
 from server.database import DatabaseController
 import http.client
+import flask
 
 
 class Loadshedding:
@@ -14,14 +15,20 @@ class Loadshedding:
         "capetown-15-universityofcapetown",
         # Add more regions as needed
     ]
-    # load_dotenv()
     key = os.environ.get("ESP_LICENSE_KEY")
+
+    # Make sure to do
+    # if flask.current_app.config["TESTING"]: use ESP sample endpoint!
 
     @staticmethod
     def update_loadsheding_schedule(region, app_current):
         host = "developer.sepush.co.za"
         areaid = Loadshedding.regions[region - 1]
-        path = Loadshedding.endpoints[0].replace("{area_id}", areaid)
+        if flask.current_app.config["TESTING"]:
+            path = Loadshedding.endpoints[0].replace("{area_id}", areaid)
+        else:
+            path = Loadshedding.endpoints[0].replace("{area_id}", areaid)
+            # when doing demos or final product switch the above line to "endpoints[1]"
         token = Loadshedding.key
         conn = http.client.HTTPSConnection(host)
         headers = {"token": token}
