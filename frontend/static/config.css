@@ -1,9 +1,9 @@
 @import url("main.css");
 
-.status-message pre {
+#status-message pre {
   margin-left: 15px;
 }
 
-.status-message.error {
+#status-message.error {
   color: red;
 }

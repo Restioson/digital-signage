@@ -8,8 +8,8 @@
 
 {% block content %}
   <script type="module">
-    import { main } from "{{ url_for('static', filename='config.mjs') }}";
-    main();
+    import { setupPostForms } from "{{ url_for('static', filename='config.mjs') }}";
+    setupPostForms();
   </script>
 
   <form action="/api/content_streams" method="post" class="post-form">
@@ -30,6 +30,6 @@
     <input type="text" id="name" name="name" />
 
     <button type="submit">Submit</button>
-    <p hidden class="status-message"></p>
+    <p hidden id="status-message"></p>
   </form>
 {% endblock %}

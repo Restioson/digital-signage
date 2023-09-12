@@ -9,8 +9,12 @@
 
 {% block content %}
   <script type="module">
-    import { main } from "{{ url_for('static', filename='config/display_group/add.mjs') }}";
-    main();
+    import {
+      setupPostForms,
+      choiceOfFieldset,
+    } from "{{ url_for('static', filename='config.mjs') }}";
+    setupPostForms();
+    choiceOfFieldset("template", "template-fieldset", "template");
   </script>
 
 
@@ -34,12 +38,7 @@
 
     {%- for name, template in templates -%}
       {# <!-- [html-validate-disable-next attribute-allowed-values,valid-id] --> doesn't understand J2 syntax #}
-      <fieldset
-        id="template-{{ loop.index }}"
-        class="template-fieldset"
-        hidden
-        disabled
-      >
+      <fieldset id="template-{{ loop.index }}" class="template-fieldset">
         <legend>{{ name }} Template</legend>
         {%- for property in template.properties -%}
           {%- if property.type == "string" -%}
@@ -54,7 +53,7 @@
       </fieldset>
     {%- endfor -%}
 
-    <fieldset id="template-custom" class="template-fieldset" hidden disabled>
+    <fieldset id="template-custom" class="template-fieldset">
       <legend>Custom display</legend>
       <label for="layout_xml">Layout XML:</label>
       <!-- [html-validate-disable no-unknown-elements, element-permitted-content, attr-spacing, close-attr, no-self-closing, element-name, element-permitted-parent] -->
@@ -72,6 +71,6 @@
     </fieldset>
 
     <button type="submit">Submit</button>
-    <p hidden class="status-message"></p>
+    <p hidden id="status-message"></p>
   </form>
 {% endblock %}

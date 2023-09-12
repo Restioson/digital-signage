@@ -1,7 +1,28 @@
-export function main () {
+export function setupPostForms () {
   for (const form of document.getElementsByClassName('post-form')) {
     form.addEventListener('submit', submitPost)
   }
+}
+
+export function choiceOfFieldset (selectorId, fieldsetClass, fieldsetIdPrefix) {
+  const selector = document.getElementById(selectorId)
+  const form = selector.closest('form')
+
+  function change () {
+    for (const element of form.querySelectorAll(`fieldset.${fieldsetClass}`)) {
+      element.hidden = true
+      element.disabled = true
+    }
+
+    const enabled = document.getElementById(
+      `${fieldsetIdPrefix}-${selector.value}`
+    )
+    enabled.hidden = false
+    enabled.disabled = false
+  }
+
+  selector.addEventListener('change', change)
+  change()
 }
 
 class ApiError extends Error {
@@ -22,8 +43,8 @@ async function submitPost (event) {
   event.preventDefault()
   const form = event.target
 
-  const postStatusMessage = form.querySelector('.status-message')
-  postStatusMessage.className = 'status-message' // Clear success/error class
+  const postStatusMessage = document.getElementById('status-message')
+  postStatusMessage.className = '' // Clear success/error class
 
   try {
     const res = await fetch(form.action, {
@@ -51,5 +72,13 @@ async function submitPost (event) {
   }
 
   postStatusMessage.hidden = false
-  postStatusMessage.scrollIntoView()
+  window.location.replace('#status-message')
+
+  const effect = new window.KeyframeEffect(
+    postStatusMessage,
+    [{ background: 'yellow' }, { background: 'transparent' }],
+    { duration: 2000, direction: 'normal', easing: 'linear' }
+  )
+  const animation = new window.Animation(effect, document.timeline)
+  animation.play()
 }
