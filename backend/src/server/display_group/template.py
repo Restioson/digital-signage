@@ -35,7 +35,7 @@ TEMPLATES = [
                     {% for stream in streams %}
                         <stream id="{{ stream }}">
                     {% endfor %}
-                <content_stream>
+                </content_stream>
             </container>
         """,
             properties=[
@@ -52,7 +52,7 @@ TEMPLATES = [
                 {% for stream in streams %}
                     <stream id="{{ stream }}">
                 {% endfor %}
-            <content_stream>
+            </content_stream>
             """,
             properties=[
                 TemplateProperty("streams", "Content streams", "content_streams")
