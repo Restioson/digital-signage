@@ -29,7 +29,7 @@ export class Department extends DeserializableWidget {
 
     if (!dirty) {
       for (let i = 0; i < update.people.length; i++) {
-        dirty |= update.people[i].id === this.people.id
+        dirty |= update.people[i].id === this.children[i].id
 
         if (dirty) {
           break
