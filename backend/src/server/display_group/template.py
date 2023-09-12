@@ -39,7 +39,12 @@ TEMPLATES = [
             </container>
         """,
             properties=[
-                TemplateProperty("clock_format", "Clock format", "string"),
+                TemplateProperty(
+                    "clock_format",
+                    "Clock format",
+                    "string",
+                    default="MMMM Do, h:mm:ss a",
+                ),
                 TemplateProperty(
                     "fetch_amount", "Number of content posts to fetch", "string"
                 ),
