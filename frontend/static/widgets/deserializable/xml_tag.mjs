@@ -82,8 +82,7 @@ export class XMLTag {
    * @return XMLTag the child of this tag
    */
   firstChild () {
-    const child = this._nthChild(0)
-    return child
+    return this._nthChild(0)
   }
 
   /**
