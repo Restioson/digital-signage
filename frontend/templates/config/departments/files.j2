@@ -8,11 +8,11 @@
 
 {% block content %}
   <script type="module">
-    import { main } from "{{ url_for('static', filename='config.mjs') }}";
+    import { main } from "{{ url_for('static', filename='config/departments/files.mjs') }}";
     main();
   </script>
   <div class="column-list">
-    <!-- find the correct form action and how to extract the name of the file from the form:api/department/{{ department.id }}/files-->
+    {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
     <form
       action="{{ url_for('api.upload_department_files', department_id=department.id) }}"
       method="post"
@@ -36,5 +36,41 @@
       <button type="submit">Submit</button>
       <p hidden class="status-message"></p>
     </form>
+
+    <div class="column-list">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">File Name</th>
+            <th scope="col">Department</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {%- for file in department.files -%}
+            <tr>
+              <td>
+                <a
+                  href="/api/departments/{{ department.id }}/files/{{ file.name }}"
+                  >{{ file.name }}</a
+                >
+              </td>
+              <td>{{ file.department_id }}</td>
+              <td>
+                <button
+                  type="button"
+                  class="delete-button"
+                  data-department_id="{{ department.id }}"
+                  data-filename="{{ file.name }}"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+      <p hidden id="status-message"></p>
+    </div>
   </div>
 {% endblock %}

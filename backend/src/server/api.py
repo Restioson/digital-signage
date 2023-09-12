@@ -234,7 +234,8 @@ def preview_display(department_id: int):
         display_config={
             "department": department_id,
             "layout": group.layout_xml,
-        },)
+        },
+    )
 
 
 @blueprint.route("/department/<int:department_id>/files", methods=["POST", "GET"])
@@ -245,22 +246,14 @@ def upload_department_files(department_id: int):
     file to the server and return the ID and post time upon success.
     """
 
-    if flask.request.method == "GET":
-        return {
-            "content": [
-                post.to_http_json()
-                for post in DatabaseController.get().fetch_all_content()
-            ]
-        }
-    else:
-        if not current_user.is_authenticated:
-            return current_app.login_manager.unauthorized()
-        # needs to create file object, passing it the form attributes
-        content_id = DatabaseController.get().upload_department_files(
-            File.from_form(flask.request.form, flask.request.files, department_id)
-        )
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
 
-        return {"id": content_id}
+    content_id = DatabaseController.get().upload_department_files(
+        File.from_form(flask.request.form, flask.request.files, department_id)
+    )
+
+    return {"id": content_id}
 
 
 @blueprint.route(
@@ -268,14 +261,40 @@ def upload_department_files(department_id: int):
     methods=["GET"],
 )
 def get_department_files(filename: str, department_id: int):
-    """Fetch file associated with department.
-
-    Returns 404 if the content is not BinaryContent.
-    """
     department_file = DatabaseController.get().fetch_file_by_id(filename, department_id)
 
-    return Response(
-        response=department_file.file_data,
-        mimetype=department_file.mime_type,
-        status=HTTPStatus.OK,
-    )
+    if department_file:
+        return Response(
+            response=department_file.file_data,
+            mimetype=department_file.mime_type,
+            status=HTTPStatus.OK,
+        )
+    else:
+        flask.abort(404)
+
+
+@blueprint.route(
+    "/departments/<int:department_id>/files/<string:file_name>",
+    methods=["DELETE", "GET"],
+)
+def file(department_id: int, file_name: str):
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
+    if not DatabaseController.get().fetch_department_by_id(department_id):
+        flask.abort(404)
+
+    if flask.request.method == "DELETE":
+        if DatabaseController.get().delete_file_by_id(file_name, department_id):
+            return {"deleted": True}
+        else:
+            flask.abort(404)
+    else:
+        file = DatabaseController.get().fetch_file_by_id(file_name, department_id)
+
+        if isinstance(file, File):
+            return Response(
+                response=file.file_data, mimetype=file.mime_type, status=HTTPStatus.OK
+            )
+        else:
+            flask.abort(404)
