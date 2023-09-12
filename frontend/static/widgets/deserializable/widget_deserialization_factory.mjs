@@ -79,6 +79,8 @@ function deserializeWidgetRaw (tag) {
       return Caption.fromXML(tag)
     case 'clock':
       return Clock.fromXML(tag)
+    case 'loadshedding':
+      return Loadshedding.fromXML(tag)
     case 'department':
       return Department.fromXML(tag)
     case 'content-stream':

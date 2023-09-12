@@ -1,5 +1,4 @@
 import { WithRefresh } from './dynamic/with_refresh.mjs'
-import { WithClasses } from './with_classes.mjs'
 import { importFromNpm } from '../util.mjs'
 import { DeserializableWidget } from './deserializable/deserializable_widget.mjs'
 const { default: moment } = await importFromNpm('moment')
@@ -57,7 +56,7 @@ export class Loadshedding extends DeserializableWidget {
             mintimetill = timetill
           }
         })
-        if (mintimetill < moment().fromNow()) {
+        if (mintimetill > moment().fromNow()) {
           this.scheduleOutput = `Loadshedding started ${mintimetill}\n${schedule.join(
             '\n'
           )}`
@@ -81,12 +80,16 @@ export class Loadshedding extends DeserializableWidget {
       builder: () => {
         const text = document.createElement('div')
         text.innerText = this.scheduleOutput
-        return new WithClasses({ classList: ['loadshedding'], child: text })
+        return text
       }
     })
   }
 
-  static fromJSON (obj) {
-    return new Loadshedding(obj.schedule_json)
+  static fromXML (tag) {
+    return new Loadshedding(tag.schedule_json)
+  }
+
+  className () {
+    return 'loadshedding'
   }
 }
