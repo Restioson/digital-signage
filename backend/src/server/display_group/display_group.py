@@ -33,7 +33,6 @@ class DisplayGroup:
                 for prop in form.keys()
                 if prop.startswith("template-")
             }
-            print(properties)
             layout_xml = template.render_template(properties)
 
         return DisplayGroup(

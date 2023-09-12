@@ -10,7 +10,6 @@ function setupPreview () {
   const form = document.getElementById('display-group-form')
   async function change () {
     const iframe = document.getElementById('preview')
-    console.log(iframe.dataset.previewUrl)
     const res = await fetch(iframe.dataset.previewUrl, {
       method: 'post',
       body: new FormData(form)
