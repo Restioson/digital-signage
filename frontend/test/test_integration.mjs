@@ -131,6 +131,8 @@ describe('API Integration', function () {
   beforeEach(async function () {
     this.timeout(10000)
 
+    console.log(process.env.ESP_LICENSE_KEY !== undefined)
+
     // eslint-disable-next-line camelcase
     serverProcess = child_process.spawn('../venv/bin/flask', [
       '--app',
@@ -139,6 +141,8 @@ describe('API Integration', function () {
       '-p',
       '5001'
     ])
+    serverProcess.stdout.on('data', dat => console.log(dat.toString()))
+    serverProcess.stderr.on('data', dat => console.error(dat.toString()))
 
     const base = 'http://127.0.0.1:5001'
 
@@ -157,13 +161,14 @@ describe('API Integration', function () {
     }
 
     let started = false
-    for (let tries = 0; tries < 8; tries++) {
+    for (let tries = 0; tries < 16; tries++) {
       try {
         if ((await (await fetch('/api/health')).json()).healthy === true) {
           started = true
           break
         }
       } catch (e) {
+        console.error(e)
         await sleepMs(250)
       }
     }
