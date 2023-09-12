@@ -9,7 +9,6 @@ const { default: moment } = await importFromNpm('moment')
 export class Loadshedding extends DeserializableWidget {
   constructor () {
     super()
-    this.scheduleOutput = 'Loading loadshedding schedule'
     this.scheduleJsonData = ''
   }
 
@@ -43,9 +42,9 @@ export class Loadshedding extends DeserializableWidget {
               const todayEvents = events.filter(event =>
                 event.start.startsWith(today)
               )
-
+              const scheduleOutput = scheduleOutput
               if (todayEvents.length === 0) {
-                this.scheduleOutput =
+                scheduleOutput =
                   'No more loadshedding scheduled for today.'
               } else {
                 // gets the stage number
@@ -75,30 +74,30 @@ export class Loadshedding extends DeserializableWidget {
                   mintimetill.diff(moment(), 'seconds') < 0 &&
                   mintimetillend.diff(moment(), 'seconds') > 0
                 ) {
-                  this.scheduleOutput = `Loadshedding started ${mintimetill.fromNow()}\n${schedule.join(
+                  scheduleOutput = `Loadshedding started ${mintimetill.fromNow()}\n${schedule.join(
                     '\n'
                   )}`
                 } else if (
                   mintimetill.diff(moment(), 'seconds') > 0 &&
                   mintimetillend.diff(moment(), 'seconds') > 0
                 ) {
-                  this.scheduleOutput = `Loadshedding starts ${mintimetill.fromNow()}\n${schedule.join(
+                  scheduleOutput = `Loadshedding starts ${mintimetill.fromNow()}\n${schedule.join(
                     '\n'
                   )}`
                 } else {
-                  this.scheduleOutput = `Loadshedding ended ${mintimetillend.fromNow()}\n${schedule.join(
+                  scheduleOutput = `Loadshedding ended ${mintimetillend.fromNow()}\n${schedule.join(
                     '\n'
                   )}`
                 }
               }
-              this.scheduleOutput =
-                'Loadshedding Schedule:\n' + this.scheduleOutput
+              scheduleOutput =
+                'Loadshedding Schedule:\n' + scheduleOutput
             } catch (error) {
-              this.scheduleOutput = 'Loading loadshedding schedule'
+              scheduleOutput = 'Loading loadshedding schedule'
               console.error('Error fetching load shedding schedule:', error)
             }
             const text = document.createElement('div')
-            text.innerText = this.scheduleOutput
+            text.innerText = scheduleOutput
             return text
           }
         })
