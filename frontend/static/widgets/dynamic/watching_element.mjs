@@ -16,6 +16,7 @@ export class WatchingElement extends window.HTMLElement {
       } else {
         this.firstElementChild.setAttribute(attr, this.getAttribute(attr))
       }
+      this.removeAttribute(attr)
     }
 
     if (this.onConnect) {
