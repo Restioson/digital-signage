@@ -6,21 +6,60 @@ export class WatchingElement extends window.HTMLElement {
     super()
     this.onConnect = props.onConnect
     this.onDisconnect = props.onDisconnect
+    this.savedAttrs = {}
   }
 
   connectedCallback () {
     // Transfer own attributes to child to make this 'invisible'
     for (const attr of this.getAttributeNames()) {
-      if (attr === 'class') {
-        this.firstElementChild.classList.add(...this.className.split(' '))
-      } else {
-        this.firstElementChild.setAttribute(attr, this.getAttribute(attr))
-      }
+      this.savedAttrs[attr] = super.getAttribute(attr)
       this.removeAttribute(attr)
     }
 
+    this.passAttrsToChild()
+
     if (this.onConnect) {
       this.onConnect()
+    }
+  }
+
+  appendChild (node) {
+    const ret = super.appendChild(node)
+    this.passAttrsToChild()
+    return ret
+  }
+
+  replaceChildren (...nodes) {
+    super.replaceChildren(...nodes)
+    this.passAttrsToChild()
+  }
+
+  // Transfer own attributes to child to make this 'invisible'
+  setAttribute (qualifiedName, value) {
+    this.savedAttrs[qualifiedName] = value
+    this.passAttrsToChild()
+  }
+
+  getAttribute (qualifiedName) {
+    return this.savedAttrs[qualifiedName]
+  }
+
+  passAttrsToChild () {
+    for (const attr in this.savedAttrs) {
+      if (attr === 'class') {
+        const childClass = this.firstElementChild.getAttribute('class') || ''
+        const classSet = new Set([
+          ...childClass.split(' '),
+          ...this.savedAttrs.class.split(' ')
+        ])
+        const className = Array.from(classSet)
+          .filter(s => s)
+          .join(' ')
+        console.log(className)
+        this.firstElementChild.setAttribute('class', className)
+      } else {
+        this.firstElementChild.setAttribute(attr, this.savedAttrs(attr))
+      }
     }
   }
 

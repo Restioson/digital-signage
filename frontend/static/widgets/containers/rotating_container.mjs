@@ -24,7 +24,10 @@ export class RotatingContainer extends DeserializableWidget {
       },
       period: this.period,
       builder: () => {
-        return new Container({ children: [this.children[this.childIndex]] })
+        return new Container({
+          children:
+            this.children.length > 0 ? [this.children[this.childIndex]] : []
+        })
       }
     })
   }
