@@ -54,9 +54,7 @@ def create_app(testing=False):
     def teardown_db(exception):
         DatabaseController.teardown()
 
-    print('updating loadshedding')
-    # repeat_update_loadshedding(Loadshedding.interval, app.app_context())
-    print('updated')
+    repeat_update_loadshedding(Loadshedding.interval, app.app_context())
     return app
 
 
