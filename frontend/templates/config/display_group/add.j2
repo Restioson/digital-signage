@@ -9,18 +9,16 @@
 
 {% block content %}
   <script type="module">
-    import {
-      setupPostForms,
-      choiceOfFieldset,
-    } from "{{ url_for('static', filename='config.mjs') }}";
-    setupPostForms();
-    choiceOfFieldset("template", "template-fieldset", "template");
+    import { main } from "{{ url_for('static', filename='config/display_groups/add.mjs') }}";
+    main();
   </script>
 
 
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
   <form
+    id="display-group-form"
     action="/api/departments/{{ department_id }}/display_groups"
+    enctype="multipart/form-data"
     method="post"
     class="post-form"
   >
@@ -69,6 +67,13 @@
         </textarea
       >
     </fieldset>
+
+    <h4>Preview</h4>
+    <iframe
+      title="Preview"
+      id="preview"
+      data-preview-url="/api/departments/{{ department_id }}/preview_display"
+    ></iframe>
 
     <button type="submit">Submit</button>
     <p hidden id="status-message"></p>

@@ -1,8 +1,7 @@
-import json
 from http import HTTPStatus
 
 import flask
-from flask import Blueprint, Response, redirect, url_for, current_app
+from flask import Blueprint, Response, redirect, url_for, current_app, render_template
 from flask_login import (
     login_user,
     logout_user,
@@ -200,13 +199,27 @@ def display_groups(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
-    try:
-        group_id = DatabaseController.get().create_display_group(
-            DisplayGroup.from_form(flask.request.form), department_id
-        )
-        return {"id": group_id}
-    except json.JSONDecodeError as err:
-        return flask.abort(400, description=f"Error in layout JSON: {err}")
+    group_id = DatabaseController.get().create_display_group(
+        DisplayGroup.from_form(flask.request.form), department_id
+    )
+    return {"id": group_id}
+
+
+@blueprint.route("/departments/<int:department_id>/preview_display", methods=["POST"])
+def preview_display(department_id: int):
+    """Preview the given display group without actually creating it"""
+
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
+    group = DisplayGroup.from_form(flask.request.form)
+    return render_template(
+        "display.j2",
+        display_config={
+            "department": department_id,
+            "layout": group.layout_xml,
+        },
+    )
 
 
 @blueprint.route("/department/<int:department_id>/files", methods=["POST", "GET"])
