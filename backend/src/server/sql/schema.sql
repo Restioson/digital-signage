@@ -78,5 +78,11 @@ CREATE TABLE IF NOT EXISTS files (
   PRIMARY KEY (department_id, filename)
 CREATE TABLE IF NOT EXISTS loadshedding_schedules (
   id INTEGER PRIMARY KEY,
-  schedule_json TEXT NOT NULL
+  schedule_json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS files (
+  department_id INTEGER NOT NULL REFERENCES departments(id),
+  filename TEXT NOT NULL,
+  file_content BLOB NOT NULL,
+  mime_type TEXT NOT NULL,
+  PRIMARY KEY (department_id, filename)
 );

@@ -10,6 +10,7 @@ from server.department import Department, File
 from server.department import Person, Department
 from server.free_form_content.content_stream import ContentStream
 from server.grouped_content_streams import GroupedContentStreams
+from server.department import Lecturer, Department, File
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -463,3 +464,41 @@ class DatabaseController:
             )
             db_user_data = cursor.fetchone()
             return db_user_data
+    # uploading of arbitrary files by department:
+    def upload_department_files(self, dep_file: File) -> int:
+        """Insert the given file and returns the inserted row id"""
+
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "INSERT INTO files "
+                "(filename, mime_type, file_content, department_id)"
+                " VALUES (?, ?, ?, ?)",
+                (
+                    dep_file.name,
+                    dep_file.mime_type,
+                    dep_file.file_data,
+                    dep_file.department_id,
+                ),
+            )
+        return cursor.lastrowid
+
+    def fetch_file_by_id(self, filename: str, department_id: int) -> Optional[File]:
+        """Fetch a given piece of content from the database. By default, the blob
+        will not be fetched from the database."""
+        cursor = self.db.cursor()
+        cursor.row_factory = free_form_content.from_sql
+
+        return next(
+            cursor.execute(
+                "SELECT "
+                "department_id, filename, file_content, mime_type "
+                "FROM files"
+                " WHERE department_id = ? AND file_name = ?",
+                (
+                    department_id,
+                    filename,
+                ),
+            ),
+            None,
+        )

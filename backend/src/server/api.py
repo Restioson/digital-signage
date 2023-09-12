@@ -10,6 +10,7 @@ from flask_login import (
 from server import free_form_content
 from server.department import File
 from server.department import Person
+from server.department import File
 from server.database import DatabaseController
 from server.display_group import DisplayGroup
 from server.free_form_content import BinaryContent
