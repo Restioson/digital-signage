@@ -138,8 +138,6 @@ describe('API Integration', function () {
       '-p',
       '5001'
     ])
-    serverProcess.stdout.on('data', dat => console.log(dat.toString()))
-    serverProcess.stderr.on('data', dat => console.error(dat.toString()))
 
     const base = 'http://127.0.0.1:5001'
 
@@ -357,7 +355,7 @@ describe('API Integration', function () {
     describe('Department', function () {
       describe('refresh', function () {
         it('should result in empty people list with empty database', async function () {
-          const dept = new Department()
+          const dept = new Department({})
           assert.deepStrictEqual(dept.children, [])
           await dept.refresh()
           assert.deepStrictEqual(dept.children, [])
@@ -389,7 +387,7 @@ describe('API Integration', function () {
             await uploadPerson(person)
           }
 
-          const dept = new Department()
+          const dept = new Department({})
           assert.deepStrictEqual(dept.children, [])
 
           await dept.refresh()
