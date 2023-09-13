@@ -1,5 +1,5 @@
 import typing
-from flask import render_template_string
+from flask import render_template
 from server.display_group.template_property import TemplateProperty
 
 
@@ -19,31 +19,14 @@ class Template:
 
     def render_template(self, values: dict[str, typing.Any]) -> str:
         """Render the template to XML"""
-        return render_template_string(self.layout_template, **values)
+        return render_template(f"layouts/{self.layout_template}", **values)
 
 
 TEMPLATES = [
     (
         "Simple",
         Template(
-            layout_template="""
-            <container>
-                <clock format="{{ clock_format }}">
-                <loadshedding>
-                <rotation secs-per-page="{{ secs_per_page }}">
-                    <department>
-                    <content-stream
-                        fetch-amount="{{ fetch_amount }}"
-                        secs-per-page="{{ content_rotation_secs }}"
-                        page-size="{{ page_size }}"
-                    >
-                        {% for stream in streams %}
-                            <stream id="{{ stream }}">
-                        {% endfor %}
-                    </content-stream>
-                </rotation>
-            </container>
-        """,
+            layout_template="simple.j2.xml",
             properties=[
                 TemplateProperty(
                     "clock_format",
@@ -75,112 +58,7 @@ TEMPLATES = [
     (
         "Chris Hani (Learning Lounge)",
         Template(
-            layout_template="""
-            <container html:id="main">
-                <style>
-                    #main {
-                        background: url({{ background_image_url }})
-                                    no-repeat center center fixed;
-                        min-height: 100%;
-                        -webkit-background-size: cover;
-                        -moz-background-size: cover;
-                        -o-background-size: cover;
-                        background-size: cover;
-                        display: grid;
-                        grid-template-rows: auto 2fr 3fr auto;
-                        grid-gap: 1em;
-                        padding-left: 25px;
-                        padding-right: 25px;
-                    }
-
-                    #screen-body {
-                        display: flex;
-                        flex-direction: column;
-                    }
-
-                    #header-text {
-                        text-align: right;
-                        color: blue;
-                        font-size: 34pt;
-                    }
-
-                    #calendar-container {
-                        display: flex;
-                        flex-direction: row;
-                    }
-
-                    #calendar-container .clock {
-                        text-align: left;
-                        font-weight: bold;
-                    }
-
-                    #calendar-container .clock .month {
-                        margin-left: 5px;
-                        font-size: 22pt;
-                        color: purple;
-                    }
-
-                    #calendar-container .clock .day {
-                        font-size: 20pt;
-                        color: purple;
-                    }
-
-                    #calendar-container > *:last-child {
-                        flex: 1;
-                    }
-
-                    .scaled-iframe {
-                        width: 50%;
-                        height: 50%;
-                        transform: scale(2);
-                        transform-origin: top left;
-                    }
-
-                    #time-clock {
-                        text-align: left;
-                        font-weight: bold;
-                        font-size: 32pt;
-                        color: black;
-                        -webkit-text-fill-color: white;
-                        -webkit-text-stroke-width: 1px;
-                        -webkit-text-stroke-color: black;
-                    }
-
-                    #stream {
-                        flex-grow: 2;
-                    }
-
-                    .content-stream > div {
-                        height: unset;
-                    }
-                </style>
-
-                <html html:id="header-text">{{ room_name }}</html>
-
-                <container html:id="calendar-container">
-                    <clock format="{{ date_format|safe }}">
-                    <container>
-                        <html html:id="calendar" html:class="scaled-iframe">
-                            {{ calendar_iframe|safe }}
-                        </html>
-                    </container>
-                </container>
-
-                <container html:id="stream">
-                    <content-stream
-                        fetch-amount="{{ fetch_amount }}"
-                        secs-per-page="{{ content_rotation_secs }}"
-                        page-size="{{ page_size }}"
-                    >
-                        {% for stream in streams %}
-                            <stream id="{{ stream }}">
-                        {% endfor %}
-                    </content-stream>
-                </container>
-
-                <clock html:id="time-clock" format="{{ time_format|safe }}">
-            </container>
-        """,
+            layout_template="chris_hani.j2.xml",
             properties=[
                 TemplateProperty(
                     "background_image_url",
@@ -244,14 +122,7 @@ TEMPLATES = [
     (
         "Content Only",
         Template(
-            layout_template="""
-            <content-stream secs-per-page="{{ rotation_secs }}"
-                page-size="{{ page_size }}">
-                {% for stream in streams %}
-                    <stream id="{{ stream }}">
-                {% endfor %}
-            </content-stream>
-            """,
+            layout_template="content_only.j2.xml",
             properties=[
                 TemplateProperty(
                     "page_size",
