@@ -59,16 +59,17 @@ async function submitPost (event) {
       throw new ApiError(await res.text())
     }
     const responsemessage = await res.json()
-    if (responsemessage.id==="response needed"){
+    if (responsemessage.id === 'response needed') {
       postStatusMessage.classList.add('success')
-      postStatusMessage.innerText = `Response: ${
-      responsemessage.response}`
+      postStatusMessage.innerText = `Response: ${responsemessage.response}`
     } else {
-    postStatusMessage.classList.add('success')
-    postStatusMessage.innerText = `Successfully submitted (id: ${
-      responsemessage.id})`}
+      postStatusMessage.classList.add('success')
+      postStatusMessage.innerText = `Successfully submitted (id: ${
+        responsemessage.id
+      })`
+    }
   } catch (err) {
-    console.log (err)
+    console.log(err)
     postStatusMessage.classList.add('error')
     const errorBox = document.createElement('pre')
     errorBox.innerText = err instanceof ApiError ? err.response : err.message

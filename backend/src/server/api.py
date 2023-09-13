@@ -177,10 +177,16 @@ def upload_table(department_id: int):
         # Create a JSON structure with the entries
         json_data = {"entries": entries}
         DatabaseController.get().upload_department_table(department_id, json_data)
-        return {"id":"response needed","response": "Excel file is a valid file. Upload successful"}
+        return {
+            "id": "response needed",
+            "response": "Excel file is a valid file. Upload successful",
+        }
     except Exception:
         print("Invalid")
-        return {"id":"response needed","response": "Not an valid excel file. Upload failed"}
+        return {
+            "id": "response needed",
+            "response": "Not an valid excel file. Upload failed",
+        }
 
 
 @blueprint.route("/register", methods=["POST"])
