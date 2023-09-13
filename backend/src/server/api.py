@@ -1,5 +1,6 @@
 from http import HTTPStatus
 import json
+import pandas as pd
 import flask
 from flask import Blueprint, Response, redirect, url_for, current_app, render_template
 from flask_login import (
@@ -15,6 +16,7 @@ from server.free_form_content import BinaryContent
 from server.free_form_content.content_stream import ContentStream
 from server.user import User
 from server.valid_redirect import url_has_allowed_host_and_scheme
+
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
@@ -140,6 +142,46 @@ def person(department_id: int, person_id: int):
         return {"deleted": True}
     else:
         flask.abort(404)
+
+
+@blueprint.route("/departments/<int:department_id>/uploadtable", methods=["POST"])
+def upload_table(department_id: int):
+    """The /api/departments/<dept_id>/upload_table endpoint.
+    POSTing this endpoint uploads the posted table to its database
+    """
+
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+    # code to split up the uploaded binary blob
+    # into a json that the database can accept.
+    try:
+        excel_file = flask.request.files["add_table"]
+        df = pd.read_excel(excel_file, engine="openpyxl")
+
+        entries = []
+
+        # Iterate through rows in the DataFrame
+        for index, row in df.iterrows():
+            entry = {
+                "department": department_id,
+                "title": row["title"],
+                "full_name": row["full_name"],
+                "position": row["position"],
+                "office_hours": row["office_hours"],
+                "office_location": row["office_location"],
+                "email": row["email"],
+                "phone": row["phone"],
+            }
+            entries.append(entry)
+
+        # Create a JSON structure with the entries
+        json_data = {"entries": entries}
+        DatabaseController.get().upload_department_table(department_id, json_data)
+        print("Valid")
+        return {"Reponse": "Valid upload"}
+    except Exception:
+        print("Invalid")
+        return {"Reponse": "Not an valid excel file"}
 
 
 @blueprint.route("/register", methods=["POST"])

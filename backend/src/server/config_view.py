@@ -69,6 +69,19 @@ def upload_person(department_id: int):
     )
 
 
+@blueprint.route("/departments/<int:department_id>/people/add_table")
+def upload_table(department_id: int):
+    """Return the 'add table' page"""
+
+    if not DatabaseController.get().fetch_department_by_id(department_id):
+        flask.abort(404)
+
+    return render_template(
+        "config/departments/people/add_table.j2",
+        department_id=department_id,
+    )
+
+
 @blueprint.route("/departments/<int:department_id>/people/<int:person_id>")
 def edit_person(department_id: int, person_id: int):
     """Return the 'edit people' page for the given people"""
