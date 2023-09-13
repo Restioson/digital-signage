@@ -1,8 +1,18 @@
-<container>
+<container html:id="main">
   <style>
-    #main {
-      background: url({{ background_image_url }}) no-repeat center center fixed;
+    #main, .page, .rotation, #main > watching-element {
+      display: flex;
       min-height: 100%;
+      min-width: 100%
+    }
+
+    .page {
+      padding-left: 25px;
+      padding-right: 25px;
+    }
+
+    #main-page {
+      background: url({{ bg_content_url|safe }}) no-repeat center center fixed;
       -webkit-background-size: cover;
       -moz-background-size: cover;
       -o-background-size: cover;
@@ -10,13 +20,6 @@
       display: grid;
       grid-template-rows: auto 2fr 3fr auto;
       grid-gap: 1em;
-      padding-left: 25px;
-      padding-right: 25px;
-    }
-
-    #screen-body {
-      display: flex;
-      flex-direction: column;
     }
 
     #header-text {
@@ -74,34 +77,58 @@
     .content-stream > div {
       height: unset;
     }
+
+    #loadshedding-page {
+      background: url({{ bg_loadshedding_url|safe }}) no-repeat center center fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loadshedding {
+      border: 0;
+      font-size: 25pt;
+    }
   </style>
 
-  <container html:id="main">
-    <html html:id="header-text">
-      {{ room_name }}
-    </html>
+  <rotation secs-per-page="{{ page_secs }}">
+    <container html:id="main-page" html:class="page">
+      <html html:id="header-text">
+        {{ room_name }}
+      </html>
 
-    <container html:id="calendar-container">
-      <clock format="{{ date_format|safe }}" />
-      <container>
-        <html html:id="calendar" html:class="scaled-iframe">
-          {{ calendar_iframe|safe }}
-        </html>
+      <container html:id="calendar-container">
+        <clock format="{{ date_format|safe }}" />
+        <container>
+          <html html:id="calendar" html:class="scaled-iframe">
+            {{ calendar_iframe|safe }}
+          </html>
+        </container>
       </container>
+
+      <container html:id="stream">
+        <content-stream
+          fetch-amount="{{ fetch_amount }}"
+          secs-per-page="{{ content_rotation_secs }}"
+          page-size="{{ page_size }}"
+        >
+          {% for stream in streams %}
+            <stream id="{{ stream }}" />
+          {% endfor %}
+        </content-stream>
+      </container>
+
+      <clock html:id="time-clock" format="{{ time_format|safe }}" />
     </container>
 
-    <container html:id="stream">
-      <content-stream
-        fetch-amount="{{ fetch_amount }}"
-        secs-per-page="{{ content_rotation_secs }}"
-        page-size="{{ page_size }}"
-      >
-        {% for stream in streams %}
-          <stream id="{{ stream }}" />
-        {% endfor %}
-      </content-stream>
+    <container html:id="loadshedding-page" html:class="page">
+      <loadshedding />
     </container>
-
-    <clock html:id="time-clock" format="{{ time_format|safe }}" />
-  </container>
+  </rotation>
 </container>

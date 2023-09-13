@@ -61,14 +61,22 @@ TEMPLATES = [
             layout_template="chris_hani.j2.xml",
             properties=[
                 TemplateProperty(
-                    "background_image_url",
-                    "Background image (URL)",
+                    "bg_content_url",
+                    "Background image for content page (URL)",
                     "string",
                     default="https://static.vecteezy.com/system/resources/previews/008/"
                     "139/407/large_2x/the-scientists-chemists-researcher-discover-the-"
                     "chemical-formula-write-on-whiteboard-in-laboratory-the-researcher-"
                     "discover-vaccine-or-drug-for-treatment-patients-infected-covid19-"
                     "photo.jpg",
+                ),
+                TemplateProperty(
+                    "bg_loadshedding_url",
+                    "Background image for loadshedding (URL)",
+                    "string",
+                    default="https://media.istockphoto.com/id/1408155641/photo/"
+                    "concept-of-loadshedding.jpg?s=612x612&w=0&k=20&c="
+                    "yjAcwlmeUfjxW62emflmKoIQ3yjyBowK7H4JdlliIIg=",
                 ),
                 TemplateProperty(
                     "calendar_iframe",
@@ -116,6 +124,12 @@ TEMPLATES = [
                     "content_rotation_secs", "Time per page of content (secs)", "string"
                 ),
                 TemplateProperty("streams", "Content streams", "content_streams"),
+                TemplateProperty(
+                    "page_secs",
+                    "Time per screen (e.g loadshedding, calendar)",
+                    "string",
+                    default=15,
+                ),
             ],
         ),
     ),
