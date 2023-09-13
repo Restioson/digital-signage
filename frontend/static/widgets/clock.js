@@ -13,15 +13,20 @@ export class Clock extends DeserializableWidget {
   constructor ({ format = 'MMMM Do, h:mm:ss a' }) {
     super()
     this.format = format
+    this.text = moment().format(this.format)
   }
 
   build () {
     return new WithRefresh({
-      refresh: () => true,
+      refresh: () => {
+        const oldText = this.text
+        this.text = moment().format(this.format)
+        return this.text !== oldText
+      },
       period: 1000,
       builder: () => {
         const text = document.createElement('div')
-        text.innerText = moment().format(this.format)
+        text.innerHTML = this.text
         return text
       }
     })
