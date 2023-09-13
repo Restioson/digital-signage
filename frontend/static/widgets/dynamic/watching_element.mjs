@@ -55,10 +55,9 @@ export class WatchingElement extends window.HTMLElement {
         const className = Array.from(classSet)
           .filter(s => s)
           .join(' ')
-        console.log(className)
         this.firstElementChild.setAttribute('class', className)
       } else {
-        this.firstElementChild.setAttribute(attr, this.savedAttrs(attr))
+        this.firstElementChild.setAttribute(attr, this.savedAttrs[attr])
       }
     }
   }
