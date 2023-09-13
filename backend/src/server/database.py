@@ -227,8 +227,8 @@ class DatabaseController:
         # get the json and assign to data
         entries = upload_json["entries"]
 
-        for entry in entries:
-            with self.db:
+        with self.db:
+            for entry in entries:
                 cursor = self.db.cursor()
                 cursor.execute(
                     "INSERT INTO people "
