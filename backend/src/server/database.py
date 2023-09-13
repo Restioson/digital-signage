@@ -223,31 +223,6 @@ class DatabaseController:
 
         return dept
 
-    def upload_department_table(self, department_id: int, upload_json: json):
-        # get the json and assign to data
-        entries = upload_json["entries"]
-
-        with self.db:
-            for entry in entries:
-                cursor = self.db.cursor()
-                cursor.execute(
-                    "INSERT INTO people "
-                    "(department, title, full_name, position, "
-                    "office_hours, office_location, email, phone)"
-                    " VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)",
-                    (
-                        department_id,
-                        entry["title"],
-                        entry["full_name"],
-                        entry["position"],
-                        entry["office_hours"],
-                        entry["office_location"],
-                        entry["email"],
-                        entry["phone"],
-                    ),
-                )
-        return
-
     def create_display_group(self, group: DisplayGroup, department_id: int) -> int:
         """Create a display ground and return its row id."""
 

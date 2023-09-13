@@ -152,31 +152,28 @@ def upload_table(department_id: int):
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-    # code to split up the uploaded binary blob
-    # into a json that the database can accept.
     try:
         excel_file = flask.request.files["add_table"]
         df = pd.read_excel(excel_file, engine="openpyxl")
-
-        entries = []
-
-        # Iterate through rows in the DataFrame
+        people = []
+        # Iterate through rows in the uploaded excel creating people
         for index, row in df.iterrows():
-            entry = {
-                "department": department_id,
-                "title": row["title"],
-                "full_name": row["full_name"],
-                "position": row["position"],
-                "office_hours": row["office_hours"],
-                "office_location": row["office_location"],
-                "email": row["email"],
-                "phone": row["phone"],
-            }
-            entries.append(entry)
-
-        # Create a JSON structure with the entries
-        json_data = {"entries": entries}
-        DatabaseController.get().upload_department_table(department_id, json_data)
+            person = Person(
+                row["title"],
+                row["full_name"],
+                row["position"],
+                row["office_hours"],
+                row["office_location"],
+                row["email"],
+                row["phone"],
+            )
+            people.append(person)
+        # Seperate loops so that any error in the whole table
+        # is caught before any entry is added
+        # loop through people to add each to the table
+        db = DatabaseController.get()
+        for person in people:
+            db.upsert_person(person, department_id)
         return {
             "id": "response needed",
             "response": "Excel file is a valid file. Upload successful",
