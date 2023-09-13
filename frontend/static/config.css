@@ -8,12 +8,23 @@
   color: red;
 }
 
+#preview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 16px;
+}
+
+#preview-container h1 {
+  font-size: 2rem;
+}
+
 .resizer {
   display: flex;
-  margin: 0;
-  padding: 0;
+  flex-direction: column;
   resize: both;
   overflow: hidden;
+  height: 100vh;
 }
 
 .resizer > .resized {

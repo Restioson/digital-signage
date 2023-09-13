@@ -71,8 +71,13 @@
         </textarea
       >
     </fieldset>
-
-    <h4>Preview</h4>
+    <button type="submit">Submit</button>
+    <p hidden id="status-message"></p>
+  </form>
+{% endblock %}
+{% block after_main %}
+  <div id="preview-container">
+    <h1>Preview</h1>
     <div class="resizer">
       <iframe
         title="Preview"
@@ -81,8 +86,5 @@
         data-preview-url="/api/departments/{{ department_id }}/preview_display"
       ></iframe>
     </div>
-
-    <button type="submit">Submit</button>
-    <p hidden id="status-message"></p>
-  </form>
+  </div>
 {% endblock %}
