@@ -45,6 +45,10 @@ body,
   font-size: 24pt;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .loadshedding {
   display: flex;
   flex-direction: column;
