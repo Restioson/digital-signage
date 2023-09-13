@@ -109,11 +109,11 @@
 
       <container html:id="calendar-container">
         <clock format="{{ date_format|safe }}" />
-        <container>
+        <refresh>
           <html html:id="calendar" html:class="scaled-iframe">
             {{ calendar_iframe|safe }}
           </html>
-        </container>
+        </refresh>
       </container>
 
       <container html:id="stream">
