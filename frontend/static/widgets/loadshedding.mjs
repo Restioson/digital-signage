@@ -1,6 +1,7 @@
 import { WithRefresh } from './dynamic/with_refresh.mjs'
 import { importFromNpm } from '../util.mjs'
 import { DeserializableWidget } from './deserializable/deserializable_widget.mjs'
+import { Container } from './containers/container.mjs'
 const { default: moment } = await importFromNpm('moment')
 
 /**
@@ -9,7 +10,7 @@ const { default: moment } = await importFromNpm('moment')
 export class Loadshedding extends DeserializableWidget {
   constructor () {
     super()
-    this.scheduleJsonData = ''
+    this.scheduleJsonData = null
   }
 
   async fetch_loadshedding () {
@@ -34,74 +35,84 @@ export class Loadshedding extends DeserializableWidget {
           refresh: () => true,
           period: 1000,
           builder: () => {
-            // gets the days date
-            const today = moment().format('YYYY-MM-DD')
-            let scheduleOutput = 'Loading loadshedding schedule'
-            try {
-              const events = this.scheduleJsonData.events || []
-              // find the 'events' for the days date
-              const todayEvents = events.filter(event =>
-                event.start.startsWith(today)
-              )
+            const header = document.createElement('h2')
+            header.className = 'loadshedding-header'
+            header.innerText = 'Loadshedding Schedule'
 
-              if (todayEvents.length === 0) {
-                scheduleOutput = 'No more loadshedding scheduled for today.'
-              } else {
-                // gets the stage number
-                const stage = todayEvents[0].note.match(/\d+/)[0]
-                todayEvents.sort((a, b) => a.start.localeCompare(b.start))
-                const schedule = [`Stage ${stage}`, 'Loadshedding today:']
-                // gets the times for the day
-                todayEvents.forEach(event => {
-                  const startTime = moment(event.start).format('HH:mm')
-                  const endTime = moment(event.end).format('HH:mm')
-                  schedule.push(`${startTime} - ${endTime}`)
-                })
-
-                // Find the closest load shedding time slot
-                let mintimetill = moment().endOf('day')
-                let mintimetillend = moment().endOf('day')
-                todayEvents.forEach(event => {
-                  const startTime = moment(event.start)
-                  const timetillend = moment(startTime)
-                  const timetill = moment(startTime)
-                  if (mintimetill.diff(timetill, 'seconds') > 0) {
-                    mintimetill = timetill
-                    mintimetillend = timetillend
-                  }
-                })
-                if (
-                  mintimetill.diff(moment(), 'seconds') < 0 &&
-                  mintimetillend.diff(moment(), 'seconds') > 0
-                ) {
-                  scheduleOutput = `Loadshedding started ${mintimetill.fromNow()}\n${schedule.join(
-                    '\n'
-                  )}`
-                } else if (
-                  mintimetill.diff(moment(), 'seconds') > 0 &&
-                  mintimetillend.diff(moment(), 'seconds') > 0
-                ) {
-                  scheduleOutput = `Loadshedding starts ${mintimetill.fromNow()}\n${schedule.join(
-                    '\n'
-                  )}`
-                } else {
-                  scheduleOutput = `Loadshedding ended ${mintimetillend.fromNow()}\n${schedule.join(
-                    '\n'
-                  )}`
-                }
-              }
-              scheduleOutput = 'Loadshedding Schedule:\n' + scheduleOutput
-            } catch (error) {
-              scheduleOutput = 'Loading loadshedding schedule'
-              console.error('Error fetching load shedding schedule:', error)
-            }
             const text = document.createElement('div')
-            text.innerText = scheduleOutput
-            return text
+            text.className = 'loadshedding-text'
+            text.innerText = this.buildScheduleOutput()
+
+            return new Container({ children: [header, text] })
           }
         })
       }
     })
+  }
+
+  buildScheduleOutput () {
+    if (this.scheduleJsonData === null) {
+      return 'Loading loadshedding schedule'
+    }
+
+    const today = moment().format('YYYY-MM-DD')
+
+    try {
+      const events = this.scheduleJsonData.events || []
+      // find the 'events' for the days date
+      const todayEvents = events.filter(event => event.start.startsWith(today))
+
+      if (todayEvents.length === 0) {
+        return 'No more loadshedding scheduled for today.'
+      }
+
+      // gets the stage number
+      const stage = todayEvents[0].note.match(/\d+/)[0]
+      todayEvents.sort((a, b) => a.start.localeCompare(b.start))
+      const schedule = [`Stage ${stage}`, 'Loadshedding today:']
+      // gets the times for the day
+      todayEvents.forEach(event => {
+        const startTime = moment(event.start).format('HH:mm')
+        const endTime = moment(event.end).format('HH:mm')
+        schedule.push(`${startTime} - ${endTime}`)
+      })
+
+      // Find the closest load shedding time slot
+      let minTimeTill = moment().endOf('day')
+      let minTimeTillEnd = moment().endOf('day')
+      todayEvents.forEach(event => {
+        const startTime = moment(event.start)
+        const timeTillEnd = moment(startTime)
+        const timetill = moment(startTime)
+        if (minTimeTill.diff(timetill, 'seconds') > 0) {
+          minTimeTill = timetill
+          minTimeTillEnd = timeTillEnd
+        }
+      })
+
+      if (
+        minTimeTill.diff(moment(), 'seconds') < 0 &&
+        minTimeTillEnd.diff(moment(), 'seconds') > 0
+      ) {
+        return `Loadshedding started ${minTimeTill.fromNow()}\n${schedule.join(
+          '\n'
+        )}`
+      } else if (
+        minTimeTill.diff(moment(), 'seconds') > 0 &&
+        minTimeTillEnd.diff(moment(), 'seconds') > 0
+      ) {
+        return `Loadshedding starts ${minTimeTill.fromNow()}\n${schedule.join(
+          '\n'
+        )}`
+      } else {
+        return `Loadshedding ended ${minTimeTillEnd.fromNow()}\n${schedule.join(
+          '\n'
+        )}`
+      }
+    } catch (error) {
+      console.error('Error fetching load shedding schedule:', error)
+      return 'Loading loadshedding schedule'
+    }
   }
 
   static fromXML (tag) {

@@ -1,9 +1,12 @@
 <container html:id="main">
   <style>
-    #main, .page, .rotation, #main > watching-element {
+    #main,
+    .page,
+    .rotation,
+    #main > watching-element {
       display: flex;
       min-height: 100%;
-      min-width: 100%
+      min-width: 100%;
     }
 
     .page {
@@ -79,7 +82,8 @@
     }
 
     #loadshedding-page {
-      background: url({{ bg_loadshedding_url|safe }}) no-repeat center center fixed;
+      background: url({{ bg_loadshedding_url|safe }}) no-repeat center center
+        fixed;
       -webkit-background-size: cover;
       -moz-background-size: cover;
       -o-background-size: cover;
