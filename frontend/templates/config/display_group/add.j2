@@ -45,7 +45,7 @@
               <input
                 type="text"
                 name="template-{{ property.variable_name }}"
-                value="{{ property.default or '' }}"
+                value="{{ (property.default or '')|escape }}"
               />
             </label>
           {%- elif property.type == "content_streams" -%}
@@ -73,11 +73,14 @@
     </fieldset>
 
     <h4>Preview</h4>
-    <iframe
-      title="Preview"
-      id="preview"
-      data-preview-url="/api/departments/{{ department_id }}/preview_display"
-    ></iframe>
+    <div class="resizer">
+      <iframe
+        title="Preview"
+        id="preview"
+        class="resized"
+        data-preview-url="/api/departments/{{ department_id }}/preview_display"
+      ></iframe>
+    </div>
 
     <button type="submit">Submit</button>
     <p hidden id="status-message"></p>
