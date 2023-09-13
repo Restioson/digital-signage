@@ -1,7 +1,7 @@
 {% extends "base.j2" %}
 
 {% block title %}
-  upload a table
+  Upload a table of people
 {% endblock %}
 {% block head %}
   {{ super() }}
@@ -13,6 +13,11 @@
     import { setupPostForms } from "{{ url_for('static', filename='config.mjs') }}";
     setupPostForms();
   </script>
+  <button type="button" onclick="history.back();">Back</button>
+  <img
+    src="{{ url_for('static', filename='/excel_table_format.png') }}"
+    alt="Image Description"
+  />
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
   <form
     action="/api/departments/{{ department_id }}/uploadtable"
