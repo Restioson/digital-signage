@@ -1,5 +1,11 @@
 <container html:id="main">
+  {# - broken with the template literals #}
+  <!-- prettier-ignore -->
   <style>
+    html {
+      font-size: {{ font_size }};
+    }
+
     #main,
     .page,
     .rotation,
@@ -21,14 +27,18 @@
       -o-background-size: cover;
       background-size: cover;
       display: grid;
-      grid-template-rows: auto 2fr 3fr auto;
+      grid-template-rows: auto 1fr 1fr auto;
       grid-gap: 1em;
     }
 
     #header-text {
       text-align: right;
       color: blue;
-      font-size: 34pt;
+      font-size: 4rem;
+    }
+
+    .scaled-iframe {
+      --scale: {{ calendar_scale }};
     }
 
     #calendar-container {
@@ -39,16 +49,17 @@
     #calendar-container .clock {
       text-align: left;
       font-weight: bold;
+      font-size: 3rem;
     }
 
     #calendar-container .clock .month {
       margin-left: 5px;
-      font-size: 22pt;
+      font-size: 0.9em;
       color: purple;
     }
 
     #calendar-container .clock .day {
-      font-size: 20pt;
+      font-size: 0.8em;
       color: purple;
     }
 
@@ -56,17 +67,10 @@
       flex: 1;
     }
 
-    .scaled-iframe {
-      width: 50%;
-      height: 50%;
-      transform: scale(2);
-      transform-origin: top left;
-    }
-
     #time-clock {
       text-align: left;
       font-weight: bold;
-      font-size: 32pt;
+      font-size: 4rem;
       color: black;
       -webkit-text-fill-color: white;
       -webkit-text-stroke-width: 1px;
@@ -97,7 +101,7 @@
 
     .loadshedding {
       border: 0;
-      font-size: 25pt;
+      font-size: 2.5rem;
     }
   </style>
 

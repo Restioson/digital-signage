@@ -92,10 +92,22 @@ TEMPLATES = [
                     'frameborder="0" scrolling="no"></iframe>',
                 ),
                 TemplateProperty(
+                    "calendar_scale",
+                    "Calendar scale (e.g 2 for 2x size)",
+                    "string",
+                    default="3",
+                ),
+                TemplateProperty(
                     "room_name",
                     "Room name",
                     "string",
                     default="my room",
+                ),
+                TemplateProperty(
+                    "font_size",
+                    "Base font size (px or pt)",
+                    "string",
+                    default="16px",
                 ),
                 TemplateProperty(
                     "time_format",

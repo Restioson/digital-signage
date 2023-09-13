@@ -99,3 +99,12 @@ body,
   height: 100%;
   width: 100%;
 }
+
+.scaled-iframe {
+  --scale: 2;
+
+  width: calc(100% / var(--scale));
+  height: calc(100% / var(--scale));
+  transform: scale(var(--scale));
+  transform-origin: top left;
+}
