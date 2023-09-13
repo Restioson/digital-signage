@@ -30,7 +30,7 @@
       "exts": ["js", "mjs"]
     }, {
       "command": "npx prettier {{file_path}}",
-      "exts": ["css", "html", "j2"]
+      "exts": ["css", "html", "j2", "xml"]
     }]
   },
   "plugins": [

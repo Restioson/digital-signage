@@ -1,7 +1,7 @@
 {
   "overrides": [
     {
-      "files": ["*.j2"],
+      "files": ["*.j2", "*.j2.xml"],
       "options": {
         "parser": "jinja-template"
       }

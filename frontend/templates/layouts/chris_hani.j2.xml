@@ -1,106 +1,107 @@
 <container>
-    <style>
-        #main {
-            background: url({{ background_image_url }})
-                        no-repeat center center fixed;
-            min-height: 100%;
-            -webkit-background-size: cover;
-            -moz-background-size: cover;
-            -o-background-size: cover;
-            background-size: cover;
-            display: grid;
-            grid-template-rows: auto 2fr 3fr auto;
-            grid-gap: 1em;
-            padding-left: 25px;
-            padding-right: 25px;
-        }
+  <style>
+    #main {
+      background: url({{ background_image_url }}) no-repeat center center fixed;
+      min-height: 100%;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      display: grid;
+      grid-template-rows: auto 2fr 3fr auto;
+      grid-gap: 1em;
+      padding-left: 25px;
+      padding-right: 25px;
+    }
 
-        #screen-body {
-            display: flex;
-            flex-direction: column;
-        }
+    #screen-body {
+      display: flex;
+      flex-direction: column;
+    }
 
-        #header-text {
-            text-align: right;
-            color: blue;
-            font-size: 34pt;
-        }
+    #header-text {
+      text-align: right;
+      color: blue;
+      font-size: 34pt;
+    }
 
-        #calendar-container {
-            display: flex;
-            flex-direction: row;
-        }
+    #calendar-container {
+      display: flex;
+      flex-direction: row;
+    }
 
-        #calendar-container .clock {
-            text-align: left;
-            font-weight: bold;
-        }
+    #calendar-container .clock {
+      text-align: left;
+      font-weight: bold;
+    }
 
-        #calendar-container .clock .month {
-            margin-left: 5px;
-            font-size: 22pt;
-            color: purple;
-        }
+    #calendar-container .clock .month {
+      margin-left: 5px;
+      font-size: 22pt;
+      color: purple;
+    }
 
-        #calendar-container .clock .day {
-            font-size: 20pt;
-            color: purple;
-        }
+    #calendar-container .clock .day {
+      font-size: 20pt;
+      color: purple;
+    }
 
-        #calendar-container > *:last-child {
-            flex: 1;
-        }
+    #calendar-container > *:last-child {
+      flex: 1;
+    }
 
-        .scaled-iframe {
-            width: 50%;
-            height: 50%;
-            transform: scale(2);
-            transform-origin: top left;
-        }
+    .scaled-iframe {
+      width: 50%;
+      height: 50%;
+      transform: scale(2);
+      transform-origin: top left;
+    }
 
-        #time-clock {
-            text-align: left;
-            font-weight: bold;
-            font-size: 32pt;
-            color: black;
-            -webkit-text-fill-color: white;
-            -webkit-text-stroke-width: 1px;
-            -webkit-text-stroke-color: black;
-        }
+    #time-clock {
+      text-align: left;
+      font-weight: bold;
+      font-size: 32pt;
+      color: black;
+      -webkit-text-fill-color: white;
+      -webkit-text-stroke-width: 1px;
+      -webkit-text-stroke-color: black;
+    }
 
-        #stream {
-            flex-grow: 2;
-        }
+    #stream {
+      flex-grow: 2;
+    }
 
-        .content-stream > div {
-            height: unset;
-        }
-    </style>
+    .content-stream > div {
+      height: unset;
+    }
+  </style>
 
-    <container html:id="main">
-        <html html:id="header-text">{{ room_name }}</html>
+  <container html:id="main">
+    <html html:id="header-text">
+      {{ room_name }}
+    </html>
 
-        <container html:id="calendar-container">
-            <clock format="{{ date_format|safe }}"/>
-            <container>
-                <html html:id="calendar" html:class="scaled-iframe">
-                    {{ calendar_iframe|safe }}
-                </html>
-            </container>
-        </container>
-
-        <container html:id="stream">
-            <content-stream
-                fetch-amount="{{ fetch_amount }}"
-                secs-per-page="{{ content_rotation_secs }}"
-                page-size="{{ page_size }}"
-            >
-                {% for stream in streams %}
-                    <stream id="{{ stream }}"/>
-                {% endfor %}
-            </content-stream>
-        </container>
-
-        <clock html:id="time-clock" format="{{ time_format|safe }}"/>
+    <container html:id="calendar-container">
+      <clock format="{{ date_format|safe }}" />
+      <container>
+        <html html:id="calendar" html:class="scaled-iframe">
+          {{ calendar_iframe|safe }}
+        </html>
+      </container>
     </container>
+
+    <container html:id="stream">
+      <content-stream
+        fetch-amount="{{ fetch_amount }}"
+        secs-per-page="{{ content_rotation_secs }}"
+        page-size="{{ page_size }}"
+      >
+        {% for stream in streams %}
+          <stream id="{{ stream }}" />
+        {% endfor %}
+      </content-stream>
+    </container>
+
+    <clock html:id="time-clock" format="{{ time_format|safe }}" />
+  </container>
 </container>
