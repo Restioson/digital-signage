@@ -6,7 +6,7 @@ from server.free_form_content.captioned_content import CaptionedContent
 from server.util import combine
 
 
-class Iframe(CaptionedContent):
+class IFrameContent(CaptionedContent):
     """A link to be embedded in an iframe on the board along with a caption."""
 
     def __init__(
