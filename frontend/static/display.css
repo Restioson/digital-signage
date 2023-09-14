@@ -15,10 +15,6 @@ body,
   display: none !important;
 }
 
-.caption .caption-title {
-  font-weight: bold;
-}
-
 .content-stream,
 .department {
   display: grid;
@@ -33,6 +29,19 @@ body,
   margin: 5px;
   padding: 5px;
   border: 3px solid #000;
+}
+
+.content-and-caption * {
+  order: 0;
+}
+
+.caption-title {
+  font-weight: bold;
+  order: 1;
+}
+
+.caption-body {
+  order: 2;
 }
 
 .clock {
@@ -80,15 +89,11 @@ body,
 .free-form-content.qrcode-content > a,
 .free-form-content.qrcode-content > div.caption {
   display: inline-block;
-  width: 50%;
-  object-fit: contain;
 }
 
 .free-form-content.link > div > a,
 .free-form-content.link > div > div.caption {
   display: inline-block;
-  width: 50%;
-  object-fit: contain;
 }
 
 .free-form-content.qrcode-content {

@@ -1,5 +1,4 @@
 import { Container } from './container.mjs'
-import { Visibility } from '../visibility.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 import { deserializeWidgetFromTag } from '../deserializable/widget_deserialization_factory.mjs'
 import { Caption } from '../caption.mjs'
@@ -13,7 +12,7 @@ export class ContentAndCaption extends DeserializableWidget {
    * @param {HTMLElement | Widget} content the content to display
    * @param {Caption?} caption the caption to display
    */
-  constructor ({ content, caption }) {
+  constructor ({ content, caption, flatten }) {
     super()
     this.content = content
     this.caption = caption
@@ -27,18 +26,28 @@ export class ContentAndCaption extends DeserializableWidget {
   }
 
   build () {
-    return new Container({
-      children: [
-        this.content,
-        new Visibility({
-          visible: Boolean(this.caption),
-          child: this.caption
-        })
-      ]
-    })
+    const children = [this.content]
+
+    if (this.caption) {
+      const caption = this.caption.render()
+      const title = (caption.getElementsByClassName('caption-title') || [])[0]
+      const body = (caption.getElementsByClassName('caption-body') || [])[0]
+
+      if (title) {
+        children.unshift(title)
+      }
+
+      if (body) {
+        children.push(body)
+      }
+    }
+
+    return new Container({ children })
   }
 
   className () {
-    return 'content-and-caption'
+    return this.caption && this.caption.title
+      ? 'content-and-caption'
+      : 'content-and-caption no-title'
   }
 }

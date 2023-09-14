@@ -75,6 +75,7 @@ export class ContentStream extends DeserializableWidget {
       period: REFRESH_INTERVAL_MS,
       builder: () => {
         if (this.pageSize) {
+          this.page = -1
           return new WithRefresh({
             refresh: () => {
               this.page += 1
@@ -85,7 +86,7 @@ export class ContentStream extends DeserializableWidget {
               return new PaginatedContainer({
                 children: this.children,
                 pageSize: this.pageSize,
-                page: this.page
+                page: this.page > 0 ? this.page : 0
               })
             }
           })
