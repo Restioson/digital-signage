@@ -179,11 +179,7 @@ def upload_table(department_id: int):
             "response": "Excel file is a valid file. Upload successful",
         }
     except Exception:
-        print("Invalid")
-        return {
-            "id": "response needed",
-            "response": "Not an valid excel file. Upload failed",
-        }
+        return flask.abort(400)
 
 
 @blueprint.route("/register", methods=["POST"])

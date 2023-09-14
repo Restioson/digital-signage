@@ -11,13 +11,18 @@
 {% block content %}
   <script type="module">
     import { setupPostForms } from "{{ url_for('static', filename='config.mjs') }}";
-    setupPostForms();
+    setupPostForms(history);
   </script>
-  <button type="button" onclick="history.back();">Back</button>
+  <button type="button" id="backButton">Back</button>
   <img
     src="{{ url_for('static', filename='/excel_table_format.png') }}"
     alt="Image Description"
   />
+  <p>
+    This is the template format of the excel file you are to upload. Please
+    ensure that the headers are have the exact same names. The data in the
+    entries can be whatever you would like.
+  </p>
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
   <form
     action="/api/departments/{{ department_id }}/uploadtable"
@@ -29,7 +34,6 @@
       >Upload an Excel file of department information:</label
     >
     <input type="file" name="add_table" id="add_table" accept=".xlsx, .xls" />
-    <br /><br />
     <button type="submit">Submit</button>
     <p hidden id="status-message"></p>
   </form>

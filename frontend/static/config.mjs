@@ -1,6 +1,13 @@
-export function setupPostForms () {
+export function setupPostForms (history) {
   for (const form of document.getElementsByClassName('post-form')) {
     form.addEventListener('submit', submitPost)
+  }
+  if (history) {
+    document
+      .getElementById('backButton')
+      .addEventListener('click', function () {
+        history.back()
+      })
   }
 }
 
@@ -69,7 +76,6 @@ async function submitPost (event) {
       })`
     }
   } catch (err) {
-    console.log(err)
     postStatusMessage.classList.add('error')
     const errorBox = document.createElement('pre')
     errorBox.innerText = err instanceof ApiError ? err.response : err.message

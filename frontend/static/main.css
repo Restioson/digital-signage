@@ -131,3 +131,11 @@ h1 {
 .user-info p {
   margin: 0;
 }
+
+/* Style for images used in the config */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
