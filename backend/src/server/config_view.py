@@ -146,3 +146,20 @@ def add_content_stream():
         return render_template(
             "config/content_stream/add.j2", display_group=None, department=None
         )
+
+
+@blueprint.route("/departments/<int:department_id>/files")
+def load_files(department_id: int):
+    """Return the 'department files page"""
+
+    department = DatabaseController.get().fetch_department_by_id(
+        department_id, fetch_files=True
+    )
+
+    if not department:
+        flask.abort(404)
+
+    return render_template(
+        "config/departments/files.j2",
+        department=department,
+    )

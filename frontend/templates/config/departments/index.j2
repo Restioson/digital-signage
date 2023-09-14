@@ -12,7 +12,9 @@
       <div>
         <h3>{{ department.name }}</h3>
         <p>{{ department.bio }}</p>
-        <a href="/config/departments/{{ department.id }}/people">View people</a>
+        <a href="/config/departments/{{ department.id }}/people">View people</a
+        ><br />
+        <a href="/config/departments/{{ department.id }}/files">View files</a>
 
         <h4>Display groups:</h4>
         {%- if department.display_groups -%}

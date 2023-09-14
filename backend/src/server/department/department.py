@@ -4,6 +4,7 @@ from typing import Optional
 from server.department.person import Person
 from server.display_group import DisplayGroup
 from server.free_form_content.content_stream import ContentStream
+from server.department.file import File
 
 
 # TODO: add more functionality and use in display group development
@@ -18,6 +19,7 @@ class Department:
         people: Optional[list[Person]] = None,
         display_groups: Optional[list[DisplayGroup]] = None,
         content_streams: Optional[list[ContentStream]] = None,
+        files: Optional[File] = None,
         department_id: Optional[int] = None,
     ):
         self.name = name
@@ -26,6 +28,7 @@ class Department:
         self.display_groups = display_groups or []
         self.content_streams = content_streams or []
         self.id = department_id
+        self.files = files
 
     @staticmethod
     def from_sql(cursor: sqlite3.Cursor, row: tuple):

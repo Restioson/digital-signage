@@ -10,6 +10,7 @@ from flask_login import (
 )
 from server import free_form_content
 from server.department import Person
+from server.department import File
 from server.database import DatabaseController
 from server.display_group import DisplayGroup
 from server.free_form_content import BinaryContent
@@ -275,3 +276,65 @@ def preview_display(department_id: int):
             "layout": group.layout_xml,
         },
     )
+
+
+@blueprint.route("/department/<int:department_id>/files", methods=["POST", "GET"])
+def upload_department_files(department_id: int):
+    """The /api/department/files endpoint.
+
+    POSTing to this endpoint with a form representing a new file post will add a
+    file to the server and return the ID and post time upon success.
+    """
+
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
+    content_id = DatabaseController.get().upload_department_files(
+        File.from_form(flask.request.form, flask.request.files, department_id)
+    )
+
+    return {"id": content_id}
+
+
+@blueprint.route(
+    "/department/<int:department_id>/<int:dislay_groups>/<string:filename>",
+    methods=["GET"],
+)
+def get_department_files(filename: str, department_id: int):
+    department_file = DatabaseController.get().fetch_file_by_id(filename, department_id)
+
+    if department_file:
+        return Response(
+            response=department_file.file_data,
+            mimetype=department_file.mime_type,
+            status=HTTPStatus.OK,
+        )
+    else:
+        flask.abort(404)
+
+
+@blueprint.route(
+    "/departments/<int:department_id>/files/<string:file_name>",
+    methods=["DELETE", "GET"],
+)
+def file(department_id: int, file_name: str):
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
+    if not DatabaseController.get().fetch_department_by_id(department_id):
+        flask.abort(404)
+
+    if flask.request.method == "DELETE":
+        if DatabaseController.get().delete_file_by_id(file_name, department_id):
+            return {"deleted": True}
+        else:
+            flask.abort(404)
+    else:
+        file = DatabaseController.get().fetch_file_by_id(file_name, department_id)
+
+        if isinstance(file, File):
+            return Response(
+                response=file.file_data, mimetype=file.mime_type, status=HTTPStatus.OK
+            )
+        else:
+            flask.abort(404)

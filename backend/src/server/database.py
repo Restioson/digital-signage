@@ -6,7 +6,7 @@ import flask
 from server import free_form_content
 from server.display_group import DisplayGroup
 from server.free_form_content import FreeFormContent, BinaryContent
-from server.department import Person, Department
+from server.department import Person, Department, File
 from server.free_form_content.content_stream import ContentStream
 from server.grouped_content_streams import GroupedContentStreams
 
@@ -194,7 +194,11 @@ class DatabaseController:
         return departments
 
     def fetch_department_by_id(
-        self, department_id: int, fetch_people=False, fetch_display_groups=False
+        self,
+        department_id: int,
+        fetch_people=False,
+        fetch_display_groups=False,
+        fetch_files=False,
     ) -> Optional[Department]:
         """Fetch the given Department by its ID"""
         cursor = self.db.cursor()
@@ -216,6 +220,19 @@ class DatabaseController:
                     "office_location, email, phone FROM people "
                     " WHERE department = ?"
                     " ORDER BY id",
+                    (department_id,),
+                )
+            )
+
+        if dept and fetch_files:
+            cursor = self.db.cursor()
+            cursor.row_factory = File.from_sql
+            dept.files = list(
+                cursor.execute(
+                    "SELECT filename, department_id, file_content, "
+                    "mime_type FROM files "
+                    " WHERE department_id = ?"
+                    " ORDER BY filename",
                     (department_id,),
                 )
             )
@@ -425,3 +442,54 @@ class DatabaseController:
             )
             db_user_data = cursor.fetchone()
             return db_user_data
+
+    # uploading of arbitrary files by department:
+    def upload_department_files(self, dep_file: File) -> int:
+        """Insert the given file and returns the inserted row id"""
+
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "INSERT INTO files "
+                "(filename, mime_type, file_content, department_id)"
+                " VALUES (?, ?, ?, ?)",
+                (
+                    dep_file.name,
+                    dep_file.mime_type,
+                    dep_file.file_data,
+                    dep_file.department_id,
+                ),
+            )
+        return cursor.lastrowid
+
+    def fetch_file_by_id(self, filename: str, department_id: int) -> Optional[File]:
+        """Fetch a given piece of content from the database. By default, the blob
+        will not be fetched from the database."""
+        cursor = self.db.cursor()
+        cursor.row_factory = File.from_sql
+
+        return next(
+            cursor.execute(
+                "SELECT "
+                "department_id, filename, file_content, mime_type "
+                "FROM files"
+                " WHERE department_id = ? AND filename = ?",
+                (
+                    department_id,
+                    filename,
+                ),
+            ),
+            None,
+        )
+
+    def delete_file_by_id(self, filename: str, department_id: int) -> bool:
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "DELETE FROM files WHERE " "department_id = ? AND filename = ?",
+                (
+                    department_id,
+                    filename,
+                ),
+            )
+        return cursor.rowcount == 1

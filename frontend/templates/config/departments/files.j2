@@ -1,0 +1,76 @@
+{% extends "base.j2" %}
+
+{% block title %}Upload Department Files{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('config') }}
+{% endblock %}
+
+{% block content %}
+  <script type="module">
+    import { main } from "{{ url_for('static', filename='config/departments/files.mjs') }}";
+    main();
+  </script>
+  <div class="column-list">
+    {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
+    <form
+      action="{{ url_for('api.upload_department_files', department_id=department.id) }}"
+      method="post"
+      enctype="multipart/form-data"
+      class="post-form"
+    >
+      <h3>Upload Department File</h3>
+      <input
+        type="hidden"
+        id="department_file_post_type"
+        name="type"
+        value="department_file"
+      />
+      <label for="department_file_data">Attach file:</label>
+      <input
+        type="file"
+        id="department_file_data"
+        name="department_file_data"
+      />
+
+      <button type="submit">Submit</button>
+      <p hidden class="status-message"></p>
+    </form>
+
+    <div class="column-list">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">File Name</th>
+            <th scope="col">Department</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {%- for file in department.files -%}
+            <tr>
+              <td>
+                <a
+                  href="/api/departments/{{ department.id }}/files/{{ file.name }}"
+                  >{{ file.name }}</a
+                >
+              </td>
+              <td>{{ file.department_id }}</td>
+              <td>
+                <button
+                  type="button"
+                  class="delete-button"
+                  data-department_id="{{ department.id }}"
+                  data-filename="{{ file.name }}"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+      <p hidden id="status-message"></p>
+    </div>
+  </div>
+{% endblock %}

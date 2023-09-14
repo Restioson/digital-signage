@@ -223,7 +223,7 @@ def test_invalid_dept_should_404(client):
         assert client.get(path).status == "404 NOT FOUND", f"Expected 404 from {path}"
 
     assert (
-        client.get("/display/10000/1").status == "404 NOT FOUND"
+        client.get("/display/10000/1/").status == "404 NOT FOUND"
     ), "Expected 404 from /display/10000/1"
 
 
