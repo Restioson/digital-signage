@@ -2,17 +2,19 @@ import { WithRefresh } from '../dynamic/with_refresh.mjs'
 import { deserializeWidgetFromTag } from '../deserializable/widget_deserialization_factory.mjs'
 import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
 import { Container } from './container.mjs'
+import { Widget } from '../widget.mjs'
 
 /**
  * A container which rotates between displaying all of its children, giving each a turn.
  *
- * Upon each turn, the child is rebuilt.
+ * Upon each turn, the child is set to show, but is not rebuilt.
  */
 export class RotatingContainer extends DeserializableWidget {
   constructor ({ children, period }) {
     super()
     this.children = children
-    this.childIndex = 0
+    this.renderedChildren = []
+    this.childIndex = -1
     this.period = period
   }
 
@@ -20,13 +22,23 @@ export class RotatingContainer extends DeserializableWidget {
     return new WithRefresh({
       refresh: async () => {
         this.childIndex = (this.childIndex + 1) % this.children.length
-        return this.children.length !== 1
+
+        for (let i = 0; i < this.children.length; i++) {
+          this.renderedChildren[i].hidden = this.childIndex !== i
+        }
+
+        return false // We just update the children's hidden property
       },
       period: this.period,
       builder: () => {
+        this.renderedChildren = this.children.map(Widget.renderIfWidget)
+
+        for (const child of this.renderedChildren.slice(1)) {
+          child.hidden = true
+        }
+
         return new Container({
-          children:
-            this.children.length > 0 ? [this.children[this.childIndex]] : []
+          children: this.renderedChildren
         })
       }
     })

@@ -12,6 +12,7 @@ import { HtmlWidget } from '../html.mjs'
 import { ScriptWidget } from '../script.mjs'
 import { StyleWidget } from '../style.mjs'
 import { RotatingContainer } from '../containers/rotating_container.mjs'
+import { StaticRefresh } from '../dynamic/static_refresh.mjs'
 const { XMLParser } = await importFromNpm('fast-xml-parser')
 
 /**
@@ -30,7 +31,7 @@ export function deserializeWidgetFromXML (xml) {
     parseAttributeValue: true,
     processEntities: false,
     stopNodes: ['*.html', '*.style', '*.script'],
-    unpairedTags: ['clock', 'department', 'stream', 'loadshedding']
+    unpairedTags: ['clock', 'department', 'stream', 'loadshedding', 'script']
   }
 
   const parser = new XMLParser(options)
@@ -94,6 +95,8 @@ function deserializeWidgetRaw (tag) {
       return HtmlWidget.fromXML(tag)
     case 'rotation':
       return RotatingContainer.fromXML(tag)
+    case 'refresh':
+      return StaticRefresh.fromXML(tag)
     default:
       throw new UnknownWidgetTypeError(tag.type)
   }

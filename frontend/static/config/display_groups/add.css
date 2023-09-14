@@ -1,0 +1,18 @@
+@import url("../../config.css");
+
+.custom-page-container {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+}
+
+.custom-page-container > label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-page-container > button {
+  height: fit-content;
+}

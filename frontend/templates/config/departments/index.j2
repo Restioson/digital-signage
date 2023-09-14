@@ -19,7 +19,9 @@
           <ul>
             {%- for group in department.display_groups -%}
               <li>
-                <a href="/display/{{ group.id }}">{{ group.name }}</a>
+                <a href="/display/{{ department.id }}/{{ group.id }}"
+                  >{{ group.name }}</a
+                >
                 {%- if group.content_streams -%}
                   <ul>
                     {%- for stream in group.content_streams -%}

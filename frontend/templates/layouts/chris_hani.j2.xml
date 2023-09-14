@@ -1,0 +1,148 @@
+<container html:id="main">
+  {# - broken with the template literals #}
+  <!-- prettier-ignore -->
+  <style>
+    html {
+      font-size: {{ font_size }};
+    }
+
+    #main,
+    .page,
+    .rotation,
+    #main > watching-element {
+      display: flex;
+      min-height: 100%;
+      min-width: 100%;
+    }
+
+    .page {
+      padding-left: 25px;
+      padding-right: 25px;
+    }
+
+    #main-page {
+      background: url({{ bg_content_url|safe }}) no-repeat center center fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      display: grid;
+      grid-template-rows: auto 1fr 1fr auto;
+      grid-gap: 1em;
+    }
+
+    #header-text {
+      text-align: right;
+      color: blue;
+      font-size: 4rem;
+    }
+
+    .scaled-iframe {
+      --scale: {{ calendar_scale }};
+    }
+
+    #calendar-container {
+      display: flex;
+      flex-direction: row;
+    }
+
+    #calendar-container .clock {
+      text-align: left;
+      font-weight: bold;
+      font-size: 3rem;
+    }
+
+    #calendar-container .clock .month {
+      margin-left: 5px;
+      font-size: 0.9em;
+      color: purple;
+    }
+
+    #calendar-container .clock .day {
+      font-size: 0.8em;
+      color: purple;
+    }
+
+    #calendar-container > *:last-child {
+      flex: 1;
+    }
+
+    #time-clock {
+      text-align: left;
+      font-weight: bold;
+      font-size: 4rem;
+      color: black;
+      -webkit-text-fill-color: white;
+      -webkit-text-stroke-width: 1px;
+      -webkit-text-stroke-color: black;
+    }
+
+    #stream {
+      flex-grow: 2;
+    }
+
+    .content-stream > div {
+      height: unset;
+    }
+
+    #loadshedding-page {
+      background: url({{ bg_loadshedding_url|safe }}) no-repeat center center
+        fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loadshedding {
+      border: 0;
+      font-size: 2.5rem;
+    }
+  </style>
+
+  <rotation secs-per-page="{{ page_secs }}">
+    <container html:id="main-page" html:class="page">
+      <html html:id="header-text">
+        {{ room_name }}
+      </html>
+
+      <container html:id="calendar-container">
+        <clock format="{{ date_format|safe }}" />
+        <refresh>
+          <html html:id="calendar" html:class="scaled-iframe">
+            {{ calendar_iframe|safe }}
+          </html>
+        </refresh>
+      </container>
+
+      <container html:id="stream">
+        <content-stream
+          fetch-amount="{{ fetch_amount }}"
+          secs-per-page="{{ content_rotation_secs }}"
+          page-size="{{ page_size }}"
+        >
+          {% for stream in streams %}
+            <stream id="{{ stream }}" />
+          {% endfor %}
+        </content-stream>
+      </container>
+
+      <clock html:id="time-clock" format="{{ time_format|safe }}" />
+    </container>
+
+    <container html:id="loadshedding-page" html:class="page">
+      <loadshedding />
+    </container>
+
+    {%- for page in custom_pages -%}
+      <html html:class="custom-page page-{{ loop.index }}">
+        {{ page|safe }}
+      </html>
+    {%- endfor -%}
+  </rotation>
+</container>

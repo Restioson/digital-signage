@@ -1,6 +1,8 @@
 import sqlite3
 from typing import Optional
 
+from werkzeug.datastructures import ImmutableMultiDict
+
 from server.display_group.template import TEMPLATES
 from server.free_form_content.content_stream import ContentStream
 
@@ -23,16 +25,21 @@ class DisplayGroup:
         self.id = group_id
 
     @staticmethod
-    def from_form(form: dict):
+    def from_form(form: ImmutableMultiDict):
         if form.get("layout_xml"):
             layout_xml = form["layout_xml"]
         else:
             template = TEMPLATES[int(form["template"]) - 1][1]
-            properties = {
-                prop[9:]: form[prop]
-                for prop in form.keys()
-                if prop.startswith("template-")
-            }
+
+            properties = dict()
+            for prop in form.keys():
+                if prop.startswith("template-"):
+                    if prop.endswith("[]"):
+                        properties[prop[9:-2]] = form.getlist(prop)
+                    else:
+                        print(form[prop])
+                        properties[prop[9:]] = form[prop]
+
             layout_xml = template.render_template(properties)
 
         return DisplayGroup(

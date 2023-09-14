@@ -4,6 +4,13 @@
   --content-gap: 10px;
 }
 
+html,
+body,
+#root {
+  min-height: 100%;
+  height: 100%;
+}
+
 .caption-title {
   font-weight: bold;
 }
@@ -38,8 +45,13 @@
   font-size: 24pt;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .loadshedding {
   display: flex;
+  flex-direction: column;
   top: 10px;
   right: 10px;
   padding: 10px;
@@ -86,4 +98,13 @@
   flex-direction: column;
   height: 100%;
   width: 100%;
+}
+
+.scaled-iframe {
+  --scale: 2;
+
+  width: calc(100% / var(--scale));
+  height: calc(100% / var(--scale));
+  transform: scale(var(--scale));
+  transform-origin: top left;
 }
