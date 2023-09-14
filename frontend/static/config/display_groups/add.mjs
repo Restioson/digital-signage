@@ -4,6 +4,7 @@ export function main () {
   setupPostForms()
   choiceOfFieldset('template', 'template-fieldset', 'template')
   setupPreview()
+  setupPagesProperties()
 }
 
 function setupPreview () {
@@ -20,4 +21,33 @@ function setupPreview () {
 
   form.addEventListener('change', change)
   change()
+}
+
+function setupPagesProperties () {
+  for (const addButton of document.getElementsByClassName('add-page')) {
+    addButton.addEventListener('click', function () {
+      const textarea = document.createElement('textarea')
+      textarea.rows = 10
+      textarea.name = `template-${addButton.dataset.variableName}[]`
+      textarea.value = '<p>Hello there!</p>'
+
+      const label = document.createElement('label')
+      label.innerText = 'Custom page'
+      label.append(textarea)
+
+      const container = document.createElement('div')
+      container.className = 'custom-page-container'
+      container.append(label)
+
+      const deleteButton = document.createElement('button')
+      deleteButton.innerText = 'Delete'
+      deleteButton.addEventListener('click', function () {
+        container.remove()
+      })
+      container.append(deleteButton)
+
+      const fieldset = addButton.parentElement
+      fieldset.append(container)
+    })
+  }
 }

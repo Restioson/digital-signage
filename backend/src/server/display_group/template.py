@@ -138,9 +138,14 @@ TEMPLATES = [
                 TemplateProperty("streams", "Content streams", "content_streams"),
                 TemplateProperty(
                     "page_secs",
-                    "Time per screen (e.g loadshedding, calendar)",
+                    "Time per screen (e.g loadshedding, calendar, custom pages)",
                     "string",
                     default=15,
+                ),
+                TemplateProperty(
+                    "custom_pages",
+                    "Custom pages (HTML)",
+                    "pages",
                 ),
             ],
         ),

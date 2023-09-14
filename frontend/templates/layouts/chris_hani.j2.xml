@@ -138,5 +138,11 @@
     <container html:id="loadshedding-page" html:class="page">
       <loadshedding />
     </container>
+
+    {%- for page in custom_pages -%}
+      <html html:class="custom-page page-{{ loop.index }}">
+        {{ page|safe }}
+      </html>
+    {%- endfor -%}
   </rotation>
 </container>

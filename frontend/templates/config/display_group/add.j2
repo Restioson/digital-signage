@@ -4,7 +4,7 @@
 {% block title %}Add display group{% endblock %}
 {% block head %}
   {{ super() }}
-  {{ css('config') }}
+  {{ css('config/display_groups/add') }}
 {% endblock %}
 
 {% block content %}
@@ -50,6 +50,17 @@
             </label>
           {%- elif property.type == "content_streams" -%}
             {{ content_stream(content_streams, "template-" + property.variable_name, true) }}
+          {%- elif property.type == "pages" -%}
+            <fieldset>
+              <legend>{{ property.pretty_name }}</legend>
+              <button
+                type="button"
+                class="add-page"
+                data-variable-name="{{ property.variable_name }}"
+              >
+                Add page
+              </button>
+            </fieldset>
           {%- endif -%}
         {%- endfor -%}
       </fieldset>
