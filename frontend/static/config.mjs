@@ -1,7 +1,10 @@
-export function setupPostForms (history) {
+export function setupPostForms () {
   for (const form of document.getElementsByClassName('post-form')) {
     form.addEventListener('submit', submitPost)
   }
+}
+
+export function setupBackButton (history) {
   if (history) {
     document
       .getElementById('backButton')
