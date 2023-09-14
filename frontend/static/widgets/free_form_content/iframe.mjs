@@ -7,7 +7,7 @@ import { Caption } from '../caption.mjs'
  *
  * @augments FreeFormContent
  */
-export class Iframe extends FreeFormContent {
+export class IFrameContent extends FreeFormContent {
   /**
    * @param {int} id the content's ID
    * @param {URL} url the URL to embed in the iFrame
@@ -26,7 +26,7 @@ export class Iframe extends FreeFormContent {
    * @returns {Link}
    */
   static fromJSON (obj) {
-    return new Iframe({
+    return new IFrameContent({
       id: obj.id,
       url: obj.url,
       caption: Caption.maybeFromJSON(obj.caption)
