@@ -65,6 +65,12 @@ body,
   flex-direction: column;
 }
 
+.iframe-content > iframe {
+  display: flex;
+  width: 100%;
+  height: 80%;
+}
+
 .link > iframe {
   display: inline-block;
   width: 100%;

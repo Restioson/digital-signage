@@ -10,6 +10,7 @@ from server.free_form_content import (
     Text,
     LocalImage,
     Link,
+    IFrameContent,
     Caption,
     QRcodeContent,
 )
@@ -63,6 +64,8 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
         return LocalImage(mime, image_data, caption, stream)
     elif content_type == "link":
         return Link(form["url"], caption, stream)
+    elif content_type == "iframe_content":
+        return IFrameContent(form["url"], caption, stream)
     elif content_type == "qrcode_content":
         return QRcodeContent(form["url"], caption, stream)
     else:
@@ -104,6 +107,10 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
         )
     elif content_type == "link":
         return Link(data["url"], caption, stream, content_id=content_id, posted=posted)
+    elif content_type == "iframe_content":
+        return IFrameContent(
+            data["url"], caption, stream, content_id=content_id, posted=posted
+        )
     elif content_type == "qrcode_content":
         return QRcodeContent(
             data["url"], caption, stream, content_id=content_id, posted=posted
