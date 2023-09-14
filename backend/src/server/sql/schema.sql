@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS content (
       'remote_image',
       'video',
       'link',
+      'iframe_content',
       'qrcode_content'
     )
   ),

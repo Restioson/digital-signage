@@ -35,6 +35,7 @@
           <option value="local_image">Image (upload file)</option>
           <option value="remote_image">Image (from URL)</option>
           <option value="link">Link</option>
+          <option value="iframe_content">Iframe</option>
           <option value="qrcode_content">QR Code</option>
         </select>
       </label>
@@ -79,6 +80,14 @@
         <legend>Link</legend>
         <label for="link_url">Url:</label>
         <input type="url" id="link_url" name="url" />
+        {{ caption() }}
+      </fieldset>
+
+      <fieldset class="content-fieldset" id="fields-for-iframe_content">
+        <legend>iframe</legend>
+        <label for="iframe_url">Url:</label>
+        {# <!-- [html-validate-disable-next form-dup-name] --> only one is enabled at a time #}
+        <input type="url" id="iframe_url" name="url" />
         {{ caption() }}
       </fieldset>
 

@@ -2,6 +2,7 @@ import { TextWidget } from './text.mjs'
 import { LocalImage } from './local_image.mjs'
 import { RemoteImage } from './remote_image.mjs'
 import { Link } from './link.mjs'
+import { Iframe } from './iframe.mjs'
 import { QrcodeContent } from './qrcode_content.mjs'
 import { UnknownWidgetTypeError } from '../../util.mjs'
 
@@ -22,6 +23,8 @@ export function deserializeFreeFormContent (obj) {
       return RemoteImage.fromJSON(obj)
     case 'link':
       return Link.fromJSON(obj)
+    case 'iframe_content':
+      return Iframe.fromJSON(obj)
     case 'qrcode_content':
       return QrcodeContent.fromJSON(obj)
     default:

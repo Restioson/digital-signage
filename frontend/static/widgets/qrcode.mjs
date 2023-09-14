@@ -3,7 +3,7 @@ import { Widget } from './widget.mjs'
 const { default: QRCode } = await importFromNpm('qrcode')
 
 /**
- * A piece of {@qrcode Widget} which displays a link in the form of a qrcode.
+ * A piece of {@link Widget} which displays a link in the form of a qrcode.
  *
  * @augments Widget
  */
