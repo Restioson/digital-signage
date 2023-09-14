@@ -64,14 +64,14 @@ async function submitPost (event) {
     if (res.status !== 200) {
       throw new ApiError(await res.text())
     }
-    const responsemessage = await res.json()
-    if (responsemessage.id === 'response needed') {
+    const responseMessage = await res.json()
+    if (responseMessage.id === 'response needed') {
       postStatusMessage.classList.add('success')
-      postStatusMessage.innerText = `Response: ${responsemessage.response}`
+      postStatusMessage.innerText = `Response: ${responseMessage.response}`
     } else {
       postStatusMessage.classList.add('success')
       postStatusMessage.innerText = `Successfully submitted (id: ${
-        responsemessage.id
+        responseMessage.id
       })`
     }
   } catch (err) {
