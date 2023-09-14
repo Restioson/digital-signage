@@ -1,4 +1,4 @@
-<container html:id="main">
+<container>
   {# - broken with the template literals #}
   <!-- prettier-ignore -->
   <style>
@@ -17,18 +17,12 @@
   </style>
 
   <style>
-    #main,
-    .page,
-    .rotation,
-    #main > watching-element {
-      display: flex;
-      min-height: 100%;
-      min-width: 100%;
-    }
-
     .page {
+      height: 100vh;
+      width: 100vw;
       padding-left: 25px;
       padding-right: 25px;
+      padding-bottom: 5px;
     }
 
     #main-page {
@@ -40,6 +34,11 @@
       display: grid;
       grid-template-rows: auto 1fr 1fr auto;
       grid-gap: 1em;
+    }
+
+    #main-page > * {
+      min-height: 0;
+      min-width: 0;
     }
 
     #header-text {
@@ -88,10 +87,6 @@
       flex-grow: 2;
     }
 
-    .content-stream > div {
-      height: unset;
-    }
-
     #loadshedding-page {
       background: var(--bg-loadshedding-url) no-repeat center center fixed;
       -webkit-background-size: cover;
@@ -119,11 +114,13 @@
 
       <container html:id="calendar-container">
         <clock format="{{ date_format|safe }}" />
-        <refresh>
-          <html html:id="calendar" html:class="scaled-iframe">
-            {{ calendar_iframe|safe }}
-          </html>
-        </refresh>
+        <container>
+          <refresh>
+            <html html:id="calendar" html:class="scaled-iframe">
+              {{ calendar_iframe|safe }}
+            </html>
+          </refresh>
+        </container>
       </container>
 
       <container html:id="stream">

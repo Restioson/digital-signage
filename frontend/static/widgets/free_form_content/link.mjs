@@ -50,6 +50,6 @@ export class Link extends FreeFormContent {
   }
 
   className () {
-    return 'link'
+    return 'free-form-content link'
   }
 }

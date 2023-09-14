@@ -42,6 +42,6 @@ export class QrcodeContent extends FreeFormContent {
   }
 
   className () {
-    return 'qrcode-content'
+    return 'free-form-content qrcode-content'
   }
 }

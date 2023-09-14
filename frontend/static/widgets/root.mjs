@@ -1,5 +1,4 @@
 import { RootAlreadyExistsError } from '../util.mjs'
-import { WatchingElement } from './dynamic/watching_element.mjs'
 
 let root
 
@@ -12,6 +11,10 @@ export const testExports = { destroyRoot }
  * Destroy the root. Used only in testing for teardown.
  */
 function destroyRoot () {
+  if (root && root.mutationObserver) {
+    root.mutationObserver.disconnect()
+  }
+
   root = null
 }
 
@@ -21,7 +24,7 @@ function destroyRoot () {
 export class Root {
   constructor (departmentId) {
     this.departmentId = departmentId
-    this.postRenderCallbacks = []
+    this.watchedElements = []
   }
 
   /**
@@ -32,21 +35,46 @@ export class Root {
    * @param {number} departmentId the departments ID of this display group
    */
   static create ({ child, targetElement, departmentId }) {
-    try {
-      window.customElements.define('watching-element', WatchingElement)
-    } catch {}
-
     if (root) {
       throw new RootAlreadyExistsError()
     } else {
       root = new Root(departmentId)
     }
 
+    this.mutationObserver = new window.MutationObserver(
+      (mutations, observer) => {
+        if (!root) {
+          observer.disconnect()
+          return
+        }
+
+        for (const { element, onAdd } of root.watchedElements) {
+          const isAdded = mutations.some(mut =>
+            Array.from(mut.addedNodes).some(node => node.contains(element))
+          )
+
+          if (isAdded) {
+            onAdd()
+          }
+        }
+
+        root.watchedElements = []
+      }
+    )
+
+    this.mutationObserver.observe(targetElement, {
+      childList: true,
+      subtree: true
+    })
     targetElement.replaceChildren(child.render())
   }
 
   static getInstance () {
     return root
+  }
+
+  watchElement ({ element, onAdd, onRemove }) {
+    this.watchedElements.push({ element, onAdd })
   }
 
   getDepartment () {

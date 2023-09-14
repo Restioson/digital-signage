@@ -38,7 +38,7 @@ export class Widget {
     const elem = Widget.renderIfWidget(this.build())
     const className = this.className()
     if (className) {
-      elem.classList.add(className)
+      elem.classList.add(...className.split(' '))
     }
     return elem
   }

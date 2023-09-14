@@ -30,26 +30,22 @@ describe('Widget', function () {
       assert.equal(container.tagName, 'DIV')
       assert.equal(container.children.length, 3)
 
-      assert.equal(container.children[0].tagName, 'WATCHING-ELEMENT')
-      assert.equal(container.children[0].firstChild.tagName, 'DIV')
-      assert.deepStrictEqual(
-        Array.from(container.children[0].firstChild.classList),
-        ['clock']
-      )
+      assert.equal(container.children[0].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[0].classList), [
+        'clock'
+      ])
 
-      assert.equal(container.children[1].tagName, 'WATCHING-ELEMENT')
-      assert.equal(container.children[1].firstChild.tagName, 'DIV')
-      assert.deepStrictEqual(
-        Array.from(container.children[1].firstChild.classList),
-        ['container', 'department']
-      )
+      assert.equal(container.children[1].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[1].classList), [
+        'container',
+        'department'
+      ])
 
-      assert.equal(container.children[1].tagName, 'WATCHING-ELEMENT')
-      assert.equal(container.children[2].firstChild.tagName, 'DIV')
-      assert.deepStrictEqual(
-        Array.from(container.children[2].firstChild.classList),
-        ['container', 'content-stream']
-      )
+      assert.equal(container.children[2].tagName, 'DIV')
+      assert.deepStrictEqual(Array.from(container.children[2].classList), [
+        'container',
+        'content-stream'
+      ])
     })
   })
 

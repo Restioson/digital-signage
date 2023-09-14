@@ -38,6 +38,6 @@ export class TextWidget extends FreeFormContent {
   }
 
   className () {
-    return 'text'
+    return 'free-form-content text'
   }
 }
