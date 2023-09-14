@@ -31,7 +31,7 @@ export function deserializeWidgetFromXML (xml) {
     parseAttributeValue: true,
     processEntities: false,
     stopNodes: ['*.html', '*.style', '*.script'],
-    unpairedTags: ['clock', 'department', 'stream', 'loadshedding']
+    unpairedTags: ['clock', 'department', 'stream', 'loadshedding', 'script']
   }
 
   const parser = new XMLParser(options)
