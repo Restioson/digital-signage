@@ -2,10 +2,21 @@
   {# - broken with the template literals #}
   <!-- prettier-ignore -->
   <style>
+    :root {
+      --bg-content-url: url({{ bg_content_url|safe }});
+      --bg-loadshedding-url: url({{ bg_loadshedding_url|safe }});
+    }
+
     html {
       font-size: {{ font_size }};
     }
 
+    .scaled-iframe {
+      --scale: {{ calendar_scale }};
+    }
+  </style>
+
+  <style>
     #main,
     .page,
     .rotation,
@@ -21,7 +32,7 @@
     }
 
     #main-page {
-      background: url({{ bg_content_url|safe }}) no-repeat center center fixed;
+      background: var(--bg-content-url) no-repeat center center fixed;
       -webkit-background-size: cover;
       -moz-background-size: cover;
       -o-background-size: cover;
@@ -35,10 +46,6 @@
       text-align: right;
       color: blue;
       font-size: 4rem;
-    }
-
-    .scaled-iframe {
-      --scale: {{ calendar_scale }};
     }
 
     #calendar-container {
@@ -86,8 +93,7 @@
     }
 
     #loadshedding-page {
-      background: url({{ bg_loadshedding_url|safe }}) no-repeat center center
-        fixed;
+      background: var(--bg-loadshedding-url) no-repeat center center fixed;
       -webkit-background-size: cover;
       -moz-background-size: cover;
       -o-background-size: cover;
