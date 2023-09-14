@@ -4,6 +4,12 @@ export function setupPostForms () {
   }
 }
 
+export function setupBackButton () {
+  document.getElementById('backButton').addEventListener('click', function () {
+    window.history.back()
+  })
+}
+
 export function choiceOfFieldset (selectorId, fieldsetClass, fieldsetIdPrefix) {
   const selector = document.getElementById(selectorId)
   const form = selector.closest('form')
@@ -58,11 +64,16 @@ async function submitPost (event) {
     if (res.status !== 200) {
       throw new ApiError(await res.text())
     }
-
-    postStatusMessage.classList.add('success')
-    postStatusMessage.innerText = `Successfully submitted (id: ${
-      (await res.json()).id
-    })`
+    const responseMessage = await res.json()
+    if (responseMessage.id === 'response needed') {
+      postStatusMessage.classList.add('success')
+      postStatusMessage.innerText = `Response: ${responseMessage.response}`
+    } else {
+      postStatusMessage.classList.add('success')
+      postStatusMessage.innerText = `Successfully submitted (id: ${
+        responseMessage.id
+      })`
+    }
   } catch (err) {
     postStatusMessage.classList.add('error')
     const errorBox = document.createElement('pre')

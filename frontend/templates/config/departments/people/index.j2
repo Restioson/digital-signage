@@ -23,7 +23,6 @@
           <th scope="col">Email</th>
           <th scope="col">Telephone</th>
           <th scope="col">Office hours</th>
-          <th scope="col">Department</th>
         </tr>
       </thead>
 
@@ -35,9 +34,8 @@
             <td>{{ person.position }}</td>
             <td>{{ person.office_location }}</td>
             <td>{{ person.email }}</td>
-            <td>{{ person.telephone }}</td>
+            <td>{{ person.phone }}</td>
             <td>{{ person.office_hours }}</td>
-            <td>{{ person.department }}</td>
             <td>
               {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
               <form
@@ -70,6 +68,14 @@
       class="redirect-form"
     >
       <button type="submit">Add a person</button>
+    </form>
+    {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
+    <form
+      action="/config/departments/{{ department.id }}/people/add_table"
+      method="get"
+      class="redirect-form"
+    >
+      <button type="submit">Add a table of people</button>
     </form>
 
     <p hidden id="status-message"></p>

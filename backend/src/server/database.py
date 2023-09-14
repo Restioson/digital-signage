@@ -213,7 +213,7 @@ class DatabaseController:
                 cursor.execute(
                     "SELECT id, department, title, "
                     "full_name, position, office_hours,"
-                    "office_location,email,phone FROM people "
+                    "office_location, email, phone FROM people "
                     " WHERE department = ?"
                     " ORDER BY id",
                     (department_id,),

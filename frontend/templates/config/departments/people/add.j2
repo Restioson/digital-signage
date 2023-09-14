@@ -11,11 +11,15 @@
 
 {% block content %}
   <script type="module">
-    import { setupPostForms } from "{{ url_for('static', filename='config.mjs') }}";
+    import {
+      setupPostForms,
+      setupBackButton,
+    } from "{{ url_for('static', filename='config.mjs') }}";
     setupPostForms();
+    setupBackButton();
   </script>
 
-
+  <button type="button" id="backButton">Back</button>
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
   <form
     action="/api/departments/{{ department_id }}/people"

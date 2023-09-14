@@ -1,5 +1,6 @@
 from http import HTTPStatus
 import json
+import pandas as pd
 import flask
 from flask import Blueprint, Response, redirect, url_for, current_app, render_template
 from flask_login import (
@@ -15,6 +16,7 @@ from server.free_form_content import BinaryContent
 from server.free_form_content.content_stream import ContentStream
 from server.user import User
 from server.valid_redirect import url_has_allowed_host_and_scheme
+
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
@@ -143,6 +145,44 @@ def person(department_id: int, person_id: int):
         return {"deleted": True}
     else:
         flask.abort(404)
+
+
+@blueprint.route("/departments/<int:department_id>/uploadtable", methods=["POST"])
+def upload_table(department_id: int):
+    """The /api/departments/<dept_id>/upload_table endpoint.
+    POSTing this endpoint uploads the posted table to its database
+    """
+
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+    try:
+        excel_file = flask.request.files["add_table"]
+        df = pd.read_excel(excel_file, engine="openpyxl")
+        people = []
+        # Iterate through rows in the uploaded excel creating people
+        for index, row in df.iterrows():
+            person = Person(
+                row["title"],
+                row["full_name"],
+                row["position"],
+                row["office_hours"],
+                row["office_location"],
+                row["email"],
+                row["phone"],
+            )
+            people.append(person)
+        # Seperate loops so that any error in the whole table
+        # is caught before any entry is added
+        # loop through people to add each to the table
+        db = DatabaseController.get()
+        for person in people:
+            db.upsert_person(person, department_id)
+        return {
+            "id": "response needed",
+            "response": "Excel file is a valid file. Upload successful",
+        }
+    except Exception:
+        return flask.abort(400)
 
 
 @blueprint.route("/register", methods=["POST"])
