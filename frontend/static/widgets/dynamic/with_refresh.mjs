@@ -67,6 +67,7 @@ export class WithRefresh extends Widget {
         attributes[attr] = element.getAttribute(attr)
       }
 
+      console.log('rebuild')
       newElement = this.renderChild(attributes)
       element.replaceWith(newElement)
     }

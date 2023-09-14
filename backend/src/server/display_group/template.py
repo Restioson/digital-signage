@@ -195,6 +195,12 @@ TEMPLATES = [
                 TemplateProperty(
                     "rotation_secs", "Time per page of content (secs)", "string"
                 ),
+                TemplateProperty(
+                    "page_secs",
+                    "Time per screen (e.g calendar, news, department)",
+                    "string",
+                    default=15,
+                ),
             ],
         ),
     ),

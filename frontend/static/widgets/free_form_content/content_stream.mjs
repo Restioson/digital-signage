@@ -79,7 +79,7 @@ export class ContentStream extends DeserializableWidget {
           return new WithRefresh({
             refresh: () => {
               this.page += 1
-              return true
+              return this.children.length > this.pageSize
             },
             period: this.rotationPeriod,
             builder: () => {
