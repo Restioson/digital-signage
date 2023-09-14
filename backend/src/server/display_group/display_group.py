@@ -37,7 +37,6 @@ class DisplayGroup:
                     if prop.endswith("[]"):
                         properties[prop[9:-2]] = form.getlist(prop)
                     else:
-                        print(form[prop])
                         properties[prop[9:]] = form[prop]
 
             layout_xml = template.render_template(properties)

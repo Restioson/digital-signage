@@ -15,7 +15,7 @@ export class Department extends DeserializableWidget {
     super()
     this.children = []
     this.pageSize = parseInt(pageSize)
-    this.page = 0
+    this.page = -1
     this.rotationPeriod = (rotateEveryNSec || 10) * 1000
   }
 
@@ -33,7 +33,7 @@ export class Department extends DeserializableWidget {
 
     if (!dirty) {
       for (let i = 0; i < update.people.length; i++) {
-        dirty = dirty || (update.people[i].id !== this.children[i].id)
+        dirty = dirty || update.people[i].id !== this.children[i].id
 
         if (dirty) {
           break
@@ -64,7 +64,7 @@ export class Department extends DeserializableWidget {
               return new PaginatedContainer({
                 children: this.children,
                 pageSize: this.pageSize,
-                page: this.page
+                page: this.page > 0 ? this.page : 0
               })
             }
           })

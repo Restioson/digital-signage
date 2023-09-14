@@ -41,7 +41,3 @@ class Loadshedding:
         else:
             print(f"Request failed with status code {response.status}")
         conn.close()
-
-    @staticmethod
-    def testing():
-        print("test")

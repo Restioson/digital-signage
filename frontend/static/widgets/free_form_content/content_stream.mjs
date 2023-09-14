@@ -22,7 +22,7 @@ export class ContentStream extends DeserializableWidget {
     this.fetchAmount = fetchAmount
     this.streams = streams
     this.pageSize = parseInt(pageSize)
-    this.page = 0
+    this.page = -1
     this.rotationPeriod = (rotateEveryNSec || 10) * 1000
   }
 
@@ -43,7 +43,7 @@ export class ContentStream extends DeserializableWidget {
 
     if (!dirty) {
       for (let i = 0; i < update.content.length; i++) {
-        dirty |= update.content[i].id === this.children.id
+        dirty |= update.content[i].id !== this.children[i].id
 
         if (dirty) {
           break
