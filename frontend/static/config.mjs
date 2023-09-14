@@ -4,14 +4,10 @@ export function setupPostForms () {
   }
 }
 
-export function setupBackButton (history) {
-  if (history) {
-    document
-      .getElementById('backButton')
-      .addEventListener('click', function () {
-        history.back()
-      })
-  }
+export function setupBackButton () {
+  document.getElementById('backButton').addEventListener('click', function () {
+    window.history.back()
+  })
 }
 
 export function choiceOfFieldset (selectorId, fieldsetClass, fieldsetIdPrefix) {
