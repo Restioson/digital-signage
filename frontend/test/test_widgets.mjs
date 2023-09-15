@@ -30,25 +30,23 @@ describe('Widget', function () {
       assert.equal(container.tagName, 'DIV')
       assert.equal(container.children.length, 3)
 
-      assert.equal(container.children[0].tagName, 'WATCHING-ELEMENT')
-      assert.equal(container.children[0].firstChild.tagName, 'DIV')
-      assert.deepStrictEqual(
-        Array.from(container.children[0].firstChild.classList),
-        ['clock']
+      assert.equal(container.children[0].tagName, 'DIV')
+      assert(classListSubsetOf(container.children[0].classList, ['clock']))
+
+      assert.equal(container.children[1].tagName, 'DIV')
+      assert(
+        classListSubsetOf(container.children[1].classList, [
+          'container',
+          'department'
+        ])
       )
 
-      assert.equal(container.children[1].tagName, 'WATCHING-ELEMENT')
-      assert.equal(container.children[1].firstChild.tagName, 'DIV')
-      assert.deepStrictEqual(
-        Array.from(container.children[1].firstChild.classList),
-        ['container', 'department']
-      )
-
-      assert.equal(container.children[1].tagName, 'WATCHING-ELEMENT')
-      assert.equal(container.children[2].firstChild.tagName, 'DIV')
-      assert.deepStrictEqual(
-        Array.from(container.children[2].firstChild.classList),
-        ['container', 'content-stream']
+      assert.equal(container.children[2].tagName, 'DIV')
+      assert(
+        classListSubsetOf(container.children[2].classList, [
+          'container',
+          'content-stream'
+        ])
       )
     })
   })
@@ -196,11 +194,13 @@ describe('Widget', function () {
       const content = document.createElement('p')
       content.innerText = 'test'
 
+      const captionRendered = caption.render()
       const widget = new ContentAndCaption({ content, caption })
       const rendered = widget.render()
-      assert.deepStrictEqual(rendered.children.length, 2)
-      assert.deepStrictEqual(rendered.children[0], content)
-      assert.deepStrictEqual(rendered.children[1], caption.render())
+      assert.deepStrictEqual(rendered.children.length, 3)
+      assert.deepStrictEqual(rendered.children[0], captionRendered.children[0])
+      assert.deepStrictEqual(rendered.children[1], content)
+      assert.deepStrictEqual(rendered.children[2], captionRendered.children[1])
     })
 
     it('renders with null caption', function () {
@@ -208,9 +208,8 @@ describe('Widget', function () {
       content.innerText = 'test'
       const widget = new ContentAndCaption({ content, caption: null })
       const rendered = widget.render()
-      assert.deepStrictEqual(rendered.children.length, 2)
+      assert.deepStrictEqual(rendered.children.length, 1)
       assert.deepStrictEqual(rendered.children[0], content)
-      assert(rendered.children[1].hidden)
     })
 
     it('deserializes', function () {
@@ -259,3 +258,7 @@ describe('Widget', function () {
     })
   })
 })
+
+function classListSubsetOf (list, expected) {
+  return Array.from(expected).every(it => list.contains(it))
+}

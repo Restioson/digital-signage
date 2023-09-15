@@ -1,0 +1,191 @@
+<container>
+  {# - broken with the template literals #}
+  <!-- prettier-ignore -->
+  <style>
+    :root {
+      --department-color: {{ department_color }};
+      --accent-color: {{ accent_color }};
+      --lighter-accent-color: color-mix(in srgb, var(--accent-color) 25%, white)
+    }
+  </style>
+
+  <style>
+    .page {
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .department {
+      display: flex;
+      gap: 20px;
+      flex-flow: row wrap;
+    }
+
+    .sidebar {
+      max-width: 300px;
+      background-color: var(--lighter-accent-color);
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+    }
+
+    .page.with-sidebar {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .sidebar > img {
+      margin: 0 auto;
+    }
+
+    .sidebar > .clock {
+      margin-top: auto;
+    }
+
+    .clock {
+      display: flex;
+      flex-direction: column;
+      font-size: 2.5rem;
+    }
+
+    .clock .day {
+      font-size: 0.9em;
+    }
+
+    .clock .date {
+      font-size: 0.7em;
+    }
+
+    .page .page-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 15px;
+    }
+
+    .header {
+      font-size: 1.5rem;
+      margin-left: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header > * {
+      margin: 0;
+      width: fit-content;
+    }
+
+    .header .dept-name {
+      color: var(--header-name-color);
+      font-weight: bold;
+    }
+
+    .header h2 {
+      color: var(--header-color);
+    }
+
+    .header .inverted-colors {
+      color: white;
+      background-color: var(--header-color);
+    }
+
+    /* People page */
+
+    #people-page {
+      background: var(--department-color);
+      padding: 100px;
+    }
+
+    /* Calendar page */
+    #calendar-page .header {
+      --header-name-color: var(--lighter-accent-color);
+      --header-color: var(--accent-color);
+    }
+
+    #calendar-container {
+      flex: 1;
+    }
+
+    /* News page */
+    #news-page .header {
+      --header-name-color: var(--department-color);
+      --header-color: var(--department-color);
+    }
+
+    .content-stream {
+      display: grid;
+      grid-auto-rows: 1fr;
+      flex: 1;
+    }
+
+    .free-form-content {
+      background: var(--lighter-accent-color);
+      border: none;
+    }
+
+    .text-title,
+    .caption-title {
+      color: white;
+      font-weight: normal;
+      background-color: var(--accent-color);
+    }
+  </style>
+
+  {% macro sidebar() %}
+    <container html:class="sidebar">
+      <html>
+        <img
+          src="https://upload.wikimedia.org/wikipedia/en/7/7c/University_of_Cape_Town_logo.svg"
+        />
+      </html>
+
+      <clock format="{{ time_format|safe|string }}" />
+    </container>
+  {% endmacro %}
+
+  <rotation secs-per-page="{{ page_secs }}">
+    <container html:id="people-page" html:class="page">
+      <department />
+    </container>
+
+    <container html:id="calendar-page" html:class="page with-sidebar">
+      {{ sidebar() }}
+      <container html:class="page-content">
+        <html html:class="header">
+          <div class="dept-name">UCT Computer Science</div>
+          <h2>CALENDAR</h2>
+          <h2><span class="inverted-colors">OF</span> EVENTS</h2>
+        </html>
+        ￼
+
+        <container html:id="calendar-container">
+          <refresh>
+            <html html:id="calendar" html:class="scaled-iframe">
+              {{ calendar_iframe|safe }}
+            </html>
+          </refresh>
+        </container>
+      </container>
+    </container>
+
+    <container html:id="news-page" html:class="page with-sidebar">
+      {{ sidebar() }}
+      <container html:class="page-content">
+        <html html:class="header">
+          <div class="dept-name">UCT School of IT</div>
+          <h2 class="inverted-colors">NEWS</h2>
+        </html>
+
+        <content-stream
+          secs-per-page="{{ rotation_secs }}"
+          page-size="{{ page_size }}"
+        >
+          {% for stream in streams %}
+            <stream id="{{ stream }}" />
+          {% endfor %}
+        </content-stream>
+      </container>
+    </container>
+  </rotation>
+</container>

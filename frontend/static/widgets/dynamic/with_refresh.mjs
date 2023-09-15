@@ -1,6 +1,23 @@
 import { Widget } from '../widget.mjs'
 import { WithHTMLAttrs } from '../deserializable/with_html_attrs.mjs'
-import { WatchingElement } from './watching_element.mjs'
+import { Root } from '../root.mjs'
+
+// HACK: nested with refreshes lose their sense of who their child is, so we track it using a class name
+// This can then be efficiently queried with document.getElementByClassName, and it is also preserved
+// by WithHTMLAttrs
+
+/**
+ * Class prefix for refresh ID
+ *
+ * @type {string}
+ */
+const classPrefix = 'with-refresh-id-'
+
+/**
+ * Gloabl counter for with refresh ID that always increases
+ * @type {number}
+ */
+let withRefreshId = 0
 
 /**
  * A {@link Widget} which is refreshed at regular intervals. It is completely rebuilt and replaced in-place upon
@@ -22,22 +39,25 @@ export class WithRefresh extends Widget {
     this.refresh = refresh
     this.builder = builder
     this.period = period
-    this.watcherElement = null
-    this.connected = false
+    this.elementId = null
   }
 
   /**
    * Refresh this widget and add another timeout to refresh this widget again once the period has elapsed.
    *
    * @private
-   * @param {HTMLElement} element
    */
-  async refreshForever (element) {
-    if (!this.connected) {
-      return // Widget no longer exists in DOM; stop refreshing
+  async refreshForever () {
+    if (this.getElement() === undefined) {
+      return
     }
 
     const dirty = await this.refresh()
+
+    const element = this.getElement()
+    if (element === undefined) {
+      return
+    }
 
     let newElement = element
     if (dirty) {
@@ -47,11 +67,18 @@ export class WithRefresh extends Widget {
         attributes[attr] = element.getAttribute(attr)
       }
 
+      console.log('rebuild')
       newElement = this.renderChild(attributes)
-      this.watcherElement.replaceChildren(newElement)
+      element.replaceWith(newElement)
     }
 
-    setTimeout(() => this.refreshForever(newElement), this.period)
+    setTimeout(() => this.refreshForever(), this.period)
+  }
+
+  getElement () {
+    return (document.getElementsByClassName(
+      `${classPrefix}${this.elementId}`
+    ) || [])[0]
   }
 
   /**
@@ -61,26 +88,38 @@ export class WithRefresh extends Widget {
    * @returns {HTMLElement}
    */
   renderChild (oldAttributes) {
+    // HACK: nested with refreshes lose their sense of who their child is, so we track it using a class name
+    // This can then be efficiently queried with document.getElementByClassName, and it is also preserved
+    // by WithHTMLAttrs
+    const newClassList = [`${classPrefix}${this.elementId}`]
+    for (const className of (oldAttributes.class || '').split(' ')) {
+      if (className.startsWith(classPrefix)) {
+        const id = parseInt(className.substring(classPrefix.length))
+
+        // Do not put child WithRefresh ids in as they'll be rebuilt
+        if (id < this.elementId) {
+          newClassList.push(className)
+        }
+      } else if (className.length !== 0) {
+        newClassList.push(className)
+      }
+    }
+
     return new WithHTMLAttrs({
       child: Widget.renderIfWidget(this.builder()),
-      attributes: oldAttributes
+      attributes: { ...oldAttributes, class: newClassList.join(' ') }
     }).render()
   }
 
   build () {
-    const child = this.renderChild()
-
-    const watcher = new WatchingElement({
-      onConnect: () => {
-        this.connected = true
-        this.refreshForever(child)
-      },
-      onDisconnect: () => (this.connected = false)
+    this.elementId = withRefreshId++
+    const child = this.renderChild({})
+    Root.getInstance().watchElement({
+      element: child,
+      onAdd: () => this.refreshForever()
     })
 
-    this.watcherElement = watcher
-    watcher.appendChild(child)
-    return watcher
+    return child
   }
 
   className () {

@@ -44,6 +44,6 @@ export class RemoteImage extends FreeFormContent {
   }
 
   className () {
-    return 'image'
+    return 'free-form-content image'
   }
 }

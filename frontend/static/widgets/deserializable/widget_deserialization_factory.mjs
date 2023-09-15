@@ -48,7 +48,19 @@ export function deserializeWidgetFromXML (xml) {
  * @returns {Widget}
  */
 export function deserializeWidgetFromTag (tag) {
-  const widget = deserializeWidgetRaw(tag)
+  let widget
+  try {
+    widget = deserializeWidgetRaw(tag)
+  } catch (e) {
+    console.log(typeof tag.attributes)
+    const attrs = Object.entries(tag.attributes).map(
+      ([attr, val]) => `${attr}="${val}"`
+    )
+    throw new Error(
+      `error deserializing <${[tag.type, ...attrs].join(' ')}>:\n${e.message}`
+    )
+  }
+
   const htmlAttrs = Object.getOwnPropertyNames(tag.attributes).filter(attr =>
     attr.startsWith('html:')
   )

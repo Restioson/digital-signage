@@ -28,9 +28,7 @@ export class Qrcode extends Widget {
   }
 
   build () {
-    const qrCodeContainer = document.createElement('A')
     const canvas = document.createElement('canvas')
-    qrCodeContainer.append(canvas)
 
     try {
       const options = {
@@ -46,7 +44,8 @@ export class Qrcode extends Widget {
     } catch (error) {
       Qrcode.showError(canvas, error)
     }
-    return qrCodeContainer
+
+    return canvas
   }
 
   className () {

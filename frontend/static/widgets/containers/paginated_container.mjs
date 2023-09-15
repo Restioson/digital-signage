@@ -11,7 +11,7 @@ export class PaginatedContainer extends Widget {
     super()
     this.children = children
     this.pageSize = pageSize
-    this.page = page % Math.ceil(this.children.length / pageSize)
+    this.page = page % Math.max(1, Math.ceil(this.children.length / pageSize))
   }
 
   build () {

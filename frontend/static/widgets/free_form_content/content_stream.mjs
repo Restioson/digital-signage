@@ -22,7 +22,7 @@ export class ContentStream extends DeserializableWidget {
     this.fetchAmount = fetchAmount
     this.streams = streams
     this.pageSize = parseInt(pageSize)
-    this.page = 0
+    this.page = -1
     this.rotationPeriod = (rotateEveryNSec || 10) * 1000
   }
 
@@ -43,7 +43,7 @@ export class ContentStream extends DeserializableWidget {
 
     if (!dirty) {
       for (let i = 0; i < update.content.length; i++) {
-        dirty |= update.content[i].id === this.children.id
+        dirty |= update.content[i].id !== this.children[i].id
 
         if (dirty) {
           break
@@ -75,17 +75,18 @@ export class ContentStream extends DeserializableWidget {
       period: REFRESH_INTERVAL_MS,
       builder: () => {
         if (this.pageSize) {
+          this.page = -1
           return new WithRefresh({
             refresh: () => {
               this.page += 1
-              return true
+              return this.children.length > this.pageSize
             },
             period: this.rotationPeriod,
             builder: () => {
               return new PaginatedContainer({
                 children: this.children,
                 pageSize: this.pageSize,
-                page: this.page
+                page: this.page > 0 ? this.page : 0
               })
             }
           })

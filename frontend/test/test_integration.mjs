@@ -284,7 +284,7 @@ describe('API Integration', function () {
             expected.map(deserializeFreeFormContent)
           )
 
-          const out = stream.render().firstChild
+          const out = stream.render()
           assert.equal(out.tagName, 'DIV')
           assert.equal(out.children.length, 5)
 
@@ -392,7 +392,7 @@ describe('API Integration', function () {
 
           await dept.refresh()
 
-          const out = dept.render().firstChild
+          const out = dept.render()
           assert.equal(out.tagName, 'DIV')
           assert.equal(out.children.length, 2)
 

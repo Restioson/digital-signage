@@ -22,6 +22,16 @@ class Template:
         return render_template(f"layouts/{self.layout_template}", **values)
 
 
+EXAMPLE_IFRAME = (
+    '<iframe src="https://calendar.google.com/calendar/embed?'
+    "height=600&wkst=2&bgcolor=%23ffffff&ctz=Africa%2FJohannesburg&"
+    "showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&mode="
+    "AGENDA&showTz=0&showCalendars=0&src=MDRkZjNjZTQ2M2EzNjgzZmNhY"
+    "mY1NWJiYTY4ZWZlOTNmMWU0ZTMyZTQ2MzNlMDBiYjRhZDY0YWI0ODMxZjQwNU"
+    'Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23795548" style='
+    '"border:solid 1px #777" width="800" height="600"'
+    'frameborder="0" scrolling="no"></iframe>'
+)
 TEMPLATES = [
     (
         "Simple",
@@ -82,14 +92,7 @@ TEMPLATES = [
                     "calendar_iframe",
                     "Calendar embed code (iframe)",
                     "string",
-                    default='<iframe src="https://calendar.google.com/calendar/embed?'
-                    "height=600&wkst=2&bgcolor=%23ffffff&ctz=Africa%2FJohannesburg&"
-                    "showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&mode="
-                    "AGENDA&showTz=0&showCalendars=0&src=MDRkZjNjZTQ2M2EzNjgzZmNhY"
-                    "mY1NWJiYTY4ZWZlOTNmMWU0ZTMyZTQ2MzNlMDBiYjRhZDY0YWI0ODMxZjQwNU"
-                    'Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23795548" style='
-                    '"border:solid 1px #777" width="800" height="600"'
-                    'frameborder="0" scrolling="no"></iframe>',
+                    default=EXAMPLE_IFRAME,
                 ),
                 TemplateProperty(
                     "calendar_scale",
@@ -146,6 +149,57 @@ TEMPLATES = [
                     "custom_pages",
                     "Custom pages (HTML)",
                     "pages",
+                ),
+            ],
+        ),
+    ),
+    (
+        "Computer Science",
+        Template(
+            layout_template="cs_department.j2.xml",
+            properties=[
+                TemplateProperty(
+                    "department_color",
+                    "Department color hex code (e.g School of IT Orange)",
+                    "string",
+                    default="#d86613",
+                ),
+                TemplateProperty(
+                    "accent_color",
+                    "Accent color hex code (e.g UCT blue)",
+                    "string",
+                    default="#003eaa",
+                ),
+                TemplateProperty(
+                    "time_format",
+                    "Time format",
+                    "string",
+                    default="[<div class='day'>]dddd[</div><div class='date'>]"
+                    "D MMMM YYYY[</div><div class='time'>]HH:mm:ss[</div>]",
+                ),
+                TemplateProperty(
+                    "calendar_iframe",
+                    "Calendar embed code (iframe)",
+                    "string",
+                    default=EXAMPLE_IFRAME,
+                ),
+                TemplateProperty(
+                    "streams", "News page - content streams)", "content_streams"
+                ),
+                TemplateProperty(
+                    "page_size",
+                    "Number of posts to display at a time (blank for all)",
+                    "string",
+                    default="9",
+                ),
+                TemplateProperty(
+                    "rotation_secs", "Time per page of content (secs)", "string"
+                ),
+                TemplateProperty(
+                    "page_secs",
+                    "Time per screen (e.g calendar, news, department)",
+                    "string",
+                    default=15,
                 ),
             ],
         ),

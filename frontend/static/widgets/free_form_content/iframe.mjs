@@ -43,6 +43,6 @@ export class IFrameContent extends FreeFormContent {
   }
 
   className () {
-    return 'iframe-content'
+    return 'free-form-content iframe-content'
   }
 }

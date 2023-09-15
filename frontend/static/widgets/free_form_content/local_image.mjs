@@ -40,6 +40,6 @@ export class LocalImage extends FreeFormContent {
   }
 
   className () {
-    return 'image'
+    return 'free-form-content image'
   }
 }

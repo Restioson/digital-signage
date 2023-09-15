@@ -13,7 +13,7 @@ import { UnknownWidgetTypeError } from '../../util.mjs'
  * @param {object} obj the object to try to deserialize
  * @returns {FreeFormContent}
  */
-export function deserializeFreeFormContent (obj) {
+export function deserializeFreeFormContent (obj, flatten) {
   switch (obj.type) {
     case 'text':
       return TextWidget.fromJSON(obj)

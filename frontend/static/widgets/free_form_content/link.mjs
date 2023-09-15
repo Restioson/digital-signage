@@ -1,5 +1,4 @@
 import { FreeFormContent } from './free_form_content.mjs'
-import { ContentAndCaption } from '../containers/content_and_caption.mjs'
 import { Container } from '../containers/container.mjs'
 import { Caption } from '../caption.mjs'
 import { Qrcode } from '../qrcode.mjs'
@@ -38,18 +37,27 @@ export class Link extends FreeFormContent {
   build () {
     const iframe = document.createElement('iframe')
     iframe.src = this.url
-    return new Container({
-      children: [
-        iframe,
-        new ContentAndCaption({
-          content: new Qrcode({ url: this.url }),
-          caption: this.caption
-        })
-      ]
-    })
+
+    const children = [iframe, new Qrcode({ url: this.url })]
+
+    if (this.caption) {
+      const caption = this.caption.render()
+      const title = (caption.getElementsByClassName('caption-title') || [])[0]
+      const body = (caption.getElementsByClassName('caption-body') || [])[0]
+
+      if (title) {
+        children.unshift(title)
+      }
+
+      if (body) {
+        children.push(body)
+      }
+    }
+
+    return new Container({ children })
   }
 
   className () {
-    return 'link'
+    return 'content-and-caption free-form-content link'
   }
 }
