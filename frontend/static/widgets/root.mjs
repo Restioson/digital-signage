@@ -41,7 +41,7 @@ export class Root {
       root = new Root(departmentId)
     }
 
-    this.mutationObserver = new window.MutationObserver(
+    root.mutationObserver = new window.MutationObserver(
       (mutations, observer) => {
         if (!root) {
           observer.disconnect()
@@ -49,11 +49,7 @@ export class Root {
         }
 
         for (const { element, onAdd } of root.watchedElements) {
-          const isAdded = mutations.some(mut =>
-            Array.from(mut.addedNodes).some(node => node.contains(element))
-          )
-
-          if (isAdded) {
+          if (isInDocument(element)) {
             onAdd()
           }
         }
@@ -62,10 +58,7 @@ export class Root {
       }
     )
 
-    this.mutationObserver.observe(targetElement, {
-      childList: true,
-      subtree: true
-    })
+    root.observeRoot(targetElement)
     targetElement.replaceChildren(child.render())
   }
 
@@ -73,11 +66,33 @@ export class Root {
     return root
   }
 
-  watchElement ({ element, onAdd, onRemove }) {
+  observeRoot (root) {
+    this.mutationObserver.observe(root, {
+      childList: true,
+      subtree: true
+    })
+  }
+
+  watchElement ({ element, onAdd }) {
     this.watchedElements.push({ element, onAdd })
   }
 
   getDepartment () {
     return this.departmentId
   }
+}
+
+function isInDocument (element) {
+  let currentElement = element
+
+  while (currentElement && currentElement.parentNode) {
+    if (currentElement.parentNode === document) {
+      return true
+    } else if (currentElement.parentNode instanceof window.DocumentFragment) {
+      currentElement = currentElement.parentNode.host
+    } else {
+      currentElement = currentElement.parentNode
+    }
+  }
+  return false
 }

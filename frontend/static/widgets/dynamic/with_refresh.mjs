@@ -40,6 +40,7 @@ export class WithRefresh extends Widget {
     this.builder = builder
     this.period = period
     this.elementId = null
+    this.root = null
   }
 
   /**
@@ -48,14 +49,14 @@ export class WithRefresh extends Widget {
    * @private
    */
   async refreshForever () {
-    if (this.getElement() === undefined) {
+    if (!this.getElement()) {
       return
     }
 
     const dirty = await this.refresh()
 
     const element = this.getElement()
-    if (element === undefined) {
+    if (!element) {
       return
     }
 
@@ -67,7 +68,6 @@ export class WithRefresh extends Widget {
         attributes[attr] = element.getAttribute(attr)
       }
 
-      console.log('rebuild')
       newElement = this.renderChild(attributes)
       element.replaceWith(newElement)
     }
@@ -76,9 +76,8 @@ export class WithRefresh extends Widget {
   }
 
   getElement () {
-    return (document.getElementsByClassName(
-      `${classPrefix}${this.elementId}`
-    ) || [])[0]
+    console.log(this.root)
+    return this.root.querySelector(`.${classPrefix}${this.elementId}`)
   }
 
   /**
@@ -116,7 +115,10 @@ export class WithRefresh extends Widget {
     const child = this.renderChild({})
     Root.getInstance().watchElement({
       element: child,
-      onAdd: () => this.refreshForever()
+      onAdd: () => {
+        this.root = child.getRootNode()
+        this.refreshForever()
+      }
     })
 
     return child

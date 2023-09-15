@@ -13,6 +13,7 @@ import { ScriptWidget } from '../script.mjs'
 import { StyleWidget } from '../style.mjs'
 import { RotatingContainer } from '../containers/rotating_container.mjs'
 import { StaticRefresh } from '../dynamic/static_refresh.mjs'
+import { Page } from '../containers/page.mjs'
 const { XMLParser } = await importFromNpm('fast-xml-parser')
 
 /**
@@ -109,6 +110,8 @@ function deserializeWidgetRaw (tag) {
       return RotatingContainer.fromXML(tag)
     case 'refresh':
       return StaticRefresh.fromXML(tag)
+    case 'page':
+      return Page.fromXML(tag)
     default:
       throw new UnknownWidgetTypeError(tag.type)
   }

@@ -53,14 +53,17 @@ export class Department extends DeserializableWidget {
       refresh: () => this.refresh(),
       period: REFRESH_INTERVAL_MS,
       builder: () => {
+        this.page = -1
         if (this.pageSize) {
           return new WithRefresh({
             refresh: () => {
               this.page += 1
+              console.log(this.children.length, this.pageSize)
               return this.children.length > this.pageSize
             },
             period: this.rotationPeriod,
             builder: () => {
+              console.log(this.page)
               return new PaginatedContainer({
                 children: this.children,
                 pageSize: this.pageSize,
