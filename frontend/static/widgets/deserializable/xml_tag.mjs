@@ -108,6 +108,8 @@ export class XMLTag {
    * @return object[] the children of this tag
    */
   children () {
-    return Array.from(this._children.keys()).map(idx => this._nthChild(idx))
+    return Array.from(this._children.keys())
+      .map(idx => this._nthChild(idx))
+      .filter(tag => tag.type !== '#text')
   }
 }

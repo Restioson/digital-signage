@@ -46,8 +46,6 @@ export class ContentAndCaption extends DeserializableWidget {
   }
 
   className () {
-    return this.caption && this.caption.title
-      ? 'content-and-caption'
-      : 'content-and-caption no-title'
+    return 'content-and-caption'
   }
 }

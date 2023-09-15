@@ -70,7 +70,7 @@ fieldset,
 .column-list {
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: 16px;
 }
 
 *[hidden] {

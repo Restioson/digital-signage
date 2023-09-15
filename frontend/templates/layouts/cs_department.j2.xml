@@ -115,110 +115,20 @@
 
     .content-stream {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
       grid-auto-rows: 1fr;
       flex: 1;
-      min-height: 0;
-    }
-
-    .content-stream > * {
-      min-height: 0;
     }
 
     .free-form-content {
-      font-size: 1.3em;
       background: var(--lighter-accent-color);
-      padding: 0;
-      padding: 15px;
       border: none;
-      margin: 0;
-      overflow: hidden;
-    }
-
-    .free-form-content.image,
-    .free-form-content.link .content-and-caption {
-      display: inline;
-      overflow: hidden;
-      height: unset;
-    }
-
-    .free-form-content.image img,
-    .qrcode canvas {
-      display: inline;
-      width: 100%;
-      height: 100%;
-      max-width: 300px;
-      max-height: 300px;
-      margin-bottom: 15px;
-      padding-right: 15px;
-      float: left;
-    }
-
-    :is(.free-form-content.image img, .qrcode canvas):last-child {
-      max-height: unset;
-      max-width: unset;
-      padding-right: 0;
-    }
-
-    .free-form-content.link {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .free-form-content iframe {
-      flex: 1;
-      min-height: 0;
-      height: unset;
-      width: unset;
-    }
-
-    .free-form-content.iframe-content {
-      padding: 0 !important;
-    }
-
-    .content-and-caption .qrcode {
-      display: contents !important;
-      margin-left: 5px;
-    }
-
-    .caption {
-      display: contents;
-    }
-
-    .text-title, .caption-title {
-      margin: -15px;
-      margin-bottom: 15px;
-    }
-
-    .caption-body {
-      display: contents;
-    }
-
-    .text-title, .text-body {
-      padding: 5px;
     }
 
     .text-title,
     .caption-title {
-      font-size: 1.5em;
       color: white;
       font-weight: normal;
       background-color: var(--accent-color);
-    }
-
-    .free-form-content.qrcode-content {
-      margin: 0;
-    }
-
-    .qrcode-content .qrcode canvas {
-      width: 100% !important;
-      height: 80% !important;
-      object-fit: contain;
-      object-position: left;
-    }
-
-    .qrcode-content.no-title .qrcode canvas {
-      height: 100% !important;
     }
   </style>
 
@@ -246,8 +156,8 @@
           <div class="dept-name">UCT Computer Science</div>
           <h2>CALENDAR</h2>
           <h2><span class="inverted-colors">OF</span> EVENTS</h2>
-        </html>￼
-
+        </html>
+        ￼
 
         <container html:id="calendar-container">
           <refresh>

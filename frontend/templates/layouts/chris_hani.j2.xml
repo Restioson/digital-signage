@@ -33,7 +33,7 @@
       background-size: cover;
       display: grid;
       grid-template-rows: auto 1fr 1fr auto;
-      grid-gap: 1em;
+      grid-gap: 16px;
     }
 
     #main-page > * {
@@ -83,10 +83,6 @@
       -webkit-text-stroke-color: black;
     }
 
-    #stream {
-      flex-grow: 2;
-    }
-
     #loadshedding-page {
       background: var(--bg-loadshedding-url) no-repeat center center fixed;
       -webkit-background-size: cover;
@@ -123,17 +119,15 @@
         </container>
       </container>
 
-      <container html:id="stream">
-        <content-stream
-          fetch-amount="{{ fetch_amount }}"
-          secs-per-page="{{ content_rotation_secs }}"
-          page-size="{{ page_size }}"
-        >
-          {% for stream in streams %}
-            <stream id="{{ stream }}" />
-          {% endfor %}
-        </content-stream>
-      </container>
+      <content-stream
+        fetch-amount="{{ fetch_amount }}"
+        secs-per-page="{{ content_rotation_secs }}"
+        page-size="{{ page_size }}"
+      >
+        {% for stream in streams %}
+          <stream id="{{ stream }}" />
+        {% endfor %}
+      </content-stream>
 
       <clock html:id="time-clock" format="{{ time_format|safe }}" />
     </container>
