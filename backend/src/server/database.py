@@ -484,14 +484,20 @@ class DatabaseController:
                 ),
             )
 
+        ctx = flask.current_app.app_context()
         Timer(
             60,
-            lambda: self.delete_file_by_name_and_department(
-                dep_file.name, dep_file.department_id
-            ),
+            lambda: DatabaseController.delete_temp_file(ctx, dep_file),
         ).start()
 
         return cursor.lastrowid
+
+    @staticmethod
+    def delete_temp_file(app_context, file):
+        with app_context:
+            DatabaseController.get().delete_file_by_name_and_department(
+                file.name, file.department_id
+            )
 
     def fetch_file_by_id(self, filename: str, department_id: int) -> Optional[File]:
         """Fetch a given piece of content from the database. By default, the blob

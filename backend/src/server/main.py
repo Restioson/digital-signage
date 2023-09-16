@@ -69,7 +69,7 @@ def create_app(testing=False):
 
 
 def repeat_update_loadshedding(interval, app):
-    app.push()
-    while True:
-        Loadshedding.update_loadsheding_schedule(1, app)
-        time.sleep(interval)
+    with app:
+        while True:
+            Loadshedding.update_loadshedding_schedule(1, app)
+            time.sleep(interval)

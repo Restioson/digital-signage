@@ -21,7 +21,7 @@ class Loadshedding:
     # if flask.current_app.config["TESTING"]: use ESP sample endpoint!
 
     @staticmethod
-    def update_loadsheding_schedule(region, app_current):
+    def update_loadshedding_schedule(region, app_current):
         host = "developer.sepush.co.za"
         areaid = Loadshedding.regions[region - 1]
         if flask.current_app.config["TESTING"]:
