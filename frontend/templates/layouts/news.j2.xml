@@ -1,0 +1,163 @@
+<template>
+  <name>News</name>
+
+  <properties>
+    <property>
+      <name>Content feeds</name>
+      <variable>streams</variable>
+      <type>content_streams</type>
+    </property>
+
+    <property>
+      <name>Department name</name>
+      <variable>department_name</variable>
+      <type>string</type>
+      <default>UCT School of IT</default>
+    </property>
+
+    <property>
+      <name>Department colour</name>
+      <variable>department_color</variable>
+      <type>color</type>
+      <default>#d86613</default>
+    </property>
+
+    <advanced>
+      <group>
+        <name>Colours</name>
+
+        <property>
+          <name>Theme colour</name>
+          <variable>theme_color</variable>
+          <type>color</type>
+          <default>#003eaa</default>
+        </property>
+
+        <property>
+          <name>Clock text colour</name>
+          <variable>clock_text_color</variable>
+          <type>color</type>
+          <default>#000000</default>
+        </property>
+
+        <property>
+          <name>Content title colour</name>
+          <variable>content_title_color</variable>
+          <type>color</type>
+          <default>#ffffff</default>
+        </property>
+
+        <property>
+          <name>Content body colour</name>
+          <variable>content_body_color</variable>
+          <type>color</type>
+          <default>#000000</default>
+        </property>
+      </group>
+
+      <property>
+        <name>Sidebar logo</name>
+        <variable>sidebar_logo</variable>
+        <type>string</type>
+        <default
+          ><![CDATA[https://upload.wikimedia.org/wikipedia/en/7/7c/University_of_Cape_Town_logo.svg]]></default
+        >
+      </property>
+
+      <property>
+        <name>Time format</name>
+        <variable>time_format</variable>
+        <type>xml-attribute</type>
+        <default>
+          <![CDATA[ [<div class='day'>]dddd[</div>] [<div class='date'>]D MMMM
+          YYYY[</div>] [<div class='time'>]HH:mm:ss[</div>] ]]>
+        </default>
+      </property>
+
+      <group>
+        <name>Content</name>
+
+        <property>
+          <name>Total number of posts to fetch</name>
+          <variable>fetch_amount</variable>
+          <type>number</type>
+          <default>9</default>
+        </property>
+
+        <property>
+          <name>Number of posts to display per page (secs)</name>
+          <variable>page_size</variable>
+          <type>number</type>
+        </property>
+
+        <property>
+          <name>Time per page of posts (secs)</name>
+          <variable>rotation_secs</variable>
+          <type>number</type>
+        </property>
+      </group>
+    </advanced>
+  </properties>
+
+  <page>
+    {# - broken with the template literals #}
+    <!-- prettier-ignore -->
+    <style>
+        @import url("/static/layouts/cs_layouts.css");
+
+        :host {
+            --theme-color: {{ theme_color }};
+            --theme-color-lighter: color-mix(in srgb, var(--theme-color) 25%, white);
+            --department-color: {{ department_color }};
+            --clock-text-color: {{ clock_text_color }};
+            --content-title-color: {{ content_title_color }};
+            --content-body-color: {{ content_body_color }};
+        }
+    </style>
+
+    <style>
+      .content-stream {
+        display: grid;
+        grid-auto-rows: 1fr;
+        flex: 1;
+        margin: var(--content-gap);
+        color: var(--content-body-color);
+      }
+
+      .free-form-content {
+        background: var(--theme-color-lighter);
+        border: none;
+      }
+
+      .text-title,
+      .caption-title {
+        color: var(--content-title-color);
+        font-weight: normal;
+        background-color: var(--theme-color);
+      }
+    </style>
+
+    <container html:class="sidebar">
+      <html>
+        <img src="{{ sidebar_logo }}" />
+      </html>
+
+      <clock format="{{ time_format }}" />
+    </container>
+
+    <html html:class="header">
+      <div class="dept-name">{{ department_name }}</div>
+      <h2 class="inverted-colors">NEWS</h2>
+    </html>
+
+    <content-stream
+      secs-per-page="{{ rotation_secs }}"
+      page-size="{{ page_size }}"
+      fetch-amount="{{ fetch_amount }}"
+    >
+      {% for stream in streams %}
+        <stream id="{{ stream }}" />
+      {% endfor %}
+    </content-stream>
+  </page>
+</template>

@@ -14,7 +14,13 @@
       setupPostForms,
       setupBackButton,
     } from "{{ url_for('static', filename='config.mjs') }}";
-    setupPostForms();
+    setupPostForms(function (res) {
+      if (res.id === "response needed") {
+        return `Response: ${res.response}`;
+      } else {
+        return `Successfully submitted (id: ${res.id})`;
+      }
+    });
     setupBackButton();
   </script>
   <button type="button" id="backButton">Back</button>

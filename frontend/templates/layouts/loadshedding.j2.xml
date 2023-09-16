@@ -1,0 +1,52 @@
+<template>
+  <name>Loadshedding</name>
+
+  <properties>
+    <property>
+      <type>string</type>
+      <variable>bg_loadshedding_url</variable>
+      <name>Background image (URL)</name>
+      <default>
+        <![CDATA[https://media.istockphoto.com/id/1408155641/photo/concept-of-loadshedding.jpg?s=612x612&w=0&k=20&c=yjAcwlmeUfjxW62emflmKoIQ3yjyBowK7H4JdlliIIg=]]>
+      </default>
+    </property>
+
+    <property>
+      <type>string</type>
+      <variable>font_color</variable>
+      <name>Text color</name>
+      <default>lightgray</default>
+    </property>
+  </properties>
+
+  <page>
+    <!-- prettier-ignore -->
+    <style>
+      :host {
+        --bg-loadshedding-url: url({{ bg_loadshedding_url|safe }});
+        --font-color: {{ font_color }};
+      }
+    </style>
+
+    <style>
+      :host {
+        background: var(--bg-loadshedding-url) no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        color: var(--font-color);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .loadshedding {
+        border: 0;
+        font-size: 2.5rem;
+      }
+    </style>
+    <loadshedding />
+  </page>
+</template>

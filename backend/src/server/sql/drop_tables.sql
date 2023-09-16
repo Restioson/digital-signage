@@ -5,3 +5,5 @@ DROP TABLE IF EXISTS display_groups;
 DROP TABLE IF EXISTS content_streams;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS loadshedding_schedules;
+DROP TABLE IF EXISTS files;
+DROP TABLE IF EXISTS templates;

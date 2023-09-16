@@ -16,3 +16,7 @@
 .custom-page-container > button {
   height: fit-content;
 }
+
+textarea {
+  width: 100%;
+}

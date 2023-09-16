@@ -1,0 +1,52 @@
+<template>
+  <name>Lecturers in department</name>
+  <properties>
+    <property>
+      <name>Background color</name>
+      <variable>bg_color</variable>
+      <type>color</type>
+      <default>#d86613</default>
+    </property>
+
+    <property>
+      <name>Text color</name>
+      <variable>text_color</variable>
+      <type>color</type>
+      <default>#000000</default>
+    </property>
+
+    <advanced>
+      <property>
+        <name>Lecturers per page</name>
+        <variable>page_size</variable>
+        <type>number</type>
+        <default>16</default>
+      </property>
+
+      <property>
+        <name>Time per page of lecturers (secs)</name>
+        <variable>rotation_secs</variable>
+        <type>number</type>
+        <default>10</default>
+      </property>
+    </advanced>
+  </properties>
+
+  <page>
+    <!-- prettier-ignore -->
+    <style>
+      :host {
+        background: {{ bg_color }};
+        color: {{ text_color }};
+      }
+
+      .department {
+          grid-template-columns: repeat(4, 1fr);
+      }
+    </style>
+    <department
+      secs-per-page="{{ rotation_secs }}"
+      page-size="{{ page_size }}"
+    />
+  </page>
+</template>

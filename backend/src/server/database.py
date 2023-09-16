@@ -1,10 +1,11 @@
 import json
+import os
 import sqlite3
 import time
 from typing import Optional
 import flask
 from server import free_form_content
-from server.display_group import DisplayGroup
+from server.display_group import DisplayGroup, PageTemplate
 from server.free_form_content import FreeFormContent, BinaryContent
 from server.department import Person, Department, File
 from server.free_form_content.content_stream import ContentStream
@@ -55,6 +56,20 @@ class DatabaseController:
         if len(self.fetch_all_departments()) == 0:
             with app.open_resource("sql/add_default_data.sql", mode="r") as f:
                 self.db.cursor().executescript(f.read())
+
+        # Wipe all templates if debugging (but not in tests as DB is already wipe)
+        # This makes hot reloading work for them too
+        if app.debug and not app.config["TESTING"]:
+            self.db.cursor().executescript("DELETE FROM templates;")
+
+        if len(self.fetch_all_page_templates()) == 0:
+            path_prefix = "" if os.getcwd().endswith("frontend") else "frontend/"
+            for path in os.scandir(f"{path_prefix}templates/layouts"):
+                if not path.is_file():
+                    continue
+
+                with open(path) as f:
+                    self.add_page_template(f.read())
 
     def post_content(self, content: FreeFormContent) -> (int, int):
         """Insert the given FreeFormContent and returns the inserted row id"""
@@ -493,3 +508,26 @@ class DatabaseController:
                 ),
             )
         return cursor.rowcount == 1
+
+    def fetch_all_page_templates(self) -> list[PageTemplate]:
+        """Return all page templates in the database"""
+        cursor = self.db.cursor()
+        cursor.row_factory = PageTemplate.from_sql
+        return list(cursor.execute("SELECT id, xml FROM templates"))
+
+    def fetch_page_template_by_id(self, template_id: int) -> Optional[PageTemplate]:
+        cursor = self.db.cursor()
+        cursor.row_factory = PageTemplate.from_sql
+        return next(
+            cursor.execute(
+                "SELECT id, xml FROM templates WHERE id = ?", (template_id,)
+            ),
+            None,
+        )
+
+    def add_page_template(self, template_xml: str) -> int:
+        """Adds the given page template, returning its id"""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute("INSERT INTO templates (xml) VALUES (?)", (template_xml,))
+        return cursor.lastrowid

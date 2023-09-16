@@ -7,10 +7,94 @@
   {{ css('config/display_groups/add') }}
 {% endblock %}
 
+{%- macro render_property(property) -%}
+  {%- if property.type == "string" -%}
+    <label
+      >{{ property.name }}
+      <input
+        type="text"
+        data-variable-name="{{ property.variable }}"
+        value="{{ (property.default or '')|escape }}"
+      />
+    </label>
+  {%- elif property.type == "color" -%}
+    <label
+      >{{ property.name }}
+      <input
+        type="color"
+        data-variable-name="{{ property.variable }}"
+        value="{{ property.default }}"
+      />
+    </label>
+  {%- elif property.type == "content_streams" -%}
+    <label
+      >{{ property.name }}:
+      <select data-variable-name="{{ property.variable }}" multiple>
+        <optgroup label="Public">
+          {%- for stream in streams.public -%}
+            <option value="{{ stream.id }}">{{ stream.name }}</option>
+          {%- endfor -%}
+        </optgroup>
+
+        {%- for dept, streams in streams.by_department.items() -%}
+          <optgroup label="Department: {{ dept }}">
+            {%- for stream in streams -%}
+              <option value="{{ stream.id }}">{{ stream.name }}</option>
+            {%- endfor -%}
+          </optgroup>
+        {%- endfor -%}
+
+        {%- for group, streams in streams.by_display_group.items() -%}
+          <optgroup label="Display group: {{ group }}">
+            {%- for stream in streams -%}
+              <option value="{{ stream.id }}">{{ stream.name }}</option>
+            {%- endfor -%}
+          </optgroup>
+        {%- endfor -%}
+      </select>
+    </label>
+  {%- elif property.type in ["html", "xml-attribute"] -%}
+    <label
+      >{{ property.name }}
+      <textarea data-variable-name="{{ property.variable }}" rows="5">
+{{ (property.default or '')|escape }}</textarea
+      >
+    </label>
+  {%- elif property.type == "number" -%}
+    <label
+      >{{ property.name }}
+      <input
+        type="number"
+        data-variable-name="{{ property.variable }}"
+        value="{{ (property.default or '')|escape }}"
+      />
+    </label>
+  {%- endif -%}
+{%- endmacro -%}
+
+{%- macro render_group(group) -%}
+  <fieldset>
+    <legend>{{ group.name }}</legend>
+    {%- for property in group.properties -%}
+      {{ render_property(property) }}
+    {%- endfor -%}
+  </fieldset>
+{%- endmacro -%}
+
+{%- macro render_props_and_groups(vals) -%}
+  {%- for val in vals -%}
+    {%- if val|is_property -%}
+      {{ render_property(val) }}
+    {%- else -%}
+      {{ render_group(val) }}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endmacro -%}
+
 {% block content %}
   <script type="module">
     import { main } from "{{ url_for('static', filename='config/display_groups/add.mjs') }}";
-    main();
+    main("{{ department_id }}");
   </script>
 
 
@@ -26,62 +110,40 @@
     <label for="name">Name:</label>
     <input id="name" name="name" type="text" required />
 
-    <label for="template">Template:</label>
-    <select id="template" name="template">
-      {%- for name, template in templates -%}
-        <option value="{{ loop.index }}">{{ name }}</option>
-      {%- endfor -%}
-      <option value="custom">[Custom]</option>
-    </select>
+    <template id="new-page-template">
+      <fieldset>
+        <legend>Page</legend>
 
-    {%- for name, template in templates -%}
-      {# <!-- [html-validate-disable-next attribute-allowed-values,valid-id] --> doesn't understand J2 syntax #}
-      <fieldset id="template-{{ loop.index }}" class="template-fieldset">
-        <legend>{{ name }} Template</legend>
-        {%- for property in template.properties -%}
-          {%- if property.type == "string" -%}
-            <label
-              >{{ property.pretty_name }}
-              <input
-                type="text"
-                name="template-{{ property.variable_name }}"
-                value="{{ (property.default or '')|escape }}"
-              />
-            </label>
-          {%- elif property.type == "content_streams" -%}
-            {{ content_stream(content_streams, "template-" + property.variable_name, true) }}
-          {%- elif property.type == "pages" -%}
-            <fieldset>
-              <legend>{{ property.pretty_name }}</legend>
-              <button
-                type="button"
-                class="add-page"
-                data-variable-name="{{ property.variable_name }}"
-              >
-                Add page
-              </button>
-            </fieldset>
-          {%- endif -%}
+        <label
+          >Template:
+          <select class="template-select">
+            {%- for template in templates -%}
+              <option value="{{ template.id }}">{{ template.name }}</option>
+            {%- endfor -%}
+          </select>
+        </label>
+
+        {%- for template in templates -%}
+          <fieldset class="template-{{ template.id }}">
+            <legend>{{ template.name }}</legend>
+
+            {{ render_props_and_groups(template.properties.root) }}
+
+            {%- if template.properties.advanced -%}
+              <details>
+                <summary>Advanced</summary>
+                {{ render_props_and_groups(template.properties.advanced) }}
+              </details>
+            {%- endif -%}
+          </fieldset>
         {%- endfor -%}
-      </fieldset>
-    {%- endfor -%}
 
-    <fieldset id="template-custom" class="template-fieldset">
-      <legend>Custom display</legend>
-      <label for="layout_xml">Layout XML:</label>
-      <!-- [html-validate-disable no-unknown-elements, element-permitted-content, attr-spacing, close-attr, no-self-closing, element-name, element-permitted-parent] -->
-      <textarea id="layout_xml" name="layout_xml" rows="10">
-        <content-and-caption>
-            <content>
-                <clock/>
-            </content>
-            <caption>
-                <body>Current time</body>
-            </caption>
-        </content-and-caption>
-        </textarea
-      >
-    </fieldset>
+        <button type="button" class="delete-page">Delete page</button>
+      </fieldset>
+    </template>
+
+    <button type="button" id="add-page">Add page</button>
+
     <button type="submit">Submit</button>
     <p hidden id="status-message"></p>
   </form>

@@ -139,3 +139,8 @@ img {
   display: block;
   margin: 0 auto;
 }
+
+details {
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,162 @@
+<template>
+  <name>Calendar - Chris Hani layout</name>
+
+  <properties>
+    <property>
+      <name>Display name</name>
+      <variable>room_name</variable>
+      <type>string</type>
+      <default>my room</default>
+    </property>
+
+    <property>
+      <name>Background image (URL)</name>
+      <variable>bg_url</variable>
+      <type>string</type>
+      <default>
+        <![CDATA[https://static.vecteezy.com/system/resources/previews/008/139/407/large_2x/the-scientists-chemists-researcher-discover-the-chemical-formula-write-on-whiteboard-in-laboratory-the-researcher-discover-vaccine-or-drug-for-treatment-patients-infected-covid19-photo.jpg]]>
+      </default>
+    </property>
+
+    <property>
+      <name>Calendar embed code (iframe)</name>
+      <variable>calendar_iframe</variable>
+      <type>html</type>
+      <default>
+        <![CDATA[<iframe
+        src="https://calendar.google.com/calendar/embed?height=600&wkst=2&bgcolor=%23ffffff&ctz=Africa%2FJohannesburg&showTitle=0&showNav=0&showDate=0&showPrint=0&showTabs=0&mode=AGENDA&showTz=0&showCalendars=0&src=MDRkZjNjZTQ2M2EzNjgzZmNhYmY1NWJiYTY4ZWZlOTNmMWU0ZTMyZTQ2MzNlMDBiYjRhZDY0YWI0ODMxZjQwNUBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&color=%23795548"
+        style="border:solid 1px #777" width="800" height="600"frameborder="0"
+        scrolling="no"></iframe>]]>
+      </default>
+    </property>
+
+    <advanced>
+      <property>
+        <name>Base font size (px or pt)</name>
+        <variable>font_size</variable>
+        <type>string</type>
+        <default>16px</default>
+      </property>
+
+      <group>
+        <name>Calendar</name>
+
+        <property>
+          <name>Calendar scale (e.g 2 for 2x scale)</name>
+          <variable>calendar_scale</variable>
+          <type>number</type>
+          <default>3</default>
+        </property>
+      </group>
+
+      <group>
+        <name>Time and date</name>
+
+        <property>
+          <name>Date format</name>
+          <variable>date_format</variable>
+          <type>xml-attribute</type>
+          <default>
+            <![CDATA[ [<span class='date'>]D[</span>] [<span
+            class='month'>]MMMM[</span>] [<br>] [<span
+            class='day'>]dddd[</span>] ]]>
+          </default>
+        </property>
+
+        <property>
+          <name>Time format</name>
+          <variable>time_format</variable>
+          <type>xml-attribute</type>
+          <default>h:mm:ss a</default>
+        </property>
+      </group>
+    </advanced>
+  </properties>
+
+  <page>
+    <!-- prettier-ignore -->
+    <style>
+      #calendar {
+        --scale: {{ calendar_scale }};
+      }
+
+      :host {
+        --bg-url: url({{ bg_url|safe }});
+        font-size: {{ font_size }};
+      }
+    </style>
+
+    <style>
+      @import url("/static/display.css");
+
+      :host {
+        padding-left: 25px;
+        padding-right: 25px;
+        padding-bottom: 5px;
+        background: var(--bg-url) no-repeat center center fixed;
+        background-size: cover;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        grid-auto-columns: auto 1fr;
+        grid-gap: 16px;
+      }
+
+      :host > * {
+        min-height: 0;
+        min-width: 0;
+        grid-column: span 2;
+      }
+
+      #header-text {
+        text-align: right;
+        color: blue;
+        font-size: 4em;
+      }
+
+      #calendar-date {
+        text-align: left;
+        font-weight: bold;
+        font-size: 3em;
+        grid-column: 1;
+      }
+
+      #calendar-date .month {
+        margin-left: 5px;
+        font-size: 0.9em;
+        color: purple;
+      }
+
+      #calendar-date .day {
+        font-size: 0.8em;
+        color: purple;
+      }
+
+      #calendar {
+        grid-column: 2;
+      }
+
+      #time-clock {
+        text-align: left;
+        font-weight: bold;
+        font-size: 4em;
+        color: black;
+        -webkit-text-fill-color: white;
+        -webkit-text-stroke-width: 1px;
+        -webkit-text-stroke-color: black;
+      }
+    </style>
+
+    <html html:id="header-text">
+      {{ room_name }}
+    </html>
+
+    <clock html:id="calendar-date" format="{{ date_format }}" />
+    <refresh>
+      <html html:id="calendar" html:class="scaled-iframe">
+        {{ calendar_iframe }}
+      </html>
+    </refresh>
+
+    <clock html:id="time-clock" format="{{ time_format }}" />
+  </page>
+</template>

@@ -1,6 +1,8 @@
-export function setupPostForms () {
+export function setupPostForms (createSuccessText) {
   for (const form of document.getElementsByClassName('post-form')) {
-    form.addEventListener('submit', submitPost)
+    form.addEventListener('submit', event =>
+      submitPost(event, createSuccessText)
+    )
   }
 }
 
@@ -10,18 +12,21 @@ export function setupBackButton () {
   })
 }
 
-export function choiceOfFieldset (selectorId, fieldsetClass, fieldsetIdPrefix) {
-  const selector = document.getElementById(selectorId)
-  const form = selector.closest('form')
-
+export function choiceOfFieldset (
+  selector,
+  fieldsetsContainer,
+  fieldsetClassPrefix
+) {
   function change () {
-    for (const element of form.querySelectorAll(`fieldset.${fieldsetClass}`)) {
+    for (const element of fieldsetsContainer.querySelectorAll(
+      ':scope > fieldset'
+    )) {
       element.hidden = true
       element.disabled = true
     }
 
-    const enabled = document.getElementById(
-      `${fieldsetIdPrefix}-${selector.value}`
+    const enabled = fieldsetsContainer.querySelector(
+      `.${fieldsetClassPrefix}-${selector.value}`
     )
     enabled.hidden = false
     enabled.disabled = false
@@ -45,7 +50,7 @@ class ApiError extends Error {
  * @param event the HTML form submit event
  * @returns {Promise<void>}
  */
-async function submitPost (event) {
+async function submitPost (event, createText) {
   event.preventDefault()
   const form = event.target
 
@@ -65,15 +70,12 @@ async function submitPost (event) {
       throw new ApiError(await res.text())
     }
     const responseMessage = await res.json()
-    if (responseMessage.id === 'response needed') {
-      postStatusMessage.classList.add('success')
-      postStatusMessage.innerText = `Response: ${responseMessage.response}`
-    } else {
-      postStatusMessage.classList.add('success')
-      postStatusMessage.innerText = `Successfully submitted (id: ${
-        responseMessage.id
-      })`
-    }
+
+    const createSuccessText =
+      createText || (res => `Successfully submitted (id: ${res.id})`)
+    postStatusMessage.classList.add('success')
+    postStatusMessage.innerHTML = ''
+    postStatusMessage.append(createSuccessText(responseMessage))
   } catch (err) {
     postStatusMessage.classList.add('error')
     const errorBox = document.createElement('pre')

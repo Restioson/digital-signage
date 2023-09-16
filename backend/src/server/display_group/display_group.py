@@ -1,9 +1,10 @@
 import sqlite3
 from typing import Optional
 
+from flask import render_template
+from markupsafe import Markup, escape
 from werkzeug.datastructures import ImmutableMultiDict
 
-from server.display_group.template import TEMPLATES
 from server.free_form_content.content_stream import ContentStream
 
 
@@ -25,21 +26,50 @@ class DisplayGroup:
         self.id = group_id
 
     @staticmethod
-    def from_form(form: ImmutableMultiDict):
-        if form.get("layout_xml"):
-            layout_xml = form["layout_xml"]
-        else:
-            template = TEMPLATES[int(form["template"]) - 1][1]
+    def from_form(form: ImmutableMultiDict, db):
+        pages = {
+            prop[14:]: {
+                "template": db.fetch_page_template_by_id(form.get(prop)),
+                "properties": dict(),
+            }
+            for prop in form.keys()
+            if prop.startswith("template-page-")
+        }
 
-            properties = dict()
-            for prop in form.keys():
-                if prop.startswith("template-"):
-                    if prop.endswith("[]"):
-                        properties[prop[9:-2]] = form.getlist(prop)
-                    else:
-                        properties[prop[9:]] = form[prop]
+        for prop in form.keys():
+            if prop.startswith("page-"):
+                tokens = prop.split("-", maxsplit=4)
+                page_no = tokens[1]
+                variable_name = tokens[3]
+                page = pages[page_no]
 
-            layout_xml = template.render_template(properties)
+                if variable_name.endswith("[]"):
+                    val = form.getlist(prop)
+                else:
+                    val = form[prop]
+
+                template_property = page["template"].properties.get_property(
+                    variable_name
+                )
+
+                if not template_property:
+                    raise RuntimeError(f"Unknown template property {variable_name}")
+
+                typ = template_property.type
+
+                if typ == "html":
+                    val = Markup(val)
+                elif typ == "xml-attribute":
+                    val = escape(val)
+
+                page["properties"][variable_name] = val
+
+        pages = [
+            Markup(page["template"].render_template(page["properties"]))
+            for page_no, page in sorted(pages.items())
+        ]
+
+        layout_xml = render_template("display_layout.j2.xml", pages=pages)
 
         return DisplayGroup(
             name=form["name"],

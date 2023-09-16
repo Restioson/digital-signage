@@ -107,20 +107,6 @@ def test_post_captioned_link(client):
         data={
             "type": "link",
             "url": "testurl",
-            "caption_title": "Becomes body",
-            "content_stream": "1",
-        },
-    )
-    assert res.json["id"] is not None
-    assert res.json["posted"] is not None
-
-    time.sleep(1)
-
-    res = client.post(
-        "/api/content",
-        data={
-            "type": "link",
-            "url": "testurl",
             "caption_title": "Title",
             "caption_body": "Body",
             "content_stream": "1",
@@ -131,10 +117,9 @@ def test_post_captioned_link(client):
 
     res = client.get("/api/content?stream=1")
     content = res.json["content"]
-    assert len(content) == 3
+    assert len(content) == 2
 
-    assert content[2]["caption"]["body"] == "Test caption"
-    assert content[1]["caption"]["body"] == "Becomes body"
+    assert content[1]["caption"]["body"] == "Test caption"
     assert content[0]["caption"]["title"] == "Title"
     assert content[0]["caption"]["body"] == "Body"
 

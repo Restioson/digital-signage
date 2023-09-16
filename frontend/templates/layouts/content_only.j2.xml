@@ -1,5 +1,0 @@
-<content-stream secs-per-page="{{ rotation_secs }}" page-size="{{ page_size }}">
-  {% for stream in streams %}
-    <stream id="{{ stream }}" />
-  {% endfor %}
-</content-stream>

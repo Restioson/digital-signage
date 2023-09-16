@@ -1,10 +1,51 @@
 import { choiceOfFieldset, setupPostForms } from '../../config.mjs'
 
-export function main () {
-  setupPostForms()
-  choiceOfFieldset('template', 'template-fieldset', 'template')
+let pageNoCounter = 0
+
+export function main (departmentId) {
+  setupPostForms(function (res) {
+    const text = document.createElement('span')
+    text.append('Successfully submitted ')
+
+    const a = document.createElement('a')
+    a.append('(view here)')
+    a.href = `/display/${departmentId}/${res.id}`
+    text.append(a)
+
+    return text
+  })
   setupPreview()
-  setupPagesProperties()
+  setupAddPage()
+}
+
+function setupAddPage () {
+  document.getElementById('add-page').addEventListener('click', function () {
+    const pageNo = pageNoCounter++
+    const template = document
+      .getElementById('new-page-template')
+      .content.cloneNode(true)
+    const fieldset = template.querySelector('fieldset')
+
+    const templateSelect = template.querySelector('.template-select')
+    templateSelect.name = `template-page-${pageNo}`
+    choiceOfFieldset(templateSelect, fieldset, 'template')
+
+    for (const elt of template.querySelectorAll('[data-variable-name]')) {
+      elt.name = `page-${pageNo}-template-${elt.dataset.variableName}`
+    }
+
+    const form = document.getElementById('display-group-form')
+
+    fieldset
+      .querySelector('button.delete-page')
+      .addEventListener('click', () => {
+        fieldset.remove()
+        form.dispatchEvent(new Event('change'))
+      })
+
+    form.insertBefore(template, document.getElementById('add-page'))
+    form.dispatchEvent(new Event('change'))
+  })
 }
 
 function setupPreview () {
@@ -21,33 +62,4 @@ function setupPreview () {
 
   form.addEventListener('change', change)
   change()
-}
-
-function setupPagesProperties () {
-  for (const addButton of document.getElementsByClassName('add-page')) {
-    addButton.addEventListener('click', function () {
-      const textarea = document.createElement('textarea')
-      textarea.rows = 10
-      textarea.name = `template-${addButton.dataset.variableName}[]`
-      textarea.value = '<p>Hello there!</p>'
-
-      const label = document.createElement('label')
-      label.innerText = 'Custom page'
-      label.append(textarea)
-
-      const container = document.createElement('div')
-      container.className = 'custom-page-container'
-      container.append(label)
-
-      const deleteButton = document.createElement('button')
-      deleteButton.innerText = 'Delete'
-      deleteButton.addEventListener('click', function () {
-        container.remove()
-      })
-      container.append(deleteButton)
-
-      const fieldset = addButton.parentElement
-      fieldset.append(container)
-    })
-  }
 }

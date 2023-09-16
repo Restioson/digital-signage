@@ -1,0 +1,5 @@
+<rotation html:id="pages">
+  {%- for page in pages -%}
+    {{ page }}
+  {%- endfor -%}
+</rotation>

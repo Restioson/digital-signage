@@ -35,19 +35,11 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
     content_type = form["type"]
     stream = int(form["content_stream"])
 
-    # Replace captions with title only (empty or missing body) to be body only,
-    # as this is probably what the user wanted
-    has_title = form_has_field(form, "caption_title")
-    has_body = form_has_field(form, "caption_body")
-    if has_title and not has_body:
-        form["caption_body"] = form["caption_title"]
-        del form["caption_title"]
-
     caption = None
-    if form_has_field(form, "caption_body"):
+    if form_has_field(form, "caption_body") or form_has_field(form, "caption_title"):
         caption = Caption(
-            form["caption_title"] if "caption_title" in form else None,
-            form["caption_body"],
+            form.get("caption_title"),
+            form.get("caption_body"),
         )
 
     if content_type == "text":
@@ -89,8 +81,8 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
 
     caption = None
     if "caption" in data:
-        title = data["caption"]["title"] if "title" in data["caption"] else None
-        caption = Caption(title, data["caption"]["body"])
+        title = data["caption"].get("title")
+        caption = Caption(title, data["caption"].get("body"))
 
     if content_type == "text":
         assert blob_data is None, "Text content should not have any blob data"

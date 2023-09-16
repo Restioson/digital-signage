@@ -12,7 +12,8 @@ export class Clock extends DeserializableWidget {
    */
   constructor ({ format = 'MMMM Do, h:mm:ss a' }) {
     super()
-    this.format = format
+    const doc = new window.DOMParser().parseFromString(format, 'text/html')
+    this.format = doc.documentElement.textContent
     this.text = moment().format(this.format)
   }
 

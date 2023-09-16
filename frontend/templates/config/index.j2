@@ -14,7 +14,11 @@
       setupPostForms,
     } from "{{ url_for('static', filename='config.mjs') }}";
     setupPostForms();
-    choiceOfFieldset("type", "content-fieldset", "fields-for");
+    choiceOfFieldset(
+      document.getElementById("type"),
+      document.getElementById("post-content-form"),
+      "fields-for"
+    );
   </script>
 
   <a href="/config/content_stream/add">Add public content stream</a>
@@ -25,6 +29,7 @@
       method="post"
       class="post-form"
       enctype="multipart/form-data"
+      id="post-content-form"
     >
       <h3>Post content</h3>
 
@@ -54,7 +59,7 @@
         </label>
       {%- endmacro -%}
 
-      <fieldset class="content-fieldset" id="fields-for-text">
+      <fieldset class="fields-for-text">
         <legend>Text post</legend>
         <label for="title">Title:</label>
         <input id="title" name="title" type="text" />
@@ -62,36 +67,36 @@
         <input id="body" name="body" type="text" />
       </fieldset>
 
-      <fieldset class="content-fieldset" id="fields-for-local_image">
+      <fieldset class="fields-for-local_image">
         <legend>Image (upload file)</legend>
         <label for="image_data">Attach file:</label>
         <input type="file" id="image_data" name="image_data" required />
         {{ caption() }}
       </fieldset>
 
-      <fieldset class="content-fieldset" id="fields-for-remote_image">
+      <fieldset class="fields-for-remote_image">
         <legend>Image (from URL)</legend>
         <label for="remote_image_url">Url:</label>
         <input type="url" id="remote_image_url" name="src" required />
         {{ caption() }}
       </fieldset>
 
-      <fieldset class="content-fieldset" id="fields-for-link">
+      <fieldset class="fields-for-link">
         <legend>Link</legend>
         <label for="link_url">Url:</label>
         <input type="url" id="link_url" name="url" />
         {{ caption() }}
       </fieldset>
 
-      <fieldset class="content-fieldset" id="fields-for-iframe_content">
-        <legend>iframe</legend>
+      <fieldset class="fields-for-iframe_content">
+        <legend>IFrame</legend>
         <label for="iframe_url">Url:</label>
         {# <!-- [html-validate-disable-next form-dup-name] --> only one is enabled at a time #}
         <input type="url" id="iframe_url" name="url" />
         {{ caption() }}
       </fieldset>
 
-      <fieldset class="content-fieldset" id="fields-for-qrcode_content">
+      <fieldset class="fields-for-qrcode_content">
         <legend>QR code post</legend>
         <label for="qrcode_content_url">Url:</label>
         {# <!-- [html-validate-disable-next form-dup-name] --> only one is enabled at a time #}

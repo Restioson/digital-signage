@@ -13,6 +13,7 @@ import { ScriptWidget } from '../script.mjs'
 import { StyleWidget } from '../style.mjs'
 import { RotatingContainer } from '../containers/rotating_container.mjs'
 import { StaticRefresh } from '../dynamic/static_refresh.mjs'
+import { Page } from '../containers/page.mjs'
 const { XMLParser } = await importFromNpm('fast-xml-parser')
 
 /**
@@ -52,7 +53,6 @@ export function deserializeWidgetFromTag (tag) {
   try {
     widget = deserializeWidgetRaw(tag)
   } catch (e) {
-    console.log(typeof tag.attributes)
     const attrs = Object.entries(tag.attributes).map(
       ([attr, val]) => `${attr}="${val}"`
     )
@@ -109,6 +109,8 @@ function deserializeWidgetRaw (tag) {
       return RotatingContainer.fromXML(tag)
     case 'refresh':
       return StaticRefresh.fromXML(tag)
+    case 'template':
+      return Page.fromXML(tag.typedChild('page'))
     default:
       throw new UnknownWidgetTypeError(tag.type)
   }
