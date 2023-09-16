@@ -68,10 +68,13 @@
         <name>Time format</name>
         <variable>time_format</variable>
         <type>xml-attribute</type>
+        <!-- prettier-ignore -->
         <default>
-          <![CDATA[ [<div class='day'>]dddd[</div>] [<div class='date'>]D MMMM
-          YYYY[</div>] [<div class='time'>]HH:mm:ss[</div>] ]]>
-        </default>
+<![CDATA[
+[<div class='day'>]dddd[</div>]
+[<div class='date'>]D MMMM YYYY[</div>]
+[<div class='time'>]HH:mm:ss[</div>]
+]]>        </default>
       </property>
 
       <group>

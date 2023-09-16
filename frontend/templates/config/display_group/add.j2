@@ -17,6 +17,36 @@
         value="{{ (property.default or '')|escape }}"
       />
     </label>
+  {%- elif property.type == "file" -%}
+    <label
+      >{{ property.name }}
+      <input type="file" data-variable-name="{{ property.variable }}" />
+    </label>
+  {%- elif property.type == "file_or_url" -%}
+    <fieldset>
+      <legend>{{ property.name }}</legend>
+      <label
+        >File or URL
+        <select class="select-file-or-url">
+          <option value="url" selected>URL</option>
+          <option value="file">File</option>
+        </select>
+      </label>
+
+      <input
+        aria-label="upload file"
+        class="input-for-file"
+        type="file"
+        data-variable-name="{{ property.variable }}"
+      />
+      <input
+        aria-label="input URL"
+        class="input-for-url"
+        type="url"
+        data-variable-name="{{ property.variable }}"
+        value="{{ property.default }}"
+      />
+    </fieldset>
   {%- elif property.type == "color" -%}
     <label
       >{{ property.name }}

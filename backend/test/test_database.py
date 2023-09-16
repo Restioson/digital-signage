@@ -4,7 +4,7 @@ import time
 import typing
 import pytest
 from server.database import DatabaseController
-from server.department import Department
+from server.department.department import Department
 from server.display_group import DisplayGroup
 from server.free_form_content import (
     Text,

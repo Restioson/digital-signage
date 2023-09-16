@@ -2,12 +2,15 @@ import json
 import os
 import sqlite3
 import time
+from threading import Timer
 from typing import Optional
 import flask
 from server import free_form_content
+from server.department.department import Department
+from server.department.file import File
+from server.department.person import Person
 from server.display_group import DisplayGroup, PageTemplate
 from server.free_form_content import FreeFormContent, BinaryContent
-from server.department import Person, Department, File
 from server.free_form_content.content_stream import ContentStream
 from server.grouped_content_streams import GroupedContentStreams
 
@@ -459,23 +462,42 @@ class DatabaseController:
             return db_user_data
 
     # uploading of arbitrary files by department:
-    def upload_department_files(self, dep_file: File) -> int:
-        """Insert the given file and returns the inserted row id"""
+    def upload_department_file(self, dep_file: File, temp=False) -> int:
+        """
+        Insert the given file and returns the inserted row id.
+
+        If temp is True, then the file will be deleted in 1 minute.
+        """
 
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO files "
-                "(filename, mime_type, file_content, department_id)"
-                " VALUES (?, ?, ?, ?)",
+                "REPLACE INTO files "
+                "(filename, mime_type, file_content, department_id, temp)"
+                " VALUES (?, ?, ?, ?, ?)",
                 (
                     dep_file.name,
                     dep_file.mime_type,
                     dep_file.file_data,
                     dep_file.department_id,
+                    temp,
                 ),
             )
+
+        ctx = flask.current_app.app_context()
+        Timer(
+            60,
+            lambda: DatabaseController.delete_temp_file(ctx, dep_file),
+        ).start()
+
         return cursor.lastrowid
+
+    @staticmethod
+    def delete_temp_file(app_context, file):
+        with app_context:
+            DatabaseController.get().delete_file_by_name_and_department(
+                file.name, file.department_id
+            )
 
     def fetch_file_by_id(self, filename: str, department_id: int) -> Optional[File]:
         """Fetch a given piece of content from the database. By default, the blob
@@ -497,11 +519,13 @@ class DatabaseController:
             None,
         )
 
-    def delete_file_by_id(self, filename: str, department_id: int) -> bool:
+    def delete_file_by_name_and_department(
+        self, filename: str, department_id: int
+    ) -> bool:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "DELETE FROM files WHERE " "department_id = ? AND filename = ?",
+                "DELETE FROM files WHERE department_id = ? AND filename = ?",
                 (
                     department_id,
                     filename,
