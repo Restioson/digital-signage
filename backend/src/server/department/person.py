@@ -2,6 +2,7 @@ import sqlite3
 from typing import Optional
 import PIL.Image
 import io
+import pandas as pd
 
 
 class Person:
@@ -64,20 +65,34 @@ class Person:
     @staticmethod
     def from_form(form: dict, files: dict):
         """forms person from data inputted in the configuration form"""
+        title = form["title"] if not pd.isna(form["title"]) else ""
+        full_name = form["name"] if not pd.isna(form["name"]) else ""
+        position = form["position"] if not pd.isna(form["position"]) else ""
+        office_hours = form["office_hours"] if not pd.isna(form["office_hours"]) else ""
+        office_location = (
+            form["office_location"] if not pd.isna(form["office_location"]) else ""
+        )
+        email = form["email"] if not pd.isna(form["email"]) else ""
+        phone = form["phone"] if not pd.isna(form["phone"]) else ""
+
         image_data = files["image_data"].read()
-        image = PIL.Image.open(io.BytesIO(image_data))
-        image.verify()
-        mime = image.get_format_mimetype()
+        if image_data:
+            image = PIL.Image.open(io.BytesIO(image_data))
+            image.verify()
+            mime = image.get_format_mimetype()
+        else:
+            mime = ""
+            image_data = ""
         return Person(
-            form["title"],
-            form["name"],
+            title,
+            full_name,
             mime,
             image_data,
-            form["position"],
-            form["office_hours"],
-            form["office_location"],
-            form["email"],
-            form["phone"],
+            position,
+            office_hours,
+            office_location,
+            email,
+            phone,
             lecturer_id=form.get("id"),
         )
 

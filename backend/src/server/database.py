@@ -242,8 +242,11 @@ class DatabaseController:
                 )
             )
             for person in dept.people:
-                image_data_base64 = base64.b64encode(person.image_data).decode("utf-8")
-                person.image_data = image_data_base64
+                if person.image_data:
+                    image_data_base64 = base64.b64encode(person.image_data).decode(
+                        "utf-8"
+                    )
+                    person.image_data = image_data_base64
 
         if dept and fetch_files:
             cursor = self.db.cursor()

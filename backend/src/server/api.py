@@ -159,36 +159,58 @@ def upload_table(department_id: int):
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
+
+    # Initialize zip_file as an empty ZipFile
+    zip_file = zipfile.ZipFile(io.BytesIO(), "r")
+
     try:
-        with zipfile.ZipFile(flask.request.files["images_folder"], "r") as zip_file:
-            excel_file = flask.request.files["add_table"]
-            df = pd.read_excel(excel_file, engine="openpyxl")
-            people = []
-            # Iterate through rows in the uploaded excel creating people
-            for index, row in df.iterrows():
+        if "images_folder" in flask.request.files:
+            # If images_folder is provided, set zip_file accordingly
+            zip_file = zipfile.ZipFile(flask.request.files["images_folder"], "r")
+
+        excel_file = flask.request.files["add_table"]
+        df = pd.read_excel(excel_file, engine="openpyxl")
+        people = []
+        # Iterate through rows in the uploaded excel creating people
+        for index, row in df.iterrows():
+            title = row["title"] if not pd.isna(row["title"]) else ""
+            full_name = row["full_name"] if not pd.isna(row["full_name"]) else ""
+            position = row["position"] if not pd.isna(row["position"]) else ""
+            office_hours = (
+                row["office_hours"] if not pd.isna(row["office_hours"]) else ""
+            )
+            office_location = (
+                row["office_location"] if not pd.isna(row["office_location"]) else ""
+            )
+            email = row["email"] if not pd.isna(row["email"]) else ""
+            phone = row["phone"] if not pd.isna(row["phone"]) else ""
+            try:
                 with zip_file.open(row["image_name"]) as image_file:
                     image_data = image_file.read()
                     image = PIL.Image.open(io.BytesIO(image_data))
                     image.verify()
                     mime_type = image.get_format_mimetype()
-                person = Person(
-                    row["title"],
-                    row["full_name"],
-                    mime_type,
-                    image_data,
-                    row["position"],
-                    row["office_hours"],
-                    row["office_location"],
-                    row["email"],
-                    row["phone"],
-                )
-                people.append(person)
-            # Seperate loops so that any error in the whole table
-            # is caught before any entry is added
-            # loop through people to add each to the table
-            db = DatabaseController.get()
-            for person in people:
-                db.upsert_person(person, department_id)
+            except Exception:
+                image_data = ""
+                mime_type = ""
+            person = Person(
+                title,
+                full_name,
+                mime_type,
+                image_data,
+                position,
+                office_hours,
+                office_location,
+                email,
+                phone,
+            )
+            people.append(person)
+        # Separate loops so that any error in the whole table
+        # is caught before any entry is added
+        # loop through people to add each to the table
+        db = DatabaseController.get()
+        for person in people:
+            db.upsert_person(person, department_id)
         return {
             "id": "response needed",
             "response": "Excel file is a valid file. Upload successful",

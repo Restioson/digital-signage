@@ -69,64 +69,66 @@ export class Person extends Widget {
     })
   }
 
-  static makeText(string,classname){
+  static makeText (string, classname, value) {
     const text = document.createElement('p')
     text.innerText = string
-    text.className=classname
+    text.className = classname
     return new Visibility({
-      visible: Boolean(text),
+      visible: Boolean(value),
       child: text
     })
   }
 
-  static makeHeader(string){
+  static makeHeader (string) {
     const text = document.createElement('h3')
     text.innerText = string
-    text.className='person_header'
+    text.className = 'person_header'
     return new Visibility({
       visible: Boolean(text),
       child: text
     })
   }
 
-  static makeImage(url){
+  static makeImage (url, value) {
     const imageElement = document.createElement('img')
     imageElement.src = url
-    imageElement.className="person_image"
-    return imageElement
+    imageElement.className = 'person_image'
+    return new Visibility({
+      visible: Boolean(value),
+      child: imageElement
+    })
   }
 
   build () {
-    return new Container({ children: [
-      makeHeader(`${this.title} ${this.name}`),
-      makeImage(`data:${this.mimeType};base64,${this.imageData}`),
-      makeText(`Position: ${this.position}`,"person_position" ),
-      makeText(`Office Hours: ${this.officeHours}`,"person_hours" ),
-      makeText(`Office Location: ${this.officeLocation}`,"person_location" ),
-      makeText(`Email: ${this.email}`,"person_email" ),
-      makeText(`Phone: ${this.phone}`,"person_phone" ),
-    ] })
-
-    // const title = document.createElement('h3')
-    // const body = document.createElement('p')
-    // const dataUrl = `data:${this.mimeType};base64,${this.imageData}`
-
-    // const imageElement = document.createElement('img')
-    // imageElement.src = dataUrl
-
-    // title.innerText = `${this.title} ${this.name}`
-    // body.innerText =
-    //   `Position: ${this.position}` +
-    //   `Office Hours: ${this.officeHours}` +
-    //   `Office Location: ${this.officeLocation}` +
-    //   `Email: ${this.email}` +
-    //   `Phone: ${this.phone}`
-
-    // return new Container({ children: [title, imageElement, body] })
+    return new Container({
+      children: [
+        Person.makeHeader(`${this.title} ${this.name}`),
+        Person.makeImage(
+          `data:${this.mimeType};base64,${this.imageData}`,
+          this.imageData
+        ),
+        Person.makeText(
+          `Position: ${this.position}`,
+          'person_position',
+          this.position
+        ),
+        Person.makeText(
+          `Office Hours: ${this.officeHours}`,
+          'person_hours',
+          this.officeHours
+        ),
+        Person.makeText(
+          `Office Location: ${this.officeLocation}`,
+          'person_location',
+          this.officeLocation
+        ),
+        Person.makeText(`Email: ${this.email}`, 'person_email', this.email),
+        Person.makeText(`Phone: ${this.phone}`, 'person_phone', this.phone)
+      ]
+    })
   }
 
   className () {
     return 'person'
   }
 }
-
