@@ -5,6 +5,8 @@ import { Root } from '../root.mjs'
 
 /**
  * A page is a widget which renders the children in their own shadow dom to encapsulate inline styles and so on.
+ *
+ * It does, however, add display.css.
  */
 export class Page extends DeserializableWidget {
   constructor ({ children }) {
@@ -15,6 +17,12 @@ export class Page extends DeserializableWidget {
   build () {
     const div = document.createElement('div')
     const shadow = div.attachShadow({ mode: 'open' })
+
+    const style = document.createElement('link')
+    style.rel = 'stylesheet'
+    style.href = '/static/display.css'
+    shadow.append(style)
+
     shadow.append(...this.children.map(child => Widget.renderIfWidget(child)))
 
     Root.getInstance().observeRoot(shadow)

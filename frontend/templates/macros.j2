@@ -1,7 +1,7 @@
-{%- macro content_stream(streams, name, multiple) -%}
+{%- macro content_stream(streams, name, label, multiple) -%}
   {%- set name = name|default('content_stream') -%}
   <label
-    >{%- if multiple is defined -%}Content streams:{%- else -%}Content stream:{%- endif -%}
+    >{{ label|default('Content stream') }}:
     <select name="{{ name }}" {% if multiple is defined %}multiple{% endif %}>
       <optgroup label="Public">
         {%- for stream in streams.public -%}

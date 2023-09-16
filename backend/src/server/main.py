@@ -9,6 +9,7 @@ from server import (
     login,
     registration,
 )
+from server.display_group import PageTemplate
 from server.loadshedding import Loadshedding
 from flask_login import LoginManager
 from server.database import DatabaseController
@@ -55,6 +56,8 @@ def create_app(testing=False):
     @app.teardown_appcontext
     def teardown_db(exception):
         DatabaseController.teardown()
+
+    PageTemplate.register_filters(app)
 
     Thread(
         target=repeat_update_loadshedding,

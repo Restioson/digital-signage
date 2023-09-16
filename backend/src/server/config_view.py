@@ -4,7 +4,6 @@ from flask_login import current_user
 
 from server.database import DatabaseController
 from server.department import Person
-from server.display_group.template import TEMPLATES
 
 blueprint = Blueprint("config_view", __name__, url_prefix="/config")
 
@@ -103,16 +102,17 @@ def edit_person(department_id: int, person_id: int):
 @blueprint.route("/departments/<int:department_id>/display_group/add")
 def add_display_group(department_id: int):
     """Return the page to add a display group"""
-    if not DatabaseController.get().fetch_department_by_id(department_id):
+    db = DatabaseController.get()
+    if not db.fetch_department_by_id(department_id):
         flask.abort(404)
 
-    streams = DatabaseController.get().fetch_all_content_streams()
+    streams = db.fetch_all_content_streams()
     streams.filter_to_department(department_id)
 
     return render_template(
         "config/display_group/add.j2",
-        templates=TEMPLATES,
-        content_streams=streams,
+        templates=db.fetch_all_page_templates(),
+        streams=streams,
         department_id=department_id,
     )
 

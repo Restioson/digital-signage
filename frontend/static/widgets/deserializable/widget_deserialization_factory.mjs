@@ -53,7 +53,6 @@ export function deserializeWidgetFromTag (tag) {
   try {
     widget = deserializeWidgetRaw(tag)
   } catch (e) {
-    console.log(typeof tag.attributes)
     const attrs = Object.entries(tag.attributes).map(
       ([attr, val]) => `${attr}="${val}"`
     )
@@ -110,8 +109,8 @@ function deserializeWidgetRaw (tag) {
       return RotatingContainer.fromXML(tag)
     case 'refresh':
       return StaticRefresh.fromXML(tag)
-    case 'page':
-      return Page.fromXML(tag)
+    case 'template':
+      return Page.fromXML(tag.typedChild('page'))
     default:
       throw new UnknownWidgetTypeError(tag.type)
   }

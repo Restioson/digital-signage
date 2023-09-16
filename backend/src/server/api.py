@@ -255,8 +255,9 @@ def display_groups(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
-    group_id = DatabaseController.get().create_display_group(
-        DisplayGroup.from_form(flask.request.form), department_id
+    db = DatabaseController.get()
+    group_id = db.create_display_group(
+        DisplayGroup.from_form(flask.request.form, db), department_id
     )
     return {"id": group_id}
 
@@ -268,7 +269,7 @@ def preview_display(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
-    group = DisplayGroup.from_form(flask.request.form)
+    group = DisplayGroup.from_form(flask.request.form, DatabaseController.get())
     return render_template(
         "display.j2",
         display_config={
