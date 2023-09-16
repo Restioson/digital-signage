@@ -56,10 +56,14 @@
           <name>Date format</name>
           <variable>date_format</variable>
           <type>xml-attribute</type>
+          <!-- prettier-ignore -->
           <default>
-            <![CDATA[ [<span class='date'>]D[</span>] [<span
-            class='month'>]MMMM[</span>] [<br>] [<span
-            class='day'>]dddd[</span>] ]]>
+<![CDATA[
+[<span class='date'>]D[</span>]
+[<span class='month'>]MMMM[</span>]
+[<br>]
+[<span class='day'>]dddd[</span>]
+]]>
           </default>
         </property>
 

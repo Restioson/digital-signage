@@ -1,10 +1,13 @@
+import os
 import sqlite3
 from typing import Optional
+import uuid
 
 from flask import render_template
 from markupsafe import Markup, escape
 from werkzeug.datastructures import ImmutableMultiDict
 
+from server.department.file import File
 from server.free_form_content.content_stream import ContentStream
 
 
@@ -26,7 +29,13 @@ class DisplayGroup:
         self.id = group_id
 
     @staticmethod
-    def from_form(form: ImmutableMultiDict, db):
+    def from_form(
+        department_id: int,
+        form: ImmutableMultiDict,
+        files: ImmutableMultiDict,
+        db,
+        is_preview=False,
+    ):
         pages = {
             prop[14:]: {
                 "template": db.fetch_page_template_by_id(form.get(prop)),
@@ -35,6 +44,29 @@ class DisplayGroup:
             for prop in form.keys()
             if prop.startswith("template-page-")
         }
+
+        for prop, file in files.items():
+            tokens = prop.split("-", maxsplit=4)
+            page_no = tokens[1]
+            variable_name = tokens[3]
+            page = pages[page_no]
+            ext = os.path.splitext(file.filename)[1]
+
+            prefix = uuid.uuid4().hex if is_preview else ""
+            name = f"{prefix}{form['name']}-{prop}{ext}"
+
+            db.upload_department_file(
+                File(
+                    name,
+                    department_id,
+                    file.content_type,
+                    file.stream.read(),
+                ),
+                temp=is_preview,
+            )
+
+            url = f"/api/departments/{department_id}/files/{name}"
+            pages[page_no]["properties"][variable_name] = url
 
         for prop in form.keys():
             if prop.startswith("page-"):

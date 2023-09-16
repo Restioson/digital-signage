@@ -9,9 +9,9 @@ from flask_login import (
     current_user,
 )
 from server import free_form_content
-from server.department import Person
-from server.department import File
 from server.database import DatabaseController
+from server.department.file import File
+from server.department.person import Person
 from server.display_group import DisplayGroup
 from server.free_form_content import BinaryContent
 from server.free_form_content.content_stream import ContentStream
@@ -257,7 +257,10 @@ def display_groups(department_id: int):
 
     db = DatabaseController.get()
     group_id = db.create_display_group(
-        DisplayGroup.from_form(flask.request.form, db), department_id
+        DisplayGroup.from_form(
+            department_id, flask.request.form, flask.request.files, db
+        ),
+        department_id,
     )
     return {"id": group_id}
 
@@ -269,7 +272,13 @@ def preview_display(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
-    group = DisplayGroup.from_form(flask.request.form, DatabaseController.get())
+    group = DisplayGroup.from_form(
+        department_id,
+        flask.request.form,
+        flask.request.files,
+        DatabaseController.get(),
+        is_preview=True,
+    )
     return render_template(
         "display.j2",
         display_config={
@@ -290,7 +299,7 @@ def upload_department_files(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
-    content_id = DatabaseController.get().upload_department_files(
+    content_id = DatabaseController.get().upload_department_file(
         File.from_form(flask.request.form, flask.request.files, department_id)
     )
 
@@ -326,7 +335,9 @@ def file(department_id: int, file_name: str):
         flask.abort(404)
 
     if flask.request.method == "DELETE":
-        if DatabaseController.get().delete_file_by_id(file_name, department_id):
+        if DatabaseController.get().delete_file_by_name_and_department(
+            file_name, department_id
+        ):
             return {"deleted": True}
         else:
             flask.abort(404)

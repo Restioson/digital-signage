@@ -28,10 +28,16 @@ function setupAddPage () {
 
     const templateSelect = template.querySelector('.template-select')
     templateSelect.name = `template-page-${pageNo}`
-    choiceOfFieldset(templateSelect, fieldset, 'template')
+    choiceOfFieldset(templateSelect, fieldset, 'template', {})
 
     for (const elt of template.querySelectorAll('[data-variable-name]')) {
       elt.name = `page-${pageNo}-template-${elt.dataset.variableName}`
+    }
+
+    for (const elt of template.querySelectorAll('.select-file-or-url')) {
+      choiceOfFieldset(elt, elt.parentElement.parentElement, 'input-for', {
+        fieldsetSelector: ':scope > input'
+      })
     }
 
     const form = document.getElementById('display-group-form')

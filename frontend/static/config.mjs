@@ -15,11 +15,12 @@ export function setupBackButton () {
 export function choiceOfFieldset (
   selector,
   fieldsetsContainer,
-  fieldsetClassPrefix
+  fieldsetClassPrefix,
+  { fieldsetSelector = ':scope > fieldset' }
 ) {
   function change () {
     for (const element of fieldsetsContainer.querySelectorAll(
-      ':scope > fieldset'
+      fieldsetSelector
     )) {
       element.hidden = true
       element.disabled = true

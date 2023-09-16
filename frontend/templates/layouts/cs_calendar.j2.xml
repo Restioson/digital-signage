@@ -52,26 +52,12 @@
           <type>color</type>
           <default>#000000</default>
         </property>
-
-        <property>
-          <name>Content title colour</name>
-          <variable>content_title_color</variable>
-          <type>color</type>
-          <default>#ffffff</default>
-        </property>
-
-        <property>
-          <name>Content body colour</name>
-          <variable>content_body_color</variable>
-          <type>color</type>
-          <default>#000000</default>
-        </property>
       </group>
 
       <property>
         <name>Sidebar logo</name>
         <variable>sidebar_logo</variable>
-        <type>string</type>
+        <type>file_or_url</type>
         <default
           ><![CDATA[https://upload.wikimedia.org/wikipedia/en/7/7c/University_of_Cape_Town_logo.svg]]></default
         >
@@ -81,9 +67,13 @@
         <name>Time format</name>
         <variable>time_format</variable>
         <type>xml-attribute</type>
+        <!-- prettier-ignore -->
         <default>
-          <![CDATA[ [<div class='day'>]dddd[</div>] [<div class='date'>]D MMMM
-          YYYY[</div>] [<div class='time'>]HH:mm:ss[</div>] ]]>
+<![CDATA[
+[<div class='day'>]dddd[</div>]
+[<div class='date'>]D MMMM YYYY[</div>]
+[<div class='time'>]HH:mm:ss[</div>]
+]]>
         </default>
       </property>
     </advanced>
@@ -100,8 +90,6 @@
             --theme-color-lighter: color-mix(in srgb, var(--theme-color) 25%, white);
             --department-color: {{ department_color }};
             --clock-text-color: {{ clock_text_color }};
-            --content-title-color: {{ content_title_color }};
-            --content-body-color: {{ content_body_color }};
         }
 
         #calendar {

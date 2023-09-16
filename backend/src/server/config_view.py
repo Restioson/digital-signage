@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, current_app
 from flask_login import current_user
 
 from server.database import DatabaseController
-from server.department import Person
+from server.department.person import Person
 
 blueprint = Blueprint("config_view", __name__, url_prefix="/config")
 
