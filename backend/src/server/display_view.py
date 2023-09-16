@@ -15,9 +15,10 @@ def default_display_group():
 @blueprint.route("/<int:department_id>/<int:group_id>/")
 def display_group(department_id: int, group_id: int):
     """Return the display view page for a given group"""
-    group = DatabaseController.get().fetch_display_group_by_id(group_id)
+    db = DatabaseController.get()
+    group = db.fetch_display_group_by_id(group_id)
 
-    if not DatabaseController.get().fetch_department_by_id(department_id):
+    if not db.fetch_department_by_id(department_id):
         flask.abort(404)
 
     if not group:
@@ -27,6 +28,6 @@ def display_group(department_id: int, group_id: int):
         "display.j2",
         display_config={
             "department": department_id,
-            "layout": group.layout_xml,
+            "layout": group.render(db),
         },
     )

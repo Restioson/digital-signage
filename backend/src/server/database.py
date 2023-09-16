@@ -268,9 +268,9 @@ class DatabaseController:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO display_groups (name, department, layout_xml)"
+                "INSERT INTO display_groups (name, department, pages_json)"
                 " VALUES (?, ?, ?)",
-                (group.name, department_id, group.layout_xml),
+                (group.name, department_id, json.dumps(group.pages)),
             )
         return cursor.lastrowid
 
@@ -282,7 +282,7 @@ class DatabaseController:
         cursor.row_factory = DisplayGroup.from_sql
         return list(
             cursor.execute(
-                "SELECT id, name, layout_xml FROM display_groups WHERE department = ?",
+                "SELECT id, name, pages_json FROM display_groups WHERE department = ?",
                 (department_id,),
             )
         )
@@ -293,7 +293,7 @@ class DatabaseController:
         cursor.row_factory = DisplayGroup.from_sql
         return next(
             cursor.execute(
-                "SELECT id, name, department, layout_xml FROM display_groups"
+                "SELECT id, name, department, pages_json FROM display_groups"
                 " WHERE id = ?",
                 (group_id,),
             ),

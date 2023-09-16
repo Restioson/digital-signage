@@ -223,7 +223,7 @@ def test_create_display_group(database: DatabaseController):
 
     assert groups[1].id == group_id, "group ids should match"
     assert groups[1].name == group.name, "names should match"
-    assert groups[1].layout_xml == group.layout_xml, "layout_xmls should match"
+    assert groups[1].pages == group.pages, "pages should match"
 
 
 def test_display_group_has_valid_dept(database: DatabaseController):
