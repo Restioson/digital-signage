@@ -153,6 +153,11 @@
           </select>
         </label>
 
+        <label
+          >Duration to show page (secs):
+          <input class="template-duration" type="number" value="10" />
+        </label>
+
         {%- for template in templates -%}
           <fieldset class="template-{{ template.id }}">
             <legend>{{ template.name }}</legend>

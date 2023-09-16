@@ -38,7 +38,7 @@ class DisplayGroup:
         is_preview=False,
     ):
         pages = {
-            prop[14:]: {
+            int(prop[14:]): {
                 "template": template,
                 "properties": dict(),
             }
@@ -48,7 +48,7 @@ class DisplayGroup:
 
         for prop, file in files.items():
             tokens = prop.split("-", maxsplit=4)
-            page_no = tokens[1]
+            page_no = int(tokens[1])
             variable_name = tokens[3]
             page = pages[page_no]
             ext = os.path.splitext(file.filename)[1]
@@ -72,7 +72,7 @@ class DisplayGroup:
         for prop in form.keys():
             if prop.startswith("page-"):
                 tokens = prop.split("-", maxsplit=4)
-                page_no = tokens[1]
+                page_no = int(tokens[1])
                 variable_name = tokens[3]
                 page = pages[page_no]
 
@@ -82,9 +82,12 @@ class DisplayGroup:
                     val = form[prop]
 
                 page["properties"][variable_name] = val
+            elif prop.startswith("duration-page-"):
+                page_no = int(prop[14:])
+                pages[page_no]["duration"] = int(form[prop])
 
         pages = [
-            (page["template"], page["properties"])
+            (page["template"], page["duration"], page["properties"])
             for page_no, page in sorted(pages.items())
         ]
 
@@ -98,10 +101,15 @@ class DisplayGroup:
         return render_template(
             "display_layout.j2.xml",
             pages=[
-                Markup(
-                    db.fetch_page_template_by_id(template).render_template(properties)
+                (
+                    duration,
+                    Markup(
+                        db.fetch_page_template_by_id(template).render_template(
+                            properties
+                        )
+                    ),
                 )
-                for (template, properties) in self.pages
+                for (template, duration, properties) in self.pages
             ],
         )
 
