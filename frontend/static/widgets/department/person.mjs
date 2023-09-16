@@ -1,4 +1,5 @@
 import { Container } from '../containers/container.mjs'
+import { Visibility } from '../visibility.mjs'
 import { Widget } from '../widget.mjs'
 
 /**
@@ -68,26 +69,64 @@ export class Person extends Widget {
     })
   }
 
-  build () {
-    const title = document.createElement('h3')
-    const body = document.createElement('p')
-    const dataUrl = `data:${this.mimeType};base64,${this.imageData}`
+  static makeText(string,classname){
+    const text = document.createElement('p')
+    text.innerText = string
+    text.className=classname
+    return new Visibility({
+      visible: Boolean(text),
+      child: text
+    })
+  }
 
+  static makeHeader(string){
+    const text = document.createElement('h3')
+    text.innerText = string
+    text.className='person_header'
+    return new Visibility({
+      visible: Boolean(text),
+      child: text
+    })
+  }
+
+  static makeImage(url){
     const imageElement = document.createElement('img')
-    imageElement.src = dataUrl
+    imageElement.src = url
+    imageElement.className="person_image"
+    return imageElement
+  }
 
-    title.innerText = `${this.title} ${this.name}`
-    body.innerText =
-      `Position: ${this.position}\n` +
-      `Office Hours: ${this.officeHours}\n` +
-      `Office Location: ${this.officeLocation}\n` +
-      `Email: ${this.email}\n` +
-      `Phone: ${this.phone}`
+  build () {
+    return new Container({ children: [
+      makeHeader(`${this.title} ${this.name}`),
+      makeImage(`data:${this.mimeType};base64,${this.imageData}`),
+      makeText(`Position: ${this.position}`,"person_position" ),
+      makeText(`Office Hours: ${this.officeHours}`,"person_hours" ),
+      makeText(`Office Location: ${this.officeLocation}`,"person_location" ),
+      makeText(`Email: ${this.email}`,"person_email" ),
+      makeText(`Phone: ${this.phone}`,"person_phone" ),
+    ] })
 
-    return new Container({ children: [title, imageElement, body] })
+    // const title = document.createElement('h3')
+    // const body = document.createElement('p')
+    // const dataUrl = `data:${this.mimeType};base64,${this.imageData}`
+
+    // const imageElement = document.createElement('img')
+    // imageElement.src = dataUrl
+
+    // title.innerText = `${this.title} ${this.name}`
+    // body.innerText =
+    //   `Position: ${this.position}` +
+    //   `Office Hours: ${this.officeHours}` +
+    //   `Office Location: ${this.officeLocation}` +
+    //   `Email: ${this.email}` +
+    //   `Phone: ${this.phone}`
+
+    // return new Container({ children: [title, imageElement, body] })
   }
 
   className () {
     return 'person'
   }
 }
+
