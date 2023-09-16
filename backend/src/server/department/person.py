@@ -1,5 +1,7 @@
 import sqlite3
 from typing import Optional
+import PIL.Image
+import io
 
 
 class Person:
@@ -7,6 +9,8 @@ class Person:
         self,
         title: str,
         name: str,
+        mime_type: str,
+        image_data: bytes,
         position: str,
         office_hours: str,
         office_location: str,
@@ -16,6 +20,8 @@ class Person:
     ):
         self.title = title
         self.name = name
+        self.mime_type = mime_type
+        self.image_data = image_data
         self.position = position
         self.office_hours = office_hours
         self.office_location = office_location
@@ -28,6 +34,8 @@ class Person:
         return {
             "title": self.title,
             "name": self.name,
+            "mime_type": self.mime_type,
+            "image_data": self.image_data,
             "position": self.position,
             "office_hours": self.office_hours,
             "office_location": self.office_location,
@@ -48,15 +56,23 @@ class Person:
             "",
             "",
             "",
+            "",
+            "",
             None,
         )
 
     @staticmethod
-    def from_form(form: dict):
+    def from_form(form: dict, files: dict):
         """forms person from data inputted in the configuration form"""
+        image_data = files["image_data"].read()
+        image = PIL.Image.open(io.BytesIO(image_data))
+        image.verify()
+        mime = image.get_format_mimetype()
         return Person(
             form["title"],
             form["name"],
+            mime,
+            image_data,
             form["position"],
             form["office_hours"],
             form["office_location"],
@@ -73,6 +89,8 @@ class Person:
             lecturer_id=row["id"],
             title=row["title"],
             name=row["full_name"],
+            mime_type=row["mime_type"],
+            image_data=row["image_data"],
             position=row["position"],
             office_hours=row["office_hours"],
             office_location=row["office_location"],

@@ -18,6 +18,7 @@
         <tr>
           <th scope="col">Name</th>
           <th scope="col">Title</th>
+          <th scope="col">Image</th>
           <th scope="col">Position</th>
           <th scope="col">Office location</th>
           <th scope="col">Email</th>
@@ -31,6 +32,12 @@
           <tr>
             <td>{{ person.name }}</td>
             <td>{{ person.title }}</td>
+            <td>
+              <img
+                src="data:{{ person.mime_type }};base64,{{ person.image_data }}"
+                alt="{{ person.name }}"
+              />
+            </td>
             <td>{{ person.position }}</td>
             <td>{{ person.office_location }}</td>
             <td>{{ person.email }}</td>

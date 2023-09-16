@@ -25,6 +25,7 @@
     action="/api/departments/{{ department_id }}/people"
     method="post"
     class="post-form"
+    enctype="multipart/form-data"
   >
     {%- if person.id -%}
       <input type="hidden" name="id" value="{{ person.id }}" />
@@ -61,6 +62,16 @@
         {{ title("A/Prof", "Associate Professor") }}
         {{ title("Dr") }}
       </select>
+    </label>
+
+    <label
+      >Upload an image of the person:
+      <input
+        type="file"
+        id="image_data"
+        name="image_data"
+        accept=".png, .jpeg, .jpg"
+      />
     </label>
 
     <label

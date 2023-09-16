@@ -3,6 +3,7 @@ import os
 import sqlite3
 import time
 from threading import Timer
+import base64
 from typing import Optional
 import flask
 from server import free_form_content
@@ -233,13 +234,16 @@ class DatabaseController:
             dept.people = list(
                 cursor.execute(
                     "SELECT id, department, title, "
-                    "full_name, position, office_hours,"
+                    "full_name, image_data, mime_type, position, office_hours,"
                     "office_location, email, phone FROM people "
                     " WHERE department = ?"
                     " ORDER BY id",
                     (department_id,),
                 )
             )
+            for person in dept.people:
+                image_data_base64 = base64.b64encode(person.image_data).decode("utf-8")
+                person.image_data = image_data_base64
 
         if dept and fetch_files:
             cursor = self.db.cursor()
@@ -307,14 +311,16 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.execute(
                 "REPLACE INTO people "
-                "(id, department, title, full_name, position, "
+                "(id, department, title, full_name, mime_type, image_data, position, "
                 "office_hours, office_location, email, phone)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     person.id,
                     department_id,
                     person.title,
                     person.name,
+                    person.mime_type,
+                    person.image_data,
                     person.position,
                     person.office_hours,
                     person.office_location,
@@ -339,7 +345,7 @@ class DatabaseController:
         return next(
             cursor.execute(
                 "SELECT id, department, title,"
-                "full_name, position, office_hours,"
+                "full_name, image_data, mime_type, position, office_hours,"
                 "office_location, email, phone FROM people"
                 " WHERE id = ?",
                 (person_id,),

@@ -30,7 +30,6 @@ export class Department extends DeserializableWidget {
     const update = await fetch(endpoint).then(res => res.json())
 
     let dirty = update.people.length !== this.children.length
-
     if (!dirty) {
       for (let i = 0; i < update.people.length; i++) {
         dirty = dirty || update.people[i].id !== this.children[i].id
@@ -40,11 +39,9 @@ export class Department extends DeserializableWidget {
         }
       }
     }
-
     if (dirty) {
       this.children = update.people.map(Person.fromJSON)
     }
-
     return dirty
   }
 

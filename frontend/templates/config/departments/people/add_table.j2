@@ -40,10 +40,12 @@
     class="post-form"
     enctype="multipart/form-data"
   >
-    <label for="add_table"
-      >Upload an Excel file of department information:</label
-    >
+    <label for="add_table">Upload an excel file of the department info:</label>
     <input type="file" name="add_table" id="add_table" accept=".xlsx, .xls" />
+    <label for="images_folder"
+      >Upload a zip folder of all the images of the department staff:</label
+    >
+    <input type="file" name="images_folder" id="images_folder" accept=".zip" />
     <button type="submit">Submit</button>
     <p hidden id="status-message"></p>
   </form>
