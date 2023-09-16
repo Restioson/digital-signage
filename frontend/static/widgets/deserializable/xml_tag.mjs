@@ -105,7 +105,7 @@ export class XMLTag {
    * Take the children of this tag.
    *
    * @public
-   * @return object[] the children of this tag
+   * @return XMLTag[] the children of this tag
    */
   children () {
     return Array.from(this._children.keys())

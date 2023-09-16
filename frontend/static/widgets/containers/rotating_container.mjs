@@ -10,18 +10,27 @@ import { Widget } from '../widget.mjs'
  * Upon each turn, the child is set to show, but is not rebuilt.
  */
 export class RotatingContainer extends DeserializableWidget {
-  constructor ({ children, period }) {
+  /**
+   *
+   * @param {{child: HTMLElement|Widget, duration: number}[]} children the children and their timings
+   */
+  constructor ({ children }) {
     super()
     this.children = children
     this.renderedChildren = []
-    this.childIndex = -1
-    this.period = period
+    this.timeSpentAtChild = -1
+    this.childIndex = 0
   }
 
   build () {
     return new WithRefresh({
       refresh: async () => {
-        this.childIndex = (this.childIndex + 1) % this.children.length
+        this.timeSpentAtChild += 1
+
+        if (this.timeSpentAtChild >= this.children[this.childIndex].duration) {
+          this.timeSpentAtChild = 0
+          this.childIndex = (this.childIndex + 1) % this.children.length
+        }
 
         for (let i = 0; i < this.children.length; i++) {
           this.renderedChildren[i].hidden = this.childIndex !== i
@@ -29,9 +38,11 @@ export class RotatingContainer extends DeserializableWidget {
 
         return false // We just update the children's hidden property
       },
-      period: this.period,
+      period: 1000,
       builder: () => {
-        this.renderedChildren = this.children.map(Widget.renderIfWidget)
+        this.renderedChildren = this.children.map(child =>
+          Widget.renderIfWidget(child.child)
+        )
 
         for (const child of this.renderedChildren.slice(1)) {
           child.hidden = true
@@ -49,9 +60,14 @@ export class RotatingContainer extends DeserializableWidget {
   }
 
   static fromXML (tag) {
+    const defaultPeriod = parseInt(tag.attribute('secs-per-page')) || 10
     return new RotatingContainer({
-      period: (parseInt(tag.attribute('secs-per-page')) || 10) * 1000,
-      children: tag.children().map(deserializeWidgetFromTag)
+      children: tag.children().map(child => {
+        return {
+          child: deserializeWidgetFromTag(child),
+          duration: parseInt(child.attribute('duration')) || defaultPeriod
+        }
+      })
     })
   }
 }
