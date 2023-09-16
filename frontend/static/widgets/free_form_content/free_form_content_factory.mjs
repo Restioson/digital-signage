@@ -1,5 +1,6 @@
 import { TextWidget } from './text.mjs'
 import { LocalImage } from './local_image.mjs'
+import { LocalVideo } from './local_video.mjs'
 import { RemoteImage } from './remote_image.mjs'
 import { Link } from './link.mjs'
 import { IFrameContent } from './iframe.mjs'
@@ -19,6 +20,8 @@ export function deserializeFreeFormContent (obj, flatten) {
       return TextWidget.fromJSON(obj)
     case 'local_image':
       return LocalImage.fromJSON(obj)
+    case 'local_video':
+      return LocalVideo.fromJSON(obj)
     case 'remote_image':
       return RemoteImage.fromJSON(obj)
     case 'link':

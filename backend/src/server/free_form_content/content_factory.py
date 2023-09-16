@@ -13,6 +13,7 @@ from server.free_form_content import (
     IFrameContent,
     Caption,
     QRcodeContent,
+    LocalVideo,
 )
 from server.free_form_content.free_form_content import FreeFormContent
 
@@ -25,7 +26,7 @@ def form_has_field(form: dict, field: str) -> bool:
 def from_form(form: dict, files: dict) -> FreeFormContent:
     """Deserialize the appropriate content object from the given form dictionary
     and files. Throws UnknownContentError if the content type is not 'text',
-    'remote_image', 'local_image', or 'link'.
+    'remote_image', 'local_image', 'local_video' or 'link'.
 
     The resulting content will not have the post or ID initialised.
     """
@@ -54,6 +55,14 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
 
         mime = image.get_format_mimetype()
         return LocalImage(mime, image_data, caption, stream)
+    elif content_type == "local_video":
+        # Load and verify the file, throwing an error if it isn't a valid image
+        video_data = files["video_data"].read()
+        video = PIL.Image.open(io.BytesIO(video_data))
+        video.verify()
+
+        mime = video.get_format_mimetype()
+        return LocalVideo(mime, video_data, caption, stream)
     elif content_type == "link":
         return Link(form["url"], caption, stream)
     elif content_type == "iframe_content":
@@ -67,7 +76,7 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
 def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
     """Parse the given SQL row and return the appropriate content type.
     Throws UnknownContentError if the content type is not 'text',
-    'remote_image', 'local_image', or 'link'.
+    'remote_image', 'local_image', 'local_video' or 'link'.
     """
 
     row = sqlite3.Row(cursor, row)
@@ -91,6 +100,10 @@ def from_sql(cursor: sqlite3.Cursor, row: tuple) -> FreeFormContent:
         )
     elif content_type == "local_image":
         return LocalImage(
+            mime, blob_data, caption, stream, content_id=content_id, posted=posted
+        )
+    elif content_type == "local_video":
+        return LocalVideo(
             mime, blob_data, caption, stream, content_id=content_id, posted=posted
         )
     elif content_type == "remote_image":

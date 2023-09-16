@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS content (
       'video',
       'link',
       'iframe_content',
-      'qrcode_content'
+      'qrcode_content',
+      'local_video'
     )
   ),
   content_json TEXT NOT NULL,

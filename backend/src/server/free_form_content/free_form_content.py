@@ -27,7 +27,7 @@ class FreeFormContent(ABC):
     @abstractmethod
     def type(self) -> str:
         """The type of this content. One of 'link', 'iframe_content',
-        'qrcode', 'text', 'local_image', or 'remote_image'
+        'qrcode', 'text', 'local_image', 'local_video' or 'remote_image'
         """
         raise NotImplementedError
 
