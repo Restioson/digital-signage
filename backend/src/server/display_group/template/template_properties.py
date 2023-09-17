@@ -56,7 +56,7 @@ class TemplateProperties:
             elif child.name == "group":
                 advanced.append(TemplatePropertyGroup.from_xml(child))
             else:
-                raise RuntimeError(f"Invalid XML tag {child.tag} in properties")
+                raise RuntimeError(f"Invalid XML tag {child.name} in properties")
         return advanced
 
     @staticmethod

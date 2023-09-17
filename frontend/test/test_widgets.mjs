@@ -6,7 +6,11 @@ import { ContentAndCaption } from '../static/widgets/containers/content_and_capt
 import { deserializeWidgetFromXML } from '../static/widgets/deserializable/widget_deserialization_factory.mjs'
 import { Clock } from '../static/widgets/clock.js'
 import { main } from '../static/display.mjs'
-import { testExports } from '../static/widgets/root.mjs'
+import {
+  Root,
+  testExports as rootTestExports,
+  testExports
+} from '../static/widgets/root.mjs'
 import { WithHTMLAttrs } from '../static/widgets/deserializable/with_html_attrs.mjs'
 import { HtmlWidget } from '../static/widgets/html.mjs'
 
@@ -236,6 +240,18 @@ describe('Widget', function () {
   })
 
   describe('HtmlWidget', function () {
+    beforeEach(function () {
+      Root.create({
+        child: new Container({ children: [] }),
+        targetElement: document.getElementById('root'),
+        departmentId: 1
+      })
+    })
+
+    afterEach(async function () {
+      rootTestExports.destroyRoot()
+    })
+
     it('renders', function () {
       const element = document.createElement('p')
       element.textContent = 'h'

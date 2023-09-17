@@ -22,6 +22,15 @@
       >{{ property.name }}
       <input type="file" data-variable-name="{{ property.variable }}" />
     </label>
+  {%- elif property.type == "url" -%}
+    <label>
+      {{ property.name }}
+      <input
+        type="url"
+        data-variable-name="{{ property.variable }}"
+        value="{{ property.default|escape }}"
+      />
+    </label>
   {%- elif property.type == "file_or_url" -%}
     <fieldset>
       <legend>{{ property.name }}</legend>
@@ -159,7 +168,9 @@
         </label>
 
         {%- for template in templates -%}
-          <fieldset class="template-{{ template.id }}">
+          <fieldset
+            class="template-{{ template.id.replace('.', '-').replace('/', '-') }}"
+          >
             <legend>{{ template.name }}</legend>
 
             {{ render_props_and_groups(template.properties.root) }}

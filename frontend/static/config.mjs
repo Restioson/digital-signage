@@ -27,7 +27,9 @@ export function choiceOfFieldset (
     }
 
     const enabled = fieldsetsContainer.querySelector(
-      `.${fieldsetClassPrefix}-${selector.value}`
+      `.${fieldsetClassPrefix}-${selector.value
+        .replace(/\./g, '-')
+        .replace(/\//g, '-')}`
     )
     enabled.hidden = false
     enabled.disabled = false

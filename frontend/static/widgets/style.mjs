@@ -13,7 +13,7 @@ export class StyleWidget extends DeserializableWidget {
     const style = document.createElement('style')
     style.appendChild(document.createTextNode(tag.text()))
 
-    for (const attr of tag.attributes) {
+    for (const attr in tag.attributes) {
       style[attr] = tag[attr]
     }
 

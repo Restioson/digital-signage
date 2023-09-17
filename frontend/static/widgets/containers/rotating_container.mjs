@@ -12,7 +12,7 @@ import { Widget } from '../widget.mjs'
 export class RotatingContainer extends DeserializableWidget {
   /**
    *
-   * @param {{child: HTMLElement|Widget, duration: number}[]} children the children and their timings
+   * @param {{child: HTMLElement|Widget, refreshOnSwitch: boolean, duration: number}[]} children the children and their settings
    */
   constructor ({ children }) {
     super()
@@ -25,7 +25,7 @@ export class RotatingContainer extends DeserializableWidget {
   build () {
     return new WithRefresh({
       refresh: async () => {
-        if (this.children.length === 0) {
+        if (this.children.length <= 1) {
           return false
         }
 
@@ -34,6 +34,16 @@ export class RotatingContainer extends DeserializableWidget {
         if (this.timeSpentAtChild >= this.children[this.childIndex].duration) {
           this.timeSpentAtChild = 0
           this.childIndex = (this.childIndex + 1) % this.children.length
+
+          const child = this.children[this.childIndex]
+
+          if (child.refreshOnSwitch) {
+            const old = this.renderedChildren[this.childIndex]
+            this.renderedChildren[this.childIndex] = Widget.renderIfWidget(
+              child.child
+            )
+            old.replaceWith(this.renderedChildren[this.childIndex])
+          }
         }
 
         for (let i = 0; i < this.children.length; i++) {
@@ -65,10 +75,16 @@ export class RotatingContainer extends DeserializableWidget {
 
   static fromXML (tag) {
     const defaultPeriod = parseInt(tag.attribute('secs-per-page')) || 10
+
     return new RotatingContainer({
       children: tag.children().map(child => {
+        // HACK: pages are wrapped in <dummy> but the template also needs to pass up the on-show attribute
+        const onShowAttrChild =
+          child.type === 'dummy' ? child.firstChild() : child
+
         return {
           child: deserializeWidgetFromTag(child),
+          refreshOnSwitch: onShowAttrChild.attribute('on-show') === 'refresh',
           duration: parseInt(child.attribute('duration')) || defaultPeriod
         }
       })

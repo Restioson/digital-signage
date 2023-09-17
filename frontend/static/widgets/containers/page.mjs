@@ -4,28 +4,37 @@ import { deserializeWidgetFromTag } from '../deserializable/widget_deserializati
 import { Root } from '../root.mjs'
 
 /**
- * A page is a widget which renders the children in their own shadow dom to encapsulate inline styles and so on.
+ * A page is a widget which renders the children in their own shadow dom to encapsulate inline styles and so on,
+ * if `shadowDom` is true (which is the default). Otherwise, it renders them in a div.
  *
  * It does, however, add display.css.
  */
 export class Page extends DeserializableWidget {
-  constructor ({ children }) {
+  constructor ({ children, shadowDom = true }) {
     super()
     this.children = children
+    this.shadowDom = shadowDom
   }
 
   build () {
     const div = document.createElement('div')
-    const shadow = div.attachShadow({ mode: 'open' })
 
-    const style = document.createElement('link')
-    style.rel = 'stylesheet'
-    style.href = '/static/display.css'
-    shadow.append(style)
+    const rendered = this.children.map(child => Widget.renderIfWidget(child))
 
-    shadow.append(...this.children.map(child => Widget.renderIfWidget(child)))
+    if (this.shadowDom) {
+      const shadow = div.attachShadow({ mode: 'open' })
 
-    Root.getInstance().observeRoot(shadow)
+      const style = document.createElement('link')
+      style.rel = 'stylesheet'
+      style.href = '/static/display.css'
+      shadow.append(style)
+
+      shadow.append(...rendered)
+
+      Root.getInstance().observeRoot(shadow)
+    } else {
+      div.append(...rendered)
+    }
 
     Root.getInstance().watchElement({
       element: div,
@@ -44,6 +53,11 @@ export class Page extends DeserializableWidget {
   }
 
   static fromXML (tag) {
-    return new Page({ children: tag.children().map(deserializeWidgetFromTag) })
+    const raw = tag.attribute('shadow-dom')
+    const shadowDom = raw != null ? raw : 'true'
+    return new Page({
+      children: tag.children().map(deserializeWidgetFromTag),
+      shadowDom: shadowDom === 'true'
+    })
   }
 }

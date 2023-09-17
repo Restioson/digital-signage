@@ -1,0 +1,54 @@
+<template>
+  <name>Video</name>
+  <properties>
+    <property>
+      <name>Video to display</name>
+      <variable>video</variable>
+      <type>file_or_url</type>
+      <default
+        ><![CDATA[https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4]]></default
+      >
+    </property>
+
+    <property>
+      <name>Background color (if video too small)</name>
+      <variable>background_color</variable>
+      <type>color</type>
+      <default>#000000</default>
+    </property>
+
+    <advanced>
+      <property>
+        <name>Video layout CSS</name>
+        <variable>css</variable>
+        <type>html</type>
+        <!-- prettier-ignore -->
+        <default>
+<![CDATA[
+video {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+]]>
+        </default>
+      </property>
+    </advanced>
+  </properties>
+
+  <page on-show="refresh">
+    <!-- prettier-ignore -->
+    <style>
+        {{ css }}
+        :host {
+            background-color: {{ background_color }};
+        }
+    </style>
+
+    <html>
+      <video autoplay="" loop="" muted="">
+        <source src="{{ video }}" />
+      </video>
+    </html>
+  </page>
+</template>

@@ -1,0 +1,178 @@
+<template>
+  <name>Twitter Feed</name>
+
+  <properties>
+    <property>
+      <name>Twitter username</name>
+      <variable>twitter_username</variable>
+      <type>string</type>
+      <default>UCT_News</default>
+    </property>
+
+    <property>
+      <name>Accent colour</name>
+      <variable>accent_color</variable>
+      <type>color</type>
+      <default>#d86613</default>
+    </property>
+
+    <advanced>
+      <group>
+        <name>Colours</name>
+
+        <property>
+          <name>Theme colour</name>
+          <variable>theme_color</variable>
+          <type>color</type>
+          <default>#003eaa</default>
+        </property>
+
+        <property>
+          <name>Clock text colour</name>
+          <variable>clock_text_color</variable>
+          <type>color</type>
+          <default>#000000</default>
+        </property>
+      </group>
+
+      <property>
+        <name>Sidebar logo</name>
+        <variable>sidebar_logo</variable>
+        <type>string</type>
+        <default
+          ><![CDATA[https://upload.wikimedia.org/wikipedia/en/7/7c/University_of_Cape_Town_logo.svg]]></default
+        >
+      </property>
+
+      <property>
+        <name>Time format</name>
+        <variable>time_format</variable>
+        <type>xml-attribute</type>
+        <!-- prettier-ignore -->
+        <default>
+<![CDATA[
+[<div class='day'>]dddd[</div>]
+[<div class='date'>]D MMMM YYYY[</div>]
+[<div class='time'>]HH:mm:ss[</div>]
+]]>        </default>
+      </property>
+    </advanced>
+  </properties>
+
+  <page shadow-dom="false">
+    {# - broken with the template literals #}
+    <!-- prettier-ignore -->
+    <style>
+        .twitter-embed-page {
+            --theme-color: {{ theme_color }};
+            --theme-color-lighter: color-mix(in srgb, var(--theme-color) 25%, white);
+            --accent-color: {{ accent_color }};
+            --clock-text-color: {{ clock_text_color }};
+        }
+    </style>
+
+    <style>
+      .twitter-embed-page {
+        display: grid;
+        grid-template-columns: [sidebar] 300px 1fr;
+        grid-template-rows: [header] auto 1fr;
+        gap: 15px;
+      }
+
+      .twitter-embed-page > * {
+        min-height: 0;
+      }
+
+      .twitter-container {
+        display: flex;
+        margin-left: auto;
+        margin-right: auto;
+        width: 33%;
+        display: flex;
+      }
+
+      .twitter-container .twitter-timeline {
+        width: 100%;
+      }
+
+      .twitter-container .twitter-timeline > * {
+        height: unset !important;
+        width: unset !important;
+      }
+
+      /* ---------------- Header ---------------- */
+
+      .header {
+        grid-column: 2;
+        grid-row: 1;
+        margin-left: auto;
+        padding: 15px 15px 0;
+        color: var(--accent-color);
+        font-size: 1.5em;
+      }
+
+      .header > * {
+        margin: 0;
+        width: fit-content;
+      }
+
+      .header .inverted-colors {
+        color: white;
+        background-color: var(--accent-color);
+      }
+
+      .sidebar {
+        display: flex;
+        flex-direction: column;
+        background-color: var(--theme-color-lighter);
+        grid-column: sidebar;
+        grid-row: span 2;
+        padding: 25px;
+      }
+
+      .clock {
+        margin-top: auto;
+        display: flex;
+        flex-direction: column;
+        font-size: 2.5em;
+        color: var(--clock-text-color);
+      }
+
+      .clock .day {
+        font-size: 0.9em;
+      }
+
+      .clock .date {
+        font-size: 0.7em;
+      }
+    </style>
+
+    <container html:class="twitter-embed-page page">
+      <container html:class="sidebar">
+        <html>
+          <img src="{{ sidebar_logo }}" />
+        </html>
+
+        <clock format="{{ time_format }}" />
+      </container>
+
+      <html html:class="header">
+        <div class="dept-name">Twitter Feed</div>
+        <h2 class="inverted-colors">@{{ twitter_username }}</h2>
+      </html>
+
+      <html html:class="twitter-container">
+        <script
+          async=""
+          src="https://platform.twitter.com/widgets.js"
+          charset="utf-8"
+        ></script>
+        <a
+          class="twitter-timeline"
+          href="https://twitter.com/{{ twitter_username }}?ref_src=twsrc%5Etfw"
+          >Tweets by {{ twitter_username }}</a
+        >
+      </html>
+    </container>
+  </page>
+</template>

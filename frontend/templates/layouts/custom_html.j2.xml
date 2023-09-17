@@ -1,0 +1,29 @@
+<template>
+  <name>Custom HTML</name>
+  <properties>
+    <property>
+      <name>HTML</name>
+      <variable>html</variable>
+      <type>html</type>
+      <!-- prettier-ignore -->
+      <default><![CDATA[ <p>hello! act as if this is straight inside the &lt;body&gt;tag :)</p> ]]></default>
+    </property>
+
+    <advanced>
+      <property>
+        <name
+          >Display inside Shadow DOM (must be false if embedding Twitter)</name
+        >
+        <variable>encapsulated</variable>
+        <type>string</type>
+        <default>true</default>
+      </property>
+    </advanced>
+  </properties>
+
+  <page shadow-dom="{{ encapsulated }}">
+    <html>
+      {{ html }}
+    </html>
+  </page>
+</template>
