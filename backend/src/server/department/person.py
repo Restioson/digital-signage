@@ -1,5 +1,8 @@
 import sqlite3
 from typing import Optional
+import PIL.Image
+import io
+import pandas as pd
 
 
 class Person:
@@ -7,6 +10,8 @@ class Person:
         self,
         title: str,
         name: str,
+        mime_type: str,
+        image_data: bytes,
         position: str,
         office_hours: str,
         office_location: str,
@@ -16,6 +21,8 @@ class Person:
     ):
         self.title = title
         self.name = name
+        self.mime_type = mime_type
+        self.image_data = image_data
         self.position = position
         self.office_hours = office_hours
         self.office_location = office_location
@@ -48,20 +55,42 @@ class Person:
             "",
             "",
             "",
+            "",
+            "",
             None,
         )
 
     @staticmethod
-    def from_form(form: dict):
+    def from_form(form: dict, files: dict):
         """forms person from data inputted in the configuration form"""
+        title = form["title"] if not pd.isna(form["title"]) else ""
+        full_name = form["name"] if not pd.isna(form["name"]) else ""
+        position = form["position"] if not pd.isna(form["position"]) else ""
+        office_hours = form["office_hours"] if not pd.isna(form["office_hours"]) else ""
+        office_location = (
+            form["office_location"] if not pd.isna(form["office_location"]) else ""
+        )
+        email = form["email"] if not pd.isna(form["email"]) else ""
+        phone = form["phone"] if not pd.isna(form["phone"]) else ""
+
+        image_data = files["image_data"].read()
+        if image_data:
+            image = PIL.Image.open(io.BytesIO(image_data))
+            image.verify()
+            mime = image.get_format_mimetype()
+        else:
+            mime = ""
+            image_data = ""
         return Person(
-            form["title"],
-            form["name"],
-            form["position"],
-            form["office_hours"],
-            form["office_location"],
-            form["email"],
-            form["phone"],
+            title,
+            full_name,
+            mime,
+            image_data,
+            position,
+            office_hours,
+            office_location,
+            email,
+            phone,
             lecturer_id=form.get("id"),
         )
 
@@ -78,4 +107,6 @@ class Person:
             office_location=row["office_location"],
             email=row["email"],
             phone=row["phone"],
+            image_data="",
+            mime_type="",
         )

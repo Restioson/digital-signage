@@ -1,5 +1,7 @@
 import { Container } from '../containers/container.mjs'
+import { Visibility } from '../visibility.mjs'
 import { Widget } from '../widget.mjs'
+import { Root } from '../root.mjs'
 
 /**
  * A {@link Widget} which displays a people and all of their details.
@@ -56,23 +58,65 @@ export class Person extends Widget {
       officeHours: obj.office_hours,
       officeLocation: obj.office_location,
       email: obj.email,
-      phone: obj.phone
+      phone: obj.phone,
+      department: Root.getInstance().getDepartment()
+    })
+  }
+
+  static makeText (string, classname, value) {
+    const text = document.createElement('p')
+    text.innerText = string
+    text.className = classname
+    return new Visibility({
+      visible: Boolean(value),
+      child: text
+    })
+  }
+
+  static makeHeader (string) {
+    const text = document.createElement('h3')
+    text.innerText = string
+    text.className = 'person_header'
+    return new Visibility({
+      visible: Boolean(text),
+      child: text
+    })
+  }
+
+  static makeImage (department, id, value) {
+    const imageElement = document.createElement('img')
+    imageElement.src = `/api/departments/${department}/people/${id}/image`
+    imageElement.className = 'person_image'
+    return new Visibility({
+      visible: Boolean(value),
+      child: imageElement
     })
   }
 
   build () {
-    const title = document.createElement('h3')
-    const body = document.createElement('p')
-
-    title.innerText = `${this.title} ${this.name}`
-    body.innerText =
-      `Position: ${this.position}\n` +
-      `Office Hours: ${this.officeHours}\n` +
-      `Office Location: ${this.officeLocation}\n` +
-      `Email: ${this.email}\n` +
-      `Phone: ${this.phone}`
-
-    return new Container({ children: [title, body] })
+    return new Container({
+      children: [
+        Person.makeHeader(`${this.title} ${this.name}`),
+        Person.makeImage(this.department, this.id, this.imageData),
+        Person.makeText(
+          `Position: ${this.position}`,
+          'person_position',
+          this.position
+        ),
+        Person.makeText(
+          `Office Hours: ${this.officeHours}`,
+          'person_hours',
+          this.officeHours
+        ),
+        Person.makeText(
+          `Office Location: ${this.officeLocation}`,
+          'person_location',
+          this.officeLocation
+        ),
+        Person.makeText(`Email: ${this.email}`, 'person_email', this.email),
+        Person.makeText(`Phone: ${this.phone}`, 'person_phone', this.phone)
+      ]
+    })
   }
 
   className () {

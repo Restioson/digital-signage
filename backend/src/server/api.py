@@ -2,6 +2,9 @@ from http import HTTPStatus
 import json
 import pandas as pd
 import flask
+import zipfile
+import PIL.Image
+import io
 from flask import Blueprint, Response, redirect, url_for, current_app, render_template
 from flask_login import (
     login_user,
@@ -120,7 +123,7 @@ def people_route(department_id: int):
             return current_app.login_manager.unauthorized()
 
         person_id = DatabaseController.get().upsert_person(
-            Person.from_form(flask.request.form), department_id
+            Person.from_form(flask.request.form, flask.request.files), department_id
         )
 
         return {"id": person_id}
@@ -148,6 +151,21 @@ def person(department_id: int, person_id: int):
         flask.abort(404)
 
 
+@blueprint.route(
+    "/departments/<int:department_id>/people/<int:person_id>/image", methods=["GET"]
+)
+def person_image(department_id: int, person_id: int):
+    """Fetch the image of a person"""
+    image_data = DatabaseController.get().fetch_person_image_by_id(person_id)
+
+    if image_data:
+        mime_type = image_data[0]
+        blob = image_data[1]
+        return Response(response=blob, mimetype=mime_type, status=HTTPStatus.OK)
+    else:
+        flask.abort(404)
+
+
 @blueprint.route("/departments/<int:department_id>/uploadtable", methods=["POST"])
 def upload_table(department_id: int):
     """The /api/departments/<dept_id>/upload_table endpoint.
@@ -156,23 +174,55 @@ def upload_table(department_id: int):
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
+
     try:
+        try:
+            zip_file = zipfile.ZipFile(flask.request.files["images_folder"], "r")
+        except Exception:
+            # If it fails, load an empty zip file from the server
+            empty_zip_path = "backend/src/server/EmptyZip.zip"
+            with open(empty_zip_path, "rb") as empty_zip_file:
+                empty_zip_contents = empty_zip_file.read()
+            zip_file = zipfile.ZipFile(io.BytesIO(empty_zip_contents), "r")
+
         excel_file = flask.request.files["add_table"]
         df = pd.read_excel(excel_file, engine="openpyxl")
         people = []
         # Iterate through rows in the uploaded excel creating people
         for index, row in df.iterrows():
+            title = row["title"] if not pd.isna(row["title"]) else ""
+            full_name = row["full_name"] if not pd.isna(row["full_name"]) else ""
+            position = row["position"] if not pd.isna(row["position"]) else ""
+            office_hours = (
+                row["office_hours"] if not pd.isna(row["office_hours"]) else ""
+            )
+            office_location = (
+                row["office_location"] if not pd.isna(row["office_location"]) else ""
+            )
+            email = row["email"] if not pd.isna(row["email"]) else ""
+            phone = row["phone"] if not pd.isna(row["phone"]) else ""
+            try:
+                with zip_file.open(row["image_name"]) as image_file:
+                    image_data = image_file.read()
+                    image = PIL.Image.open(io.BytesIO(image_data))
+                    image.verify()
+                    mime_type = image.get_format_mimetype()
+            except Exception:
+                image_data = ""
+                mime_type = ""
             person = Person(
-                row["title"],
-                row["full_name"],
-                row["position"],
-                row["office_hours"],
-                row["office_location"],
-                row["email"],
-                row["phone"],
+                title,
+                full_name,
+                mime_type,
+                image_data,
+                position,
+                office_hours,
+                office_location,
+                email,
+                phone,
             )
             people.append(person)
-        # Seperate loops so that any error in the whole table
+        # Separate loops so that any error in the whole table
         # is caught before any entry is added
         # loop through people to add each to the table
         db = DatabaseController.get()
@@ -182,7 +232,8 @@ def upload_table(department_id: int):
             "id": "response needed",
             "response": "Excel file is a valid file. Upload successful",
         }
-    except Exception:
+    except Exception as e:
+        print(e)
         return flask.abort(400)
 
 

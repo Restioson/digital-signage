@@ -92,21 +92,38 @@ async function checkUploadOne (content) {
 }
 
 async function uploadPerson (formData) {
+  const data = new FormData()
+
+  for (const key in formData) {
+    data.append(key, formData[key])
+  }
+
+  const emptyImageData = new Blob([], { type: 'image/jpeg' })
+  data.append('image_data', emptyImageData, 'empty.jpg')
+
   const res = await fetch('/api/departments/1/people', {
     method: 'post',
-    // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
-    body: new URLSearchParams(formData)
+    body: data
   })
+
   assert.equal(res.status, 200)
   return (await res.json()).id
 }
 
 async function checkUploadPerson (formData) {
+  const data = new FormData()
+
+  for (const key in formData) {
+    data.append(key, formData[key])
+  }
+  const emptyImageData = new Blob([], { type: 'image/jpeg' })
+  data.append('image_data', emptyImageData, 'empty.jpg')
+
   const res = await fetch('/api/departments/1/people', {
     method: 'post',
-    // FormData always encodes as multipart/form-data so urlencoded data needs to be converted
-    body: new URLSearchParams(formData)
+    body: data
   })
+
   assert.equal(res.status, 200)
   const id = (await res.json()).id
 

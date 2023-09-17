@@ -22,17 +22,28 @@ describe('Widget', function () {
 
 export function checkRenderedPerson (out, expected) {
   assert.equal(out.tagName, 'DIV')
-  assert.equal(out.children.length, 2)
+  assert.equal(out.children.length, 7)
 
   const title = out.children[0]
   assert.equal(title.tagName, 'H3')
   assert.equal(title.innerText, `${expected.title} ${expected.name}`)
 
-  const body = out.children[1]
-  const split = body.innerText.split('\n')
-  assert.equal(split[0], `Position: ${expected.position}`)
-  assert.equal(split[1], `Office Hours: ${expected.officeHours}`)
-  assert.equal(split[2], `Office Location: ${expected.officeLocation}`)
-  assert.equal(split[3], `Email: ${expected.email}`)
-  assert.equal(split[4], `Phone: ${expected.phone}`)
+  const image = out.children[1]
+  assert.equal(image.tagName, 'DIV')
+
+  const text1 = out.children[2]
+  assert.equal(text1.tagName, 'P')
+  assert.equal(text1.innerText, `Position: ${expected.position}`)
+  const text2 = out.children[3]
+  assert.equal(text2.tagName, 'P')
+  assert.equal(text2.innerText, `Office Hours: ${expected.officeHours}`)
+  const text3 = out.children[4]
+  assert.equal(text3.tagName, 'P')
+  assert.equal(text3.innerText, `Office Location: ${expected.officeLocation}`)
+  const text4 = out.children[5]
+  assert.equal(text4.tagName, 'P')
+  assert.equal(text4.innerText, `Email: ${expected.email}`)
+  const text5 = out.children[6]
+  assert.equal(text5.tagName, 'P')
+  assert.equal(text5.innerText, `Phone: ${expected.phone}`)
 }

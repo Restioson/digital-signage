@@ -31,7 +31,11 @@
   <p>
     This is the template format of the excel file you are to upload. Please
     ensure that the headers are have the exact same names. The data in the
-    entries can be whatever you would like.
+    entries can be whatever you would like. If you do not wish to upload certain
+    data simply leave those entries blank like in the format example picture. If
+    you want pictures of people in the department then put the name of the image
+    in the image name field and upload a zip folder containing those images.
+    Ensure that the image names are correct to what's in the excel file.
   </p>
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
   <form
@@ -40,10 +44,12 @@
     class="post-form"
     enctype="multipart/form-data"
   >
-    <label for="add_table"
-      >Upload an Excel file of department information:</label
-    >
+    <label for="add_table">Upload an excel file of the department info:</label>
     <input type="file" name="add_table" id="add_table" accept=".xlsx, .xls" />
+    <label for="images_folder"
+      >Upload a zip folder of all the images of the department staff:</label
+    >
+    <input type="file" name="images_folder" id="images_folder" accept=".zip" />
     <button type="submit">Submit</button>
     <p hidden id="status-message"></p>
   </form>

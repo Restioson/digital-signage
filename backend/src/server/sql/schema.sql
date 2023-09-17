@@ -46,6 +46,8 @@ CREATE TABLE IF NOT EXISTS people (
   department INTEGER NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   full_name TEXT NOT NULL,
+  mime_type TEXT NOT NULL,
+  image_data BLOB NOT NULL,
   position TEXT NOT NULL,
   office_hours TEXT NOT NULL,
   office_location TEXT NOT NULL,
