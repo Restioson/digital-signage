@@ -14,7 +14,7 @@ export class Person extends Widget {
    * @param {string} department the departments in which the person works
    * @param {string} position the person's position
    * @param {string} title the person's title
-   * @param {bytes} imageData the image blob
+   * @param {string} name the person's name
    * @param {string} officeHours the person's office hours
    * @param {string} officeLocation the person's office location
    * @param {string} email the person's email address
