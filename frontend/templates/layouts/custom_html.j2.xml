@@ -1,0 +1,18 @@
+<template>
+  <name>Custom HTML</name>
+  <properties>
+    <property>
+      <name>HTML</name>
+      <variable>html</variable>
+      <type>html</type>
+      <!-- prettier-ignore -->
+      <default><![CDATA[ <p>hello! act as if this is straight inside the &lt;body&gt;tag :)</p> ]]></default>
+    </property>
+  </properties>
+
+  <page>
+    <html>
+      {{ html }}
+    </html>
+  </page>
+</template>
