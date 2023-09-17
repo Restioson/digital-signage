@@ -1,0 +1,42 @@
+<template>
+  <name>Image</name>
+  <properties>
+    <property>
+      <name>Image to display</name>
+      <variable>image</variable>
+      <type>file_or_url</type>
+      <default
+        ><![CDATA[https://uct.ac.za/sites/default/files/styles/standard_lg/public/content_migration/uct_ac_za/48/images/uctuppercampus.jpg]]></default
+      >
+    </property>
+
+    <advanced>
+      <property>
+        <name>Image layout CSS</name>
+        <variable>css</variable>
+        <type>html</type>
+        <!-- prettier-ignore -->
+        <default>
+<![CDATA[
+img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+]]>
+                </default>
+      </property>
+    </advanced>
+  </properties>
+
+  <page>
+    <!-- prettier-ignore -->
+    <style>
+            {{ css }}
+        </style>
+
+    <html>
+      <img src="{{ image }}" />
+    </html>
+  </page>
+</template>
