@@ -1,5 +1,5 @@
 <rotation html:id="pages">
-  {%- for page in pages -%}
-    {{ page }}
+  {%- for duration, page in pages -%}
+    <dummy duration="{{ duration }}"> {{ page }} </dummy>
   {%- endfor -%}
 </rotation>

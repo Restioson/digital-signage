@@ -272,18 +272,19 @@ def preview_display(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
+    db = DatabaseController.get()
     group = DisplayGroup.from_form(
         department_id,
         flask.request.form,
         flask.request.files,
-        DatabaseController.get(),
+        db,
         is_preview=True,
     )
     return render_template(
         "display.j2",
         display_config={
             "department": department_id,
-            "layout": group.layout_xml,
+            "layout": group.render(db),
         },
     )
 

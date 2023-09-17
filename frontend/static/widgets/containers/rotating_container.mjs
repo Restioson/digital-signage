@@ -25,6 +25,10 @@ export class RotatingContainer extends DeserializableWidget {
   build () {
     return new WithRefresh({
       refresh: async () => {
+        if (this.children.length === 0) {
+          return false
+        }
+
         this.timeSpentAtChild += 1
 
         if (this.timeSpentAtChild >= this.children[this.childIndex].duration) {

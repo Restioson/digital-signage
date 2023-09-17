@@ -30,6 +30,9 @@ function setupAddPage () {
     templateSelect.name = `template-page-${pageNo}`
     choiceOfFieldset(templateSelect, fieldset, 'template', {})
 
+    const templateDuration = template.querySelector('.template-duration')
+    templateDuration.name = `duration-page-${pageNo}`
+
     for (const elt of template.querySelectorAll('[data-variable-name]')) {
       elt.name = `page-${pageNo}-template-${elt.dataset.variableName}`
     }

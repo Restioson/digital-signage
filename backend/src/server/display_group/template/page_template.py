@@ -3,6 +3,7 @@ from typing import Any
 
 from bs4 import BeautifulSoup
 from flask import render_template_string
+from markupsafe import Markup, escape
 
 from server.display_group.template import TemplateProperties
 from server.display_group.template import TemplateProperty
@@ -38,14 +39,13 @@ class PageTemplate:
     def from_sql(cursor: sqlite3.Cursor, row: tuple):
         row = sqlite3.Row(cursor, row)
         template = PageTemplate.from_xml_string(row["xml"])
-        template.id = int(row["id"])
+        template.id = row["id"]
         return template
 
     @staticmethod
     def from_xml_string(xml: str):
         """Deserialize the given XML string into a Template"""
         soup = BeautifulSoup(xml, "lxml-xml")
-        print(soup.find("page").decode_contents())
         return PageTemplate(
             soup.find("name").text,
             xml,
@@ -58,6 +58,20 @@ class PageTemplate:
             f"Properties:{self.properties}\n\nLayout:{self.layout_template}"
         )
 
-    def render_template(self, values: dict[str, Any]) -> str:
+    def render_template(self, properties: dict[str, Any]) -> str:
         """Render the template to XML"""
-        return render_template_string(self.layout_template, **values)
+
+        for prop in properties:
+            template_property = self.properties.get_property(prop)
+
+            if not template_property:
+                raise RuntimeError(f"Unknown template property {prop}")
+
+            typ = template_property.type
+
+            if typ == "html":
+                properties[prop] = Markup(properties[prop])
+            elif typ == "xml-attribute":
+                properties[prop] = escape(properties[prop])
+
+        return render_template_string(self.layout_template, **properties)

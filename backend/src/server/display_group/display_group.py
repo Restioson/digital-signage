@@ -1,10 +1,11 @@
+import json
 import os
 import sqlite3
 from typing import Optional
 import uuid
 
 from flask import render_template
-from markupsafe import Markup, escape
+from markupsafe import Markup
 from werkzeug.datastructures import ImmutableMultiDict
 
 from server.department.file import File
@@ -19,12 +20,12 @@ class DisplayGroup:
     def __init__(
         self,
         name: str,
-        layout_xml: str,
+        pages: list[(int, dict)],
         content_streams: Optional[list[ContentStream]] = None,
         group_id: Optional[int] = None,
     ):
         self.name = name
-        self.layout_xml = layout_xml
+        self.pages = pages
         self.content_streams = content_streams or []
         self.id = group_id
 
@@ -37,17 +38,17 @@ class DisplayGroup:
         is_preview=False,
     ):
         pages = {
-            prop[14:]: {
-                "template": db.fetch_page_template_by_id(form.get(prop)),
+            int(prop[14:]): {
+                "template": template,
                 "properties": dict(),
             }
-            for prop in form.keys()
+            for prop, template in form.items()
             if prop.startswith("template-page-")
         }
 
         for prop, file in files.items():
             tokens = prop.split("-", maxsplit=4)
-            page_no = tokens[1]
+            page_no = int(tokens[1])
             variable_name = tokens[3]
             page = pages[page_no]
             ext = os.path.splitext(file.filename)[1]
@@ -66,12 +67,12 @@ class DisplayGroup:
             )
 
             url = f"/api/departments/{department_id}/files/{name}"
-            pages[page_no]["properties"][variable_name] = url
+            page["properties"][variable_name] = url
 
         for prop in form.keys():
             if prop.startswith("page-"):
                 tokens = prop.split("-", maxsplit=4)
-                page_no = tokens[1]
+                page_no = int(tokens[1])
                 variable_name = tokens[3]
                 page = pages[page_no]
 
@@ -80,32 +81,36 @@ class DisplayGroup:
                 else:
                     val = form[prop]
 
-                template_property = page["template"].properties.get_property(
-                    variable_name
-                )
-
-                if not template_property:
-                    raise RuntimeError(f"Unknown template property {variable_name}")
-
-                typ = template_property.type
-
-                if typ == "html":
-                    val = Markup(val)
-                elif typ == "xml-attribute":
-                    val = escape(val)
-
                 page["properties"][variable_name] = val
+            elif prop.startswith("duration-page-"):
+                page_no = int(prop[14:])
+                pages[page_no]["duration"] = int(form[prop])
 
         pages = [
-            Markup(page["template"].render_template(page["properties"]))
+            (page["template"], page["duration"], page["properties"])
             for page_no, page in sorted(pages.items())
         ]
 
-        layout_xml = render_template("display_layout.j2.xml", pages=pages)
-
         return DisplayGroup(
             name=form["name"],
-            layout_xml=layout_xml,
+            pages=pages,
+        )
+
+    def render(self, db):
+        print(json.dumps(self.pages))
+        return render_template(
+            "display_layout.j2.xml",
+            pages=[
+                (
+                    duration,
+                    Markup(
+                        db.fetch_page_template_by_id(template).render_template(
+                            properties
+                        )
+                    ),
+                )
+                for (template, duration, properties) in self.pages
+            ],
         )
 
     @staticmethod
@@ -116,5 +121,5 @@ class DisplayGroup:
         return DisplayGroup(
             group_id=row["id"],
             name=row["name"],
-            layout_xml=row["layout_xml"],
+            pages=json.loads(row["pages_json"]),
         )

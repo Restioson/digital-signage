@@ -76,7 +76,6 @@ export class WithRefresh extends Widget {
   }
 
   getElement () {
-    console.log(this.root)
     return this.root.querySelector(`.${classPrefix}${this.elementId}`)
   }
 

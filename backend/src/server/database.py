@@ -60,19 +60,18 @@ class DatabaseController:
             with app.open_resource("sql/add_default_data.sql", mode="r") as f:
                 self.db.cursor().executescript(f.read())
 
-        # Wipe all templates if debugging (but not in tests as DB is already wipe)
-        # This makes hot reloading work for them too
-        if app.debug and not app.config["TESTING"]:
-            self.db.cursor().executescript("DELETE FROM templates;")
+        # Reload builtin templates
+        self.db.cursor().executescript(
+            "DELETE FROM templates WHERE id LIKE 'builtin%';"
+        )
 
-        if len(self.fetch_all_page_templates()) == 0:
-            path_prefix = "" if os.getcwd().endswith("frontend") else "frontend/"
-            for path in os.scandir(f"{path_prefix}templates/layouts"):
-                if not path.is_file():
-                    continue
+        path_prefix = "" if os.getcwd().endswith("frontend") else "frontend/"
+        for path in os.scandir(f"{path_prefix}templates/layouts"):
+            if not path.is_file():
+                continue
 
-                with open(path) as f:
-                    self.add_page_template(f.read())
+            with open(path) as f:
+                self.add_page_template(f"builtin/{path.name}", f.read())
 
     def post_content(self, content: FreeFormContent) -> (int, int):
         """Insert the given FreeFormContent and returns the inserted row id"""
@@ -268,9 +267,9 @@ class DatabaseController:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO display_groups (name, department, layout_xml)"
+                "INSERT INTO display_groups (name, department, pages_json)"
                 " VALUES (?, ?, ?)",
-                (group.name, department_id, group.layout_xml),
+                (group.name, department_id, json.dumps(group.pages)),
             )
         return cursor.lastrowid
 
@@ -282,7 +281,7 @@ class DatabaseController:
         cursor.row_factory = DisplayGroup.from_sql
         return list(
             cursor.execute(
-                "SELECT id, name, layout_xml FROM display_groups WHERE department = ?",
+                "SELECT id, name, pages_json FROM display_groups WHERE department = ?",
                 (department_id,),
             )
         )
@@ -293,7 +292,7 @@ class DatabaseController:
         cursor.row_factory = DisplayGroup.from_sql
         return next(
             cursor.execute(
-                "SELECT id, name, department, layout_xml FROM display_groups"
+                "SELECT id, name, department, pages_json FROM display_groups"
                 " WHERE id = ?",
                 (group_id,),
             ),
@@ -539,7 +538,7 @@ class DatabaseController:
         cursor.row_factory = PageTemplate.from_sql
         return list(cursor.execute("SELECT id, xml FROM templates"))
 
-    def fetch_page_template_by_id(self, template_id: int) -> Optional[PageTemplate]:
+    def fetch_page_template_by_id(self, template_id: str) -> Optional[PageTemplate]:
         cursor = self.db.cursor()
         cursor.row_factory = PageTemplate.from_sql
         return next(
@@ -549,9 +548,15 @@ class DatabaseController:
             None,
         )
 
-    def add_page_template(self, template_xml: str) -> int:
-        """Adds the given page template, returning its id"""
+    def add_page_template(self, template_id: str, template_xml: str):
+        """Adds the given page template"""
         with self.db:
             cursor = self.db.cursor()
-            cursor.execute("INSERT INTO templates (xml) VALUES (?)", (template_xml,))
+            cursor.execute(
+                "INSERT INTO templates (id, xml) VALUES (?, ?)",
+                (
+                    template_id,
+                    template_xml,
+                ),
+            )
         return cursor.lastrowid
