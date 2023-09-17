@@ -1,0 +1,25 @@
+<template>
+  <name>Display webpage</name>
+  <properties>
+    <property>
+      <name>URL to display</name>
+      <variable>src</variable>
+      <type>xml-attribute</type>
+      <default>https://example.com/</default>
+    </property>
+  </properties>
+
+  <page>
+    <style>
+      iframe {
+        height: 100%;
+        width: 100%;
+        border: none;
+      }
+    </style>
+
+    <html>
+      <iframe src="{{ src }}" />
+    </html>
+  </page>
+</template>
