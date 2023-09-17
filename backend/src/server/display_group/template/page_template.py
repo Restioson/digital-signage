@@ -39,7 +39,7 @@ class PageTemplate:
     def from_sql(cursor: sqlite3.Cursor, row: tuple):
         row = sqlite3.Row(cursor, row)
         template = PageTemplate.from_xml_string(row["xml"])
-        template.id = int(row["id"])
+        template.id = row["id"]
         return template
 
     @staticmethod
