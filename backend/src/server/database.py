@@ -4,7 +4,7 @@ import sqlite3
 import time
 from threading import Timer
 import base64
-from typing import Optional
+from typing import Optional, Tuple
 import flask
 from server import free_form_content
 from server.department.department import Department
@@ -355,6 +355,15 @@ class DatabaseController:
             ),
             None,
         )
+
+    def fetch_person_image_by_id(self, person_id: int) -> Optional[Tuple[str, bytes]]:
+        """Fetch a specific person's image data and MIME type
+        from the database based on their ID"""
+        cursor = self.db.cursor()
+        return cursor.execute(
+            "SELECT mime_type, image_data FROM people WHERE id = ?",
+            (person_id,),
+        ).fetchone()
 
     # returns user from db based on email
     def get_user(self, email: str):

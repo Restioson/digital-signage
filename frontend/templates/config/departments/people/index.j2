@@ -34,7 +34,7 @@
             <td>{{ person.title }}</td>
             <td>
               <img
-                src="data:{{ person.mime_type }};base64,{{ person.image_data }}"
+                src="/api/departments/{{ department.id }}/people/{{ person.id }}/image"
                 alt="{{ person.name }}"
               />
             </td>

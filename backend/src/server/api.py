@@ -151,6 +151,21 @@ def person(department_id: int, person_id: int):
         flask.abort(404)
 
 
+@blueprint.route(
+    "/departments/<int:department_id>/people/<int:person_id>/image", methods=["GET"]
+)
+def person_image(department_id: int, person_id: int):
+    """Fetch the image of a person"""
+    image_data = DatabaseController.get().fetch_person_image_by_id(person_id)
+
+    if image_data:
+        mime_type = image_data[0]
+        blob = image_data[1]
+        return Response(response=blob, mimetype=mime_type, status=HTTPStatus.OK)
+    else:
+        flask.abort(404)
+
+
 @blueprint.route("/departments/<int:department_id>/uploadtable", methods=["POST"])
 def upload_table(department_id: int):
     """The /api/departments/<dept_id>/upload_table endpoint.

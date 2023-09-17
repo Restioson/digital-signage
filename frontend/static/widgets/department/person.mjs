@@ -91,7 +91,9 @@ export class Person extends Widget {
 
   static makeImage (url, value) {
     const imageElement = document.createElement('img')
-    imageElement.src = url
+    imageElement.src = `/api/departments/${this.department}/people/${
+      this.id
+    }/image`
     imageElement.className = 'person_image'
     return new Visibility({
       visible: Boolean(value),
