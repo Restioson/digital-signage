@@ -9,7 +9,6 @@ import { Container } from '../containers/container.mjs'
 import { WithHTMLAttrs } from './with_html_attrs.mjs'
 import { XMLTag } from './xml_tag.mjs'
 import { HtmlWidget } from '../html.mjs'
-import { ScriptWidget } from '../script.mjs'
 import { StyleWidget } from '../style.mjs'
 import { RotatingContainer } from '../containers/rotating_container.mjs'
 import { StaticRefresh } from '../dynamic/static_refresh.mjs'
@@ -29,7 +28,7 @@ export function deserializeWidgetFromXML (xml) {
     ignorePiTags: true,
     ignoreAttributes: false,
     preserveOrder: true,
-    allowBooleanAttributes: true,
+    allowBooleanAttributes: false,
     parseAttributeValue: true,
     processEntities: false,
     stopNodes: ['*.html', '*.style', '*.script'],
@@ -100,8 +99,6 @@ function deserializeWidgetRaw (tag) {
       return Department.fromXML(tag)
     case 'content-stream':
       return ContentStream.fromXML(tag)
-    case 'script':
-      return ScriptWidget.fromXML(tag)
     case 'style':
       return StyleWidget.fromXML(tag)
     case 'html':

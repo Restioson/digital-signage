@@ -22,7 +22,6 @@ export class HtmlWidget extends DeserializableWidget {
   }
 
   build () {
-    const scripts = this.element.querySelectorAll('script')
     Root.getInstance().watchElement({
       element: this.element,
       onAdd: () => {

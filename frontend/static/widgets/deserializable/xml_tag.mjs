@@ -30,7 +30,8 @@ export class XMLTag {
    * Returns the text inside this element.
    */
   text () {
-    return this._children.find(child => child['#text'])['#text']
+    const child = this._children.find(child => child['#text'])
+    return child ? child['#text'] : ''
   }
 
   /**
