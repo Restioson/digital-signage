@@ -160,13 +160,15 @@ def upload_table(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
-    # Initialize zip_file as an empty ZipFile
-    zip_file = zipfile.ZipFile(io.BytesIO(), "r")
-
     try:
-        if "images_folder" in flask.request.files:
-            # If images_folder is provided, set zip_file accordingly
+        try:
             zip_file = zipfile.ZipFile(flask.request.files["images_folder"], "r")
+        except Exception:
+            # If it fails, load an empty zip file from the server
+            empty_zip_path = "backend/src/server/EmptyZip.zip"
+            with open(empty_zip_path, "rb") as empty_zip_file:
+                empty_zip_contents = empty_zip_file.read()
+            zip_file = zipfile.ZipFile(io.BytesIO(empty_zip_contents), "r")
 
         excel_file = flask.request.files["add_table"]
         df = pd.read_excel(excel_file, engine="openpyxl")
