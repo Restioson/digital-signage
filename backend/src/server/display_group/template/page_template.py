@@ -1,5 +1,6 @@
 import sqlite3
 from typing import Any
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 from flask import render_template_string
@@ -34,6 +35,7 @@ class PageTemplate:
         app.jinja_env.filters["is_property"] = lambda val: isinstance(
             val, TemplateProperty
         )
+        app.jinja_env.filters["youtube_code"] = youtube_code
 
     @staticmethod
     def from_sql(cursor: sqlite3.Cursor, row: tuple):
@@ -75,3 +77,12 @@ class PageTemplate:
                 properties[prop] = escape(properties[prop])
 
         return render_template_string(self.layout_template, **properties)
+
+
+def youtube_code(link: str) -> str:
+    parsed = urlparse(link)
+
+    if "youtube.com" in parsed.netloc:
+        return parsed.query.split("=")[1]
+    else:
+        return parsed.path[1:].split("?")[0]
