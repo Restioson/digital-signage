@@ -340,9 +340,7 @@ describe('API Integration', function () {
           office_location: 'CS302',
           phone: '021 111 1111',
           position: 'Professor',
-          title: 'Prof',
-          image_data: '',
-          mime_type: ''
+          title: 'Prof'
         }
 
         await checkUploadPerson(formData)
@@ -356,9 +354,7 @@ describe('API Integration', function () {
           office_location: 'CS302',
           phone: '021 111 1111',
           position: 'Professor',
-          title: 'Prof',
-          image_data: '',
-          mime_type: ''
+          title: 'Prof'
         }
 
         const id = await checkUploadPerson(formData)

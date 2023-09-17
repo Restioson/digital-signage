@@ -14,8 +14,6 @@ export class Person extends Widget {
    * @param {string} department the departments in which the person works
    * @param {string} position the person's position
    * @param {string} title the person's title
-   * @param {string} name the person's name
-   * @param {string} mimeType the mime type of the image blob
    * @param {bytes} imageData the image blob
    * @param {string} officeHours the person's office hours
    * @param {string} officeLocation the person's office location
@@ -28,8 +26,6 @@ export class Person extends Widget {
     position,
     title,
     name,
-    mimeType,
-    imageData,
     officeHours,
     officeLocation,
     email,
@@ -41,8 +37,6 @@ export class Person extends Widget {
     this.position = position
     this.title = title
     this.name = name
-    this.mimeType = mimeType
-    this.imageData = imageData
     this.officeHours = officeHours
     this.officeLocation = officeLocation
     this.email = email
@@ -61,8 +55,6 @@ export class Person extends Widget {
       position: obj.position,
       title: obj.title,
       name: obj.name,
-      mimeType: obj.mime_type,
-      imageData: obj.image_data,
       officeHours: obj.office_hours,
       officeLocation: obj.office_location,
       email: obj.email,

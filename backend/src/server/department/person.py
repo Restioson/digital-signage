@@ -35,8 +35,6 @@ class Person:
         return {
             "title": self.title,
             "name": self.name,
-            "mime_type": self.mime_type,
-            "image_data": self.image_data,
             "position": self.position,
             "office_hours": self.office_hours,
             "office_location": self.office_location,
@@ -104,11 +102,11 @@ class Person:
             lecturer_id=row["id"],
             title=row["title"],
             name=row["full_name"],
-            mime_type=row["mime_type"],
-            image_data=row["image_data"],
             position=row["position"],
             office_hours=row["office_hours"],
             office_location=row["office_location"],
             email=row["email"],
             phone=row["phone"],
+            image_data="",
+            mime_type="",
         )
