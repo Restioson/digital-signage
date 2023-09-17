@@ -12,7 +12,9 @@
     setupPostForms();
   </script>
 
-  <form action="/api/register" method="post" name="register">
+
+  {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
+  <form action="/api/register?next={{ next }}" method="post" name="register">
     <label
       >Email Address:
       <input type="email" id="email" name="email" required />

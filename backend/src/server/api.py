@@ -250,7 +250,15 @@ def registration_route():
             )
             user = User(form["email"], form["screen_name"])
             login_user(user)
-            return redirect(url_for("config_view.index"))
+
+            redirect_to = flask.request.args.get("next")
+            # url_has_allowed_host_and_scheme should check if the url is safe
+            if redirect_to and not url_has_allowed_host_and_scheme(
+                redirect_to, flask.request.host
+            ):
+                return flask.abort(400)
+
+            return flask.redirect(redirect_to or flask.url_for("config_view.index"))
 
         else:
             flask.abort(401)
@@ -267,7 +275,9 @@ def login_route():
 
             redirect_to = flask.request.args.get("next")
             # url_has_allowed_host_and_scheme should check if the url is safe
-            if not url_has_allowed_host_and_scheme(redirect_to, flask.request.host):
+            if redirect_to and not url_has_allowed_host_and_scheme(
+                redirect_to, flask.request.host
+            ):
                 return flask.abort(400)
 
             return flask.redirect(redirect_to or flask.url_for("config_view.index"))
