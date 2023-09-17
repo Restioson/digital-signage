@@ -159,7 +159,7 @@
         </label>
 
         {%- for template in templates -%}
-          <fieldset class="template-{{ template.id }}">
+          <fieldset class="template-{{ template.id.replace('.', '-').replace('/', '-') }}">
             <legend>{{ template.name }}</legend>
 
             {{ render_props_and_groups(template.properties.root) }}
