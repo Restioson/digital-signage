@@ -53,13 +53,6 @@ body,
   border: 3px solid #000;
 }
 
-.content-stream img {
-  display: flex;
-  width: 100%;
-  height: 80%;
-  object-fit: contain;
-}
-
 .person img {
   display: flex;
   max-width: 100%;
