@@ -1,6 +1,7 @@
 import { Container } from '../containers/container.mjs'
 import { Visibility } from '../visibility.mjs'
 import { Widget } from '../widget.mjs'
+import { Root } from '../root.mjs'
 
 /**
  * A {@link Widget} which displays a people and all of their details.
@@ -65,7 +66,8 @@ export class Person extends Widget {
       officeHours: obj.office_hours,
       officeLocation: obj.office_location,
       email: obj.email,
-      phone: obj.phone
+      phone: obj.phone,
+      department: Root.getInstance().getDepartment()
     })
   }
 
@@ -89,11 +91,9 @@ export class Person extends Widget {
     })
   }
 
-  static makeImage (url, value) {
+  static makeImage (department, id, value) {
     const imageElement = document.createElement('img')
-    imageElement.src = `/api/departments/${this.department}/people/${
-      this.id
-    }/image`
+    imageElement.src = `/api/departments/${department}/people/${id}/image`
     imageElement.className = 'person_image'
     return new Visibility({
       visible: Boolean(value),
@@ -105,10 +105,7 @@ export class Person extends Widget {
     return new Container({
       children: [
         Person.makeHeader(`${this.title} ${this.name}`),
-        Person.makeImage(
-          `data:${this.mimeType};base64,${this.imageData}`,
-          this.imageData
-        ),
+        Person.makeImage(this.department, this.id, this.imageData),
         Person.makeText(
           `Position: ${this.position}`,
           'person_position',
