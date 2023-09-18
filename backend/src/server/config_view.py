@@ -31,7 +31,7 @@ def list_departments():
     return render_template(
         "config/departments/index.j2",
         departments=DatabaseController.get().fetch_all_departments(
-            fetch_display_groups=True,
+            fetch_displays=True,
             fetch_content_streams=True,
         ),
     )
@@ -99,8 +99,8 @@ def edit_person(department_id: int, person_id: int):
     )
 
 
-@blueprint.route("/departments/<int:department_id>/display_group/add")
-def add_display_group(department_id: int):
+@blueprint.route("/departments/<int:department_id>/display/add")
+def add_display(department_id: int):
     """Return the page to add a display group"""
     db = DatabaseController.get()
     if not db.fetch_department_by_id(department_id):
@@ -110,7 +110,7 @@ def add_display_group(department_id: int):
     streams.filter_to_department(department_id)
 
     return render_template(
-        "config/display_group/add.j2",
+        "config/display/add.j2",
         templates=db.fetch_all_page_templates(),
         existing=None,
         streams=streams,
@@ -118,8 +118,8 @@ def add_display_group(department_id: int):
     )
 
 
-@blueprint.route("/departments/<int:department_id>/display_group/<int:group_id>")
-def edit_display_group(department_id: int, group_id: int):
+@blueprint.route("/departments/<int:department_id>/display/<int:display_id>")
+def edit_display(department_id: int, display_id: int):
     """Return the page to edit a display group"""
     db = DatabaseController.get()
     if not db.fetch_department_by_id(department_id):
@@ -129,9 +129,9 @@ def edit_display_group(department_id: int, group_id: int):
     streams.filter_to_department(department_id)
 
     return render_template(
-        "config/display_group/add.j2",
+        "config/display/add.j2",
         templates=db.fetch_all_page_templates(),
-        existing=db.fetch_display_group_by_id(group_id),
+        existing=db.fetch_display_by_id(display_id),
         streams=streams,
         department_id=department_id,
     )
@@ -142,29 +142,29 @@ def add_content_stream():
     """Return the page to add a content stream"""
 
     db = DatabaseController.get()
-    group = flask.request.args.get("group")
+    display = flask.request.args.get("group")
     department = flask.request.args.get("department")
 
-    if group and department:
+    if display and department:
         flask.abort(400)
 
-    if group:
-        group = db.fetch_display_group_by_id(int(group))
-        if not group:
+    if display:
+        display = db.fetch_display_by_id(int(display))
+        if not display:
             flask.abort(404)
         return render_template(
-            "config/content_stream/add.j2", display_group=group, department=None
+            "config/content_stream/add.j2", display=display, department=None
         )
     elif department:
         department = db.fetch_department_by_id(int(department))
         if not department:
             flask.abort(404)
         return render_template(
-            "config/content_stream/add.j2", display_group=None, department=department
+            "config/content_stream/add.j2", display=None, department=department
         )
     else:
         return render_template(
-            "config/content_stream/add.j2", display_group=None, department=None
+            "config/content_stream/add.j2", display=None, department=None
         )
 
 

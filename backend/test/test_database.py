@@ -5,7 +5,7 @@ import typing
 import pytest
 from server.database import DatabaseController
 from server.department.department import Department
-from server.display_group import DisplayGroup
+from server.display import Display
 from server.free_form_content import (
     Text,
     LocalImage,
@@ -208,24 +208,24 @@ def test_create_dept(database: DatabaseController):
     assert depts[1].bio == dept.bio, "bios should match"
 
 
-def test_create_display_group(database: DatabaseController):
+def test_create_display(database: DatabaseController):
     assert (
-        len(database.fetch_all_display_groups_in_dept(1)) == 1
+        len(database.fetch_all_displays_in_dept(1)) == 1
     ), "DB should start with 1 default display group"
 
-    group = DisplayGroup("Test Group", "<clock/>")
-    group_id = database.upsert_display_group(group, 1)
-    groups = database.fetch_all_display_groups_in_dept(1)
-    assert len(groups) == 2, "Only 1 department should be inserted"
+    display = Display("Test Display", "<clock/>")
+    display_id = database.upsert_display(display, 1)
+    displays = database.fetch_all_displays_in_dept(1)
+    assert len(displays) == 2, "Only 1 department should be inserted"
 
-    assert groups[0].id == 1, "default group id should be 1"
-    assert groups[0].name == "Default", "default name should be 'Default'"
+    assert displays[0].id == 1, "default group id should be 1"
+    assert displays[0].name == "Default", "default name should be 'Default'"
 
-    assert groups[1].id == group_id, "group ids should match"
-    assert groups[1].name == group.name, "names should match"
-    assert groups[1].pages == group.pages, "pages should match"
+    assert displays[1].id == display_id, "group ids should match"
+    assert displays[1].name == display.name, "names should match"
+    assert displays[1].pages == display.pages, "pages should match"
 
 
-def test_display_group_has_valid_dept(database: DatabaseController):
+def test_display_has_valid_dept(database: DatabaseController):
     with pytest.raises(Exception):
-        database.upsert_display_group(DisplayGroup("Test Group 2", 301, {}))
+        database.upsert_display(Display("Test Group 2", 301, {}))

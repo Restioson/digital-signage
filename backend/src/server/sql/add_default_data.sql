@@ -3,7 +3,7 @@ INSERT INTO
 VALUES
   (1, 'Default', 'Default department');
 INSERT INTO
-  display_groups (id, name, department, pages_json)
+  displays (id, name, department, pages_json)
 VALUES
   (
     1,

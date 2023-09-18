@@ -1,7 +1,7 @@
 from typing import Optional
 
-from server.display_group.template.template_property import TemplateProperty
-from server.display_group.template.template_property_group import TemplatePropertyGroup
+from server.display.template.template_property import TemplateProperty
+from server.display.template.template_property_group import TemplatePropertyGroup
 
 from bs4 import Tag
 

@@ -8,7 +8,7 @@ from server import free_form_content
 from server.department.department import Department
 from server.department.file import File
 from server.department.person import Person
-from server.display_group import DisplayGroup, PageTemplate
+from server.display import Display, PageTemplate
 from server.free_form_content import FreeFormContent, BinaryContent
 from server.free_form_content.content_stream import ContentStream
 from server.grouped_content_streams import GroupedContentStreams
@@ -174,11 +174,11 @@ class DatabaseController:
             return dept_id
 
     def fetch_all_departments(
-        self, fetch_display_groups=False, fetch_content_streams=False
+        self, fetch_displays=False, fetch_content_streams=False
     ) -> list[Department]:
         """Fetch all departments (but does not fetch their people).
 
-        If fetch_display_groups is True, display groups for this
+        If fetch_displays is True, display groups for this
         Department will also be fetched.
 
         If fetch_content_streams is True, content streams for this
@@ -191,21 +191,17 @@ class DatabaseController:
             cursor.execute("SELECT id, name, bio FROM departments ORDER BY id")
         )
 
-        if fetch_display_groups:
+        if fetch_displays:
             for department in departments:
-                department.display_groups = self.fetch_all_display_groups_in_dept(
-                    department.id
-                )
+                department.displays = self.fetch_all_displays_in_dept(department.id)
 
         if fetch_content_streams:
             streams = self.fetch_all_content_streams()
             for department in departments:
                 department.content_streams = streams.by_department.get(department.id)
 
-                for display_group in department.display_groups:
-                    display_group.content_streams = streams.by_display_group.get(
-                        display_group.id
-                    )
+                for display in department.displays:
+                    display.content_streams = streams.by_display.get(display.id)
 
         return departments
 
@@ -213,7 +209,7 @@ class DatabaseController:
         self,
         department_id: int,
         fetch_people=False,
-        fetch_display_groups=False,
+        fetch_displays=False,
         fetch_files=False,
     ) -> Optional[Department]:
         """Fetch the given Department by its ID"""
@@ -253,67 +249,64 @@ class DatabaseController:
                 )
             )
 
-        if dept and fetch_display_groups:
-            dept.display_groups = self.fetch_all_display_groups_in_dept(dept.id)
+        if dept and fetch_displays:
+            dept.displays = self.fetch_all_displays_in_dept(dept.id)
 
         return dept
 
-    def reserve_display_group_id(self, department_id: int) -> int:
+    def reserve_display_id(self, department_id: int) -> int:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO display_groups (name, department, pages_json)"
+                "INSERT INTO displays (name, department, pages_json)"
                 " VALUES ('', ?, '')",
                 (department_id,),
             )
         return cursor.lastrowid
 
-    def upsert_display_group(self, group: DisplayGroup, department_id: int) -> int:
+    def upsert_display(self, display: Display, department_id: int) -> int:
         """Create a display ground and return its row id."""
 
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "REPLACE INTO display_groups (id, name, department, pages_json)"
+                "REPLACE INTO displays (id, name, department, pages_json)"
                 " VALUES (?, ?, ?, ?)",
-                (group.id, group.name, department_id, json.dumps(group.pages)),
+                (display.id, display.name, department_id, json.dumps(display.pages)),
             )
         return cursor.lastrowid
 
-    def delete_files_for_group(self, department_id: int, group_id: int):
+    def delete_files_for_display(self, department_id: int, display_id: int):
         with self.db:
             cursor = self.db.cursor()
 
-            # SAFETY: this string substitution is ok since group_id is an int
-            assert isinstance(group_id, int)
+            # SAFETY: this string substitution is ok since display_id is an int
+            assert isinstance(display_id, int)
             cursor.execute(
                 f"DELETE FROM files WHERE department_id = ?"
-                f" AND filename LIKE '_group-{ group_id }-%'",
+                f" AND filename LIKE '_group-{ display_id }-%'",
                 (department_id,),
             )
 
-    def fetch_all_display_groups_in_dept(
-        self, department_id: int
-    ) -> list[DisplayGroup]:
+    def fetch_all_displays_in_dept(self, department_id: int) -> list[Display]:
         """Fetch all display groups from the database"""
         cursor = self.db.cursor()
-        cursor.row_factory = DisplayGroup.from_sql
+        cursor.row_factory = Display.from_sql
         return list(
             cursor.execute(
-                "SELECT id, name, pages_json FROM display_groups WHERE department = ?",
+                "SELECT id, name, pages_json FROM displays WHERE department = ?",
                 (department_id,),
             )
         )
 
-    def fetch_display_group_by_id(self, group_id: int) -> list[DisplayGroup]:
+    def fetch_display_by_id(self, display_id: int) -> list[Display]:
         """Fetch the given display group from the database"""
         cursor = self.db.cursor()
-        cursor.row_factory = DisplayGroup.from_sql
+        cursor.row_factory = Display.from_sql
         return next(
             cursor.execute(
-                "SELECT id, name, department, pages_json FROM display_groups"
-                " WHERE id = ?",
-                (group_id,),
+                "SELECT id, name, department, pages_json FROM displays" " WHERE id = ?",
+                (display_id,),
             ),
             None,
         )
@@ -446,9 +439,9 @@ class DatabaseController:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO content_streams (name, department, display_group) "
+                "INSERT INTO content_streams (name, department, display) "
                 "VALUES (?, ?, ?)",
-                (stream.name, stream.department, stream.display_group),
+                (stream.name, stream.department, stream.display),
             )
         return cursor.lastrowid
 
@@ -460,7 +453,7 @@ class DatabaseController:
         return GroupedContentStreams(
             list(
                 cursor.execute(
-                    "SELECT id, name, display_group, department FROM content_streams"
+                    "SELECT id, name, display, department FROM content_streams"
                 )
             )
         )

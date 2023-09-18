@@ -12,22 +12,21 @@ from server.department.file import File
 from server.free_form_content.content_stream import ContentStream
 
 
-class DisplayGroup:
-    """A DisplayGroup is a template for how a display should look. Many displays
-    can look the same, hence they are grouped like this. Each display group is
-    owned by a department and has a defined layout."""
+class Display:
+    """A Display is a display on which things are displayed.
+    Each display is owned by a department and has a defined layout."""
 
     def __init__(
         self,
         name: str,
         pages: list[(int, dict)],
         content_streams: Optional[list[ContentStream]] = None,
-        group_id: Optional[int] = None,
+        display_id: Optional[int] = None,
     ):
         self.name = name
         self.pages = pages
         self.content_streams = content_streams or []
-        self.id = group_id
+        self.id = display_id
 
     # TODO refactor this if we have time. Weird that it also creates the files
     @staticmethod
@@ -47,18 +46,18 @@ class DisplayGroup:
             if prop.startswith("template-page-")
         }
 
-        if "group_id" in form:
-            group_id = form["group_id"]
+        if "display_id" in form:
+            display_id = form["display_id"]
 
             if not is_preview:
-                db.delete_files_for_group(
-                    department_id, int(group_id)
+                db.delete_files_for_display(
+                    department_id, int(display_id)
                 )  # Wipe old files
 
         elif not is_preview:
-            group_id = db.reserve_display_group_id(department_id)
+            display_id = db.reserve_display_id(department_id)
         else:
-            group_id = None
+            display_id = None
 
         for prop, file in files.items():
             tokens = prop.split("-", maxsplit=4)
@@ -68,7 +67,7 @@ class DisplayGroup:
             ext = os.path.splitext(file.filename)[1]
 
             if not is_preview:
-                name = f"_group-{group_id}-{form['name']}-{prop}{ext}"
+                name = f"_group-{display_id}-{form['name']}-{prop}{ext}"
 
                 db.upload_department_file(
                     File(
@@ -108,10 +107,10 @@ class DisplayGroup:
             for page_no, page in sorted(pages.items())
         ]
 
-        return DisplayGroup(
+        return Display(
             name=form["name"],
             pages=pages,
-            group_id=group_id,
+            display_id=display_id,
         )
 
     def render(self, db):
@@ -133,11 +132,11 @@ class DisplayGroup:
 
     @staticmethod
     def from_sql(cursor: sqlite3.Cursor, row: tuple):
-        """Parse the given SQL row into a DisplayGroup object"""
+        """Parse the given SQL row into a Display object"""
 
         row = sqlite3.Row(cursor, row)
-        return DisplayGroup(
-            group_id=row["id"],
+        return Display(
+            display_id=row["id"],
             name=row["name"],
             pages=json.loads(row["pages_json"]),
         )

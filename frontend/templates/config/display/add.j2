@@ -1,16 +1,16 @@
 {% extends "base.j2" %}
 {% from "macros.j2" import content_stream %}
 
-{%- if existing_pages is not none -%}
-  {% set action = 'Edit a display group' %}
+{%- if existing is not none -%}
+  {% set action = 'Edit a display' %}
 {%- else -%}
-  {% set action = 'Add a display group' %}
+  {% set action = 'Add a display' %}
 {%- endif -%}
 
 {% block title %}{{ action }}{% endblock %}
 {% block head %}
   {{ super() }}
-  {{ css('config/display_groups/add') }}
+  {{ css('config/displays/add') }}
 {% endblock %}
 
 {%- macro render_property(property) -%}
@@ -89,8 +89,8 @@
           </optgroup>
         {%- endfor -%}
 
-        {%- for group, streams in streams.by_display_group.items() -%}
-          <optgroup label="Display group: {{ group }}">
+        {%- for display, streams in streams.by_display.items() -%}
+          <optgroup label="Display: {{ display }}">
             {%- for stream in streams -%}
               <option value="{{ stream.id }}">{{ stream.name }}</option>
             {%- endfor -%}
@@ -147,7 +147,7 @@
 
   <!-- prettier-ignore -->
   <script type="module">
-    import { main } from "{{ url_for('static', filename='config/display_groups/add.mjs') }}";
+    import { main } from "{{ url_for('static', filename='config/displays/add.mjs') }}";
     main("{{ department_id }}", {{ pages|tojson }});
   </script>
 
@@ -155,7 +155,7 @@
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
   <form
     id="display-group-form"
-    action="/api/departments/{{ department_id }}/display_groups"
+    action="/api/departments/{{ department_id }}/displays"
     enctype="multipart/form-data"
     method="post"
     class="post-form"
@@ -164,7 +164,7 @@
     <input id="name" name="name" type="text" required value="{{ name }}" />
 
     {%- if existing is not none -%}
-      <input type="hidden" name="group_id" value="{{ existing.id }}" />
+      <input type="hidden" name="display_id" value="{{ existing.id }}" />
     {%- endif -%}
 
     <template id="new-page-template">

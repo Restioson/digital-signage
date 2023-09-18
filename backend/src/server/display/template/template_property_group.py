@@ -2,7 +2,7 @@ from typing import Optional
 
 from bs4 import Tag
 
-from server.display_group.template.template_property import TemplateProperty
+from server.display.template.template_property import TemplateProperty
 
 
 class TemplatePropertyGroup:
