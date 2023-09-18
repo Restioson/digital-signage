@@ -458,6 +458,12 @@ class DatabaseController:
             list(cursor.execute("SELECT id, name, department FROM content_streams"))
         )
 
+    def fetch_all_content_stream_ids(self) -> list:
+        """Fetch all content stream ids from the database"""
+        cursor = self.db.cursor()
+        cursor.row_factory = lambda _cursor, row: row[0]
+        return list(cursor.execute("SELECT id FROM content_streams"))
+
     def update_loadshedding_schedule(self, region, schedule):
         """Updates the loadshedding schedule for the given region"""
 

@@ -32,11 +32,21 @@ header {
   padding: 10px 0;
 }
 
+h2 {
+  text-align: center;
+}
+
 nav {
   background-color: #666;
   display: flex;
   justify-content: center;
   padding: 10px 0;
+}
+
+a {
+  text-decoration: none;
+  color: #226ea0;
+  font-weight: bold;
 }
 
 nav a,
@@ -46,11 +56,25 @@ header a {
   padding: 10px 20px;
 }
 
+li a {
+  text-decoration: none;
+  color: #226ea0;
+  font-weight: bold;
+}
+
 /* Style for the logout button */
 .user-info a {
   color: white;
   text-decoration: none;
   padding: 5px 10px;
+}
+
+a:hover {
+  color: #c76210;
+}
+
+li a:hover {
+  color: #c76210;
 }
 
 nav a:hover,
@@ -71,6 +95,8 @@ fieldset,
   display: flex;
   flex-direction: column;
   gap: 16px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px 4px  #333;
 }
 
 *[hidden] {
@@ -79,6 +105,7 @@ fieldset,
 
 input[type="text"],
 input[type="email"],
+input[type="password"],
 input[type="tel"] {
   width: 100%;
   padding: 10px;
