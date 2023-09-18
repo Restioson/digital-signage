@@ -31,6 +31,9 @@ header {
   text-align: center;
   padding: 10px 0;
 }
+h2 {
+  text-align: center;
+}
 
 nav {
   background-color: #666;
@@ -71,6 +74,8 @@ fieldset,
   display: flex;
   flex-direction: column;
   gap: 16px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.06);
 }
 
 *[hidden] {
@@ -79,6 +84,7 @@ fieldset,
 
 input[type="text"],
 input[type="email"],
+input[type="password"],
 input[type="tel"] {
   width: 100%;
   padding: 10px;
@@ -143,4 +149,24 @@ img {
 details {
   display: flex;
   flex-direction: column;
+}
+
+li a {
+  text-decoration: none;
+  color: #226ea0;
+  font-weight: bold;
+}
+
+li a:hover {
+  color: #c76210;
+}
+
+a {
+  text-decoration: none;
+  color: #226ea0;
+  font-weight: bold;
+}
+
+a:hover {
+  color: #c76210;
 }

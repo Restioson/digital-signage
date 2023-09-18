@@ -1,3 +1,7 @@
+import { Root } from './widgets/root.mjs'
+import { ContentStream } from './widgets/free_form_content/content_stream.mjs'
+import { Department } from './widgets/department/department.mjs'
+
 export function setupPostForms (createSuccessText) {
   for (const form of document.getElementsByClassName('post-form')) {
     form.addEventListener('submit', event =>
@@ -9,6 +13,14 @@ export function setupPostForms (createSuccessText) {
 export function setupBackButton () {
   document.getElementById('backButton').addEventListener('click', function () {
     window.history.back()
+  })
+}
+
+export function showContent (streams) {
+  Root.create({
+    child: new ContentStream({ streams }),
+    targetElement: document.getElementById('root'),
+    departmentId: 0
   })
 }
 
