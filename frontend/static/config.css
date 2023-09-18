@@ -32,3 +32,47 @@
   margin: 0;
   padding: 0;
 }
+
+.display-entry * {
+  margin: 0;
+}
+
+.display-small-preview-container {
+  aspect-ratio: 16 / 9;
+}
+
+span.button-icon {
+  margin-left: 5px;
+  vertical-align: middle;
+  color: black;
+  outline: 1px solid black;
+  border-radius: 3px;
+  background: white;
+  padding: 0;
+  border: 1px solid black;
+  display: inline;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+span.button-icon:hover {
+  background-color: #0f2;
+}
+
+button.icon-button {
+  display: contents;
+}
+
+a.button-link {
+  text-decoration: none;
+  display: inline-block;
+}
+
+.display-small-preview {
+  height: 300%;
+  width: 300%;
+  transform: scale(calc(100% / 3));
+  border: 6px inset;
+  transform-origin: top left;
+}

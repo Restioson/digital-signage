@@ -34,6 +34,7 @@ def list_departments():
             fetch_displays=True,
             fetch_content_streams=True,
         ),
+        base=flask.request.root_url,
     )
 
 

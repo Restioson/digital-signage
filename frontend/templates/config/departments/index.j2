@@ -3,33 +3,69 @@
 {% block title %}Departments{% endblock %}
 {% block head %}
   {{ super() }}
-  {{ css('main') }}
+  {{ css('config') }}
+
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+  />
+
+  <script type="module">
+    import { main } from "{{ url_for('static', filename='config/departments/index.mjs') }}";
+    main();
+  </script>
 {% endblock %}
 
 {% block content %}
   <div class="column-list">
     {%- for department in departments -%}
       <div>
-        <h3>{{ department.name }}</h3>
+        <h2>{{ department.name }}</h2>
         <p>{{ department.bio }}</p>
         <a href="/config/departments/{{ department.id }}/people">View people</a
         ><br />
         <a href="/config/departments/{{ department.id }}/files">View files</a>
 
-        <h4>Displays:</h4>
+        <h3>Displays:</h3>
         {%- if department.displays -%}
-          <ul>
+          <div class="column-list">
             {%- for display in department.displays -%}
-              <li>
-                <a href="/display/{{ department.id }}/{{ display.id }}">
-                  {{ display.name }}
-                </a>
+              <div class="display-entry column-list">
+                {%- set link = "display/" + department.id|string + "/" + display.id|string -%}
+                <h4>
+                  <a href="/{{ link }}">{{ display.name }}</a>
+                  <a
+                    href="/config/departments/{{ department.id }}/display/{{ display.id }}"
+                    class="button-link"
+                  >
+                    <span class="material-symbols-outlined button-icon">
+                      edit
+                    </span>
+                  </a>
 
-                <a
-                  href="/config/departments/{{ department.id }}/display/{{ display.id }}"
-                >
-                  (Edit layout)
-                </a>
+                  <button
+                    type="button"
+                    class="delete-display icon-button"
+                    data-department-id="{{ department.id }}"
+                    data-display-id="{{ display.id }}"
+                  >
+                    <span class="material-symbols-outlined button-icon">
+                      delete
+                    </span>
+                  </button>
+                </h4>
+                <p>
+                  Permalink to display view -
+                  <a href="/{{ link }}"> {{ base }}{{ link }} </a>
+                </p>
+
+                <div class="display-small-preview-container">
+                  <iframe
+                    title="{{ display.name }}"
+                    class="display-small-preview"
+                    src="/{{ link }}"
+                  ></iframe>
+                </div>
 
                 {%- if display.content_streams -%}
                   <ul>
@@ -43,9 +79,9 @@
                     >Add content stream</a
                   >
                 </p>
-              </li>
+              </div>
             {%- endfor -%}
-          </ul>
+          </div>
         {%- else -%}
           <p>This department has no displays.</p>
         {%- endif -%}
