@@ -142,7 +142,7 @@ def test_cant_access_private_routes(unauthorized_client):
     assert_redirects_login(client.post("/api/content", data={}))
     assert_redirects_login(client.post("/api/departments/1/people", data={}))
     assert_redirects_login(client.delete("/api/departments/1/people/1", data={}))
-    assert_redirects_login(client.post("/api/departments/1/display_groups", data={}))
+    assert_redirects_login(client.post("/api/departments/1/displays", data={}))
     assert_redirects_login(client.post("/api/content_streams", data={}))
 
 
@@ -203,7 +203,7 @@ def test_post_text(client):
 
 
 def test_invalid_dept_should_404(client):
-    for route in ["people", "people/add", "people/20", "display_group/add"]:
+    for route in ["people", "people/add", "people/20", "display/add"]:
         path = f"/config/departments/10000/{route}"
         assert client.get(path).status == "404 NOT FOUND", f"Expected 404 from {path}"
 
@@ -214,7 +214,7 @@ def test_invalid_dept_should_404(client):
 
 def test_post_content_stream(client):
     stream_ids = []
-    for target in [{"department": 1}, {"display_group": 1}, dict()]:
+    for target in [{"department": 1}, {"display": 1}, dict()]:
         res = client.post(
             "/api/content_streams", data=combine(target, {"name": "stream"})
         )

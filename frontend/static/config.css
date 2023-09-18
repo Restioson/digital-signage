@@ -8,14 +8,14 @@
   color: red;
 }
 
-.preview-container {
+#preview-container {
   display: flex;
   flex-direction: column;
   gap: 5px;
   padding: 16px;
 }
 
-.preview-container h1 {
+#preview-container h1 {
   font-size: 2rem;
 }
 

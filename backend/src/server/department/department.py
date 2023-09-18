@@ -25,7 +25,7 @@ class Department:
         self.name = name
         self.bio = bio
         self.people = people or []
-        self.display_groups = displays or []
+        self.displays = displays or []
         self.content_streams = content_streams or []
         self.id = department_id
         self.files = files

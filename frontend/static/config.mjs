@@ -98,17 +98,3 @@ async function submitPost (event, createText) {
   const animation = new window.Animation(effect, document.timeline)
   animation.play()
 }
-
-export function setupPreview (form, preview) {
-  async function change () {
-    const res = await fetch(preview.dataset.previewUrl, {
-      method: 'post',
-      body: new FormData(form)
-    })
-
-    preview.srcdoc = await res.text()
-  }
-
-  form.addEventListener('change', change)
-  change()
-}

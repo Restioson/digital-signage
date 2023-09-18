@@ -21,44 +21,25 @@
           <ul>
             {%- for display in department.displays -%}
               <li>
-                <a href="/display/{{ display.id }}">{{ display.name }}</a>
-              </li>
-            {%- endfor -%}
-          </ul>
-        {%- else -%}
-          <p>This department has no displays groups.</p>
-        {%- endif -%}
-
-        <p>
-          <a href="/config/departments/{{ department.id }}/displays/add">
-            Add display
-          </a>
-        </p>
-
-        <h4>Display groups:</h4>
-        {%- if department.display_groups -%}
-          <ul>
-            {%- for group in department.display_groups -%}
-              <li>
-                <a href="/display/{{ department.id }}/{{ group.id }}">
-                  {{ group.name }}
+                <a href="/display/{{ department.id }}/{{ display.id }}">
+                  {{ display.name }}
                 </a>
 
                 <a
-                  href="/config/departments/{{ department.id }}/display_group/{{ group.id }}"
+                  href="/config/departments/{{ department.id }}/display/{{ display.id }}"
                 >
                   (Edit layout)
                 </a>
 
-                {%- if group.content_streams -%}
+                {%- if display.content_streams -%}
                   <ul>
-                    {%- for stream in group.content_streams -%}
+                    {%- for stream in display.content_streams -%}
                       <li>{{ stream.name }} (ID: {{ stream.id }})</li>
                     {%- endfor -%}
                   </ul>
                 {%- endif -%}
                 <p>
-                  <a href="/config/content_stream/add?group={{ group.id }}"
+                  <a href="/config/content_stream/add?group={{ display.id }}"
                     >Add content stream</a
                   >
                 </p>
@@ -66,14 +47,12 @@
             {%- endfor -%}
           </ul>
         {%- else -%}
-          <p>This department has no display groups.</p>
+          <p>This department has no displays.</p>
         {%- endif -%}
 
-        <p>
-          <a href="/config/departments/{{ department.id }}/display_group/add">
-            Add display group</a
-          >
-        </p>
+        <a href="/config/departments/{{ department.id }}/display/add"
+          >Add display</a
+        >
 
         <h4>Content streams:</h4>
         {%- if department.content_streams -%}

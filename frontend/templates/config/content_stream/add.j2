@@ -13,8 +13,8 @@
   </script>
 
   <form action="/api/content_streams" method="post" class="post-form">
-    {% if display_group %}
-      {% set dest = "to group " + display_group.name %}
+    {% if display %}
+      {% set dest = "to group " + display.name %}
     {% elif department %}
       {% set dest = "to " + department.name + " department" %}
     {% else %}
@@ -22,7 +22,7 @@
     {% endif %}
 
     <h3>Add a content stream {{ dest }}</h3>
-    <input type="hidden" name="display_group" value="{{ display_group.id }}" />
+    <input type="hidden" name="display" value="{{ display.id }}" />
 
     <input type="hidden" name="department" value="{{ department.id }}" />
 

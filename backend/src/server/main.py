@@ -9,7 +9,7 @@ from server import (
     login,
     registration,
 )
-from server.display_group import PageTemplate
+from server.display import PageTemplate
 from server.loadshedding import Loadshedding
 from flask_login import LoginManager
 from server.database import DatabaseController

@@ -6,12 +6,12 @@ from bs4 import BeautifulSoup
 from flask import render_template_string
 from markupsafe import Markup, escape
 
-from server.display_group.template import TemplateProperties
-from server.display_group.template import TemplateProperty
+from server.display.template import TemplateProperties
+from server.display.template import TemplateProperty
 
 
 class PageTemplate:
-    """A PageTemplate is a template for a page within DisplayGroup that has
+    """A PageTemplate is a template for a page within Display that has
     Jinja2 template XML to be filled out with a list of specified properties."""
 
     def __init__(

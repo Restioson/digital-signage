@@ -16,7 +16,6 @@ from server.database import DatabaseController
 from server.department.file import File
 from server.department.person import Person
 from server.display import Display
-from server.display_group import DisplayGroup
 from server.free_form_content import BinaryContent
 from server.free_form_content.content_stream import ContentStream
 from server.user import User
@@ -312,56 +311,28 @@ def content_blob(content_id: int):
         flask.abort(404)
 
 
-@blueprint.route("/departments/<int:department_id>/display_groups", methods=["POST"])
-def display_groups(department_id: int):
+@blueprint.route("/departments/<int:department_id>/displays", methods=["POST"])
+def displays(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
     db = DatabaseController.get()
-    group_id = db.upsert_display_group(
-        DisplayGroup.from_form(
-            department_id, flask.request.form, flask.request.files, db
-        ),
+    display_id = db.upsert_display(
+        Display.from_form(department_id, flask.request.form, flask.request.files, db),
         department_id,
     )
-    return {"id": group_id}
-
-
-@blueprint.route(
-    "/departments/<int:department_id>/displays/preview",
-    methods=["POST"],
-)
-def preview_display(department_id: int):
-    """Preview the given display without actually creating it"""
-    db = DatabaseController.get()
-
-    try:
-        display = Display.from_form(flask.request.form)
-    except KeyError:
-        return ""  # Form not done yet
-    group = db.fetch_display_group_by_id(display.group)
-
-    if not group:
-        flask.abort(404)
-
-    return render_template(
-        "display.j2",
-        display_config={
-            "department": department_id,
-            "layout": group.render(db),
-        },
-    )
+    return {"id": display_id}
 
 
 @blueprint.route("/departments/<int:department_id>/preview_display", methods=["POST"])
-def preview_display_group(department_id: int):
-    """Preview the given display group without actually creating it"""
+def preview_display(department_id: int):
+    """Preview the given display without actually creating it"""
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
     db = DatabaseController.get()
-    group = DisplayGroup.from_form(
+    display = Display.from_form(
         department_id,
         flask.request.form,
         flask.request.files,
@@ -373,7 +344,7 @@ def preview_display_group(department_id: int):
         "display.j2",
         display_config={
             "department": department_id,
-            "layout": group.render(db),
+            "layout": display.render(db),
         },
     )
 
@@ -440,15 +411,3 @@ def file(department_id: int, file_name: str):
             )
         else:
             flask.abort(404)
-
-
-@blueprint.route("/departments/<int:department_id>/displays/", methods=["POST"])
-def displays(department_id: int):
-    if not current_user.is_authenticated:
-        return current_app.login_manager.unauthorized()
-
-    if not DatabaseController.get().fetch_department_by_id(department_id):
-        flask.abort(404)
-
-    DatabaseController.get().upsert_display(Display.from_form(flask.request.form))
-    return redirect(url_for("config_view.list_departments"))

@@ -12,16 +12,14 @@ class GroupedContentStreams:
 
     def __init__(self, streams: list[ContentStream]):
         self.public = []
-        self.by_display_group = dict()
+        self.by_display = dict()
         self.by_department = dict()
 
         for stream in streams:
             if stream.department:
                 self.by_department.setdefault(stream.department, []).append(stream)
-            elif stream.display_group:
-                self.by_display_group.setdefault(stream.display_group, []).append(
-                    stream
-                )
+            elif stream.display:
+                self.by_display.setdefault(stream.display, []).append(stream)
             else:
                 self.public.append(stream)
 
@@ -29,7 +27,7 @@ class GroupedContentStreams:
         """Filter this collection to only the content streams accessible by a new
         display group in the given department. This modifies this object."""
 
-        self.by_display_group = dict()
+        self.by_display = dict()
         for_dept = self.by_department.get(dept_id)
         self.by_department = {dept_id: for_dept} if for_dept else dict()
         return self
