@@ -112,6 +112,26 @@ def add_display_group(department_id: int):
     return render_template(
         "config/display_group/add.j2",
         templates=db.fetch_all_page_templates(),
+        existing=None,
+        streams=streams,
+        department_id=department_id,
+    )
+
+
+@blueprint.route("/departments/<int:department_id>/display_group/<int:group_id>")
+def edit_display_group(department_id: int, group_id: int):
+    """Return the page to edit a display group"""
+    db = DatabaseController.get()
+    if not db.fetch_department_by_id(department_id):
+        flask.abort(404)
+
+    streams = db.fetch_all_content_streams()
+    streams.filter_to_department(department_id)
+
+    return render_template(
+        "config/display_group/add.j2",
+        templates=db.fetch_all_page_templates(),
+        existing=db.fetch_display_group_by_id(group_id),
         streams=streams,
         department_id=department_id,
     )
