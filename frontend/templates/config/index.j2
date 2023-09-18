@@ -39,6 +39,7 @@
         <select id="type" name="type">
           <option value="text">Text</option>
           <option value="local_image">Image (upload file)</option>
+          <option value="local_video">Video (upload file)</option>
           <option value="remote_image">Image (from URL)</option>
           <option value="link">Link</option>
           <option value="iframe_content">Iframe</option>
@@ -79,6 +80,13 @@
         <legend>Image (from URL)</legend>
         <label for="remote_image_url">Url:</label>
         <input type="url" id="remote_image_url" name="src" required />
+        {{ caption() }}
+      </fieldset>
+
+      <fieldset class="fields-for-local_video">
+        <legend>Video (upload file)</legend>
+        <label for="video_data">Attach file:</label>
+        <input type="file" id="video_data" name="video_data" required />
         {{ caption() }}
       </fieldset>
 
