@@ -7,13 +7,14 @@
 {% endblock %}
 
 {% block content %}
+  <!-- prettier-ignore -->
   <script type="module">
     import {
       showContent,
     } from "{{ url_for('static', filename='config.mjs') }}";
+    
     showContent({{content_stream_ids}});
   </script>
   <a href="/config/add_posts">Add a piece of content</a>
-  <div class="column-list" id="root">
-  </div>
+  <div class="column-list" id="root"></div>
 {% endblock %}

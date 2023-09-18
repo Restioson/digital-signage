@@ -16,7 +16,7 @@ def check_logged_in():
 
 @blueprint.route("/add_posts")
 def add_posts():
-    """Return the config index page"""
+    """Return the add posts page"""
 
     return render_template(
         "config/add_content.j2",
