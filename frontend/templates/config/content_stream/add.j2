@@ -1,6 +1,6 @@
 {% extends "base.j2" %}
 
-{% block title %}Add content stream{% endblock %}
+{% block title %}Add content feed{% endblock %}
 {% block head %}
   {{ super() }}
   {{ css('config') }}
@@ -13,15 +13,13 @@
   </script>
 
   <form action="/api/content_streams" method="post" class="post-form">
-    {% if display %}
-      {% set dest = "to group " + display.name %}
-    {% elif department %}
+    {% if department %}
       {% set dest = "to " + department.name + " department" %}
     {% else %}
       {% set dest = "(public)" %}
     {% endif %}
 
-    <h3>Add a content stream {{ dest }}</h3>
+    <h3>Add a content feed {{ dest }}</h3>
     <input type="hidden" name="display" value="{{ display.id }}" />
 
     <input type="hidden" name="department" value="{{ department.id }}" />

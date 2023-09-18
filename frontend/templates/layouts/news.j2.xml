@@ -1,5 +1,5 @@
 <template>
-  <name>News</name>
+  <name>News (posts from content feeds)</name>
 
   <properties>
     <property>

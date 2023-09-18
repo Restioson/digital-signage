@@ -324,6 +324,21 @@ def displays(department_id: int):
     return {"id": display_id}
 
 
+@blueprint.route(
+    "/departments/<int:department_id>/displays/<int:display_id>", methods=["DELETE"]
+)
+def delete_display(department_id: int, display_id: int):
+    """DELETEing this endpoitn deletes the given display"""
+
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
+    if DatabaseController.get().delete_display(department_id, display_id):
+        return {"deleted": True}
+    else:
+        return flask.abort(500)
+
+
 @blueprint.route("/departments/<int:department_id>/preview_display", methods=["POST"])
 def preview_display(department_id: int):
     """Preview the given display without actually creating it"""
@@ -368,7 +383,7 @@ def upload_department_files(department_id: int):
 
 
 @blueprint.route(
-    "/department/<int:department_id>/<int:dislay_groups>/<string:filename>",
+    "/department/<int:department_id>/<int:display>/<string:filename>",
     methods=["GET"],
 )
 def get_department_files(filename: str, department_id: int):

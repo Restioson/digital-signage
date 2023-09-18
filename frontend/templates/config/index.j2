@@ -1,5 +1,4 @@
 {% extends "base.j2" %}
-{% from "macros.j2" import content_stream %}
 
 {% block title %}Config{% endblock %}
 {% block head %}
@@ -47,7 +46,24 @@
         </select>
       </label>
 
-      {{ content_stream(content_streams) }}
+      <label
+        >Content feed:
+        <select name="content_stream">
+          <optgroup label="Public">
+            {%- for stream in content_streams.public -%}
+              <option value="{{ stream.id }}">{{ stream.name }}</option>
+            {%- endfor -%}
+          </optgroup>
+
+          {%- for dept, streams in content_streams.by_department.items() -%}
+            <optgroup label="Department: {{ departments[dept].name }}">
+              {%- for stream in streams -%}
+                <option value="{{ stream.id }}">{{ stream.name }}</option>
+              {%- endfor -%}
+            </optgroup>
+          {%- endfor -%}
+        </select>
+      </label>
 
       {%- macro caption() -%}
         <label

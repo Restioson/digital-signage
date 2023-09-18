@@ -276,6 +276,14 @@ class DatabaseController:
             )
         return cursor.lastrowid
 
+    def delete_display(self, department_id: int, display_id: int) -> bool:
+        """Delete a display"""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute("DELETE FROM displays WHERE id = ?", (display_id,))
+            self.delete_files_for_display(department_id, display_id)
+        return cursor.rowcount == 1
+
     def delete_files_for_display(self, department_id: int, display_id: int):
         with self.db:
             cursor = self.db.cursor()
