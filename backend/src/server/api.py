@@ -317,7 +317,7 @@ def display_groups(department_id: int):
         return current_app.login_manager.unauthorized()
 
     db = DatabaseController.get()
-    group_id = db.create_display_group(
+    group_id = db.upsert_display_group(
         DisplayGroup.from_form(
             department_id, flask.request.form, flask.request.files, db
         ),
@@ -341,6 +341,7 @@ def preview_display(department_id: int):
         db,
         is_preview=True,
     )
+
     return render_template(
         "display.j2",
         display_config={

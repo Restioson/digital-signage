@@ -1,7 +1,13 @@
 {% extends "base.j2" %}
 {% from "macros.j2" import content_stream %}
 
-{% block title %}Add display group{% endblock %}
+{%- if existing_pages is not none -%}
+  {% set action = 'Edit a display group' %}
+{%- else -%}
+  {% set action = 'Add a display group' %}
+{%- endif -%}
+
+{% block title %}{{ action }}{% endblock %}
 {% block head %}
   {{ super() }}
   {{ css('config/display_groups/add') }}
@@ -131,9 +137,18 @@
 {%- endmacro -%}
 
 {% block content %}
+  {%- if existing is not none -%}
+    {% set pages = existing.pages %}
+    {% set name = existing.name %}
+  {%- else -%}
+    {% set pages = [] %}
+    {% set name = '' %}
+  {%- endif -%}
+
+  <!-- prettier-ignore -->
   <script type="module">
     import { main } from "{{ url_for('static', filename='config/display_groups/add.mjs') }}";
-    main("{{ department_id }}");
+    main("{{ department_id }}", {{ pages|tojson }});
   </script>
 
 
@@ -145,9 +160,12 @@
     method="post"
     class="post-form"
   >
-    <h3>Create display group</h3>
     <label for="name">Name:</label>
-    <input id="name" name="name" type="text" required />
+    <input id="name" name="name" type="text" required value="{{ name }}" />
+
+    {%- if existing is not none -%}
+      <input type="hidden" name="group_id" value="{{ existing.id }}" />
+    {%- endif -%}
 
     <template id="new-page-template">
       <fieldset>

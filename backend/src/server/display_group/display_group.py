@@ -1,8 +1,8 @@
+import base64
 import json
 import os
 import sqlite3
 from typing import Optional
-import uuid
 
 from flask import render_template
 from markupsafe import Markup
@@ -29,6 +29,7 @@ class DisplayGroup:
         self.content_streams = content_streams or []
         self.id = group_id
 
+    # TODO refactor this if we have time. Weird that it also creates the files
     @staticmethod
     def from_form(
         department_id: int,
@@ -46,6 +47,19 @@ class DisplayGroup:
             if prop.startswith("template-page-")
         }
 
+        if "group_id" in form:
+            group_id = form["group_id"]
+
+            if not is_preview:
+                db.delete_files_for_group(
+                    department_id, int(group_id)
+                )  # Wipe old files
+
+        elif not is_preview:
+            group_id = db.reserve_display_group_id(department_id)
+        else:
+            group_id = None
+
         for prop, file in files.items():
             tokens = prop.split("-", maxsplit=4)
             page_no = int(tokens[1])
@@ -53,20 +67,23 @@ class DisplayGroup:
             page = pages[page_no]
             ext = os.path.splitext(file.filename)[1]
 
-            prefix = uuid.uuid4().hex if is_preview else ""
-            name = f"{prefix}{form['name']}-{prop}{ext}"
+            if not is_preview:
+                name = f"_group-{group_id}-{form['name']}-{prop}{ext}"
 
-            db.upload_department_file(
-                File(
-                    name,
-                    department_id,
-                    file.content_type,
-                    file.stream.read(),
-                ),
-                temp=is_preview,
-            )
+                db.upload_department_file(
+                    File(
+                        name,
+                        department_id,
+                        file.content_type,
+                        file.stream.read(),
+                    ),
+                )
 
-            url = f"/api/departments/{department_id}/files/{name}"
+                url = f"/api/departments/{department_id}/files/{name}"
+            else:
+                b64 = base64.b64encode(file.stream.read()).decode("utf-8")
+                url = f"data:{file.content_type};base64,{b64}"
+
             page["properties"][variable_name] = url
 
         for prop in form.keys():
@@ -94,6 +111,7 @@ class DisplayGroup:
         return DisplayGroup(
             name=form["name"],
             pages=pages,
+            group_id=group_id,
         )
 
     def render(self, db):
