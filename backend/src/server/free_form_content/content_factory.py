@@ -58,11 +58,7 @@ def from_form(form: dict, files: dict) -> FreeFormContent:
     elif content_type == "local_video":
         # Load and verify the file, throwing an error if it isn't a valid image
         video_data = files["video_data"].read()
-        video = PIL.Image.open(io.BytesIO(video_data))
-        video.verify()
-
-        mime = video.get_format_mimetype()
-        return LocalVideo(mime, video_data, caption, stream)
+        return LocalVideo(files["video_data"].content_type, video_data, caption, stream)
     elif content_type == "link":
         return Link(form["url"], caption, stream)
     elif content_type == "iframe_content":

@@ -92,6 +92,7 @@ body,
 }
 
 .image img,
+.video video,
 .qrcode {
   display: inline;
   max-width: min(100%, 300px);
@@ -110,7 +111,7 @@ body,
   width: unset !important;
 }
 
-:is(.image img, .qrcode canvas):last-child {
+:is(.image img, .qrcode canvas, .video video):last-child {
   max-height: unset;
   max-width: unset;
   width: 100%;

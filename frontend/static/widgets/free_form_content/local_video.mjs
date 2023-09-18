@@ -32,6 +32,9 @@ export class LocalVideo extends FreeFormContent {
 
   build () {
     const video = document.createElement('video')
+    video.autoplay = true
+    video.muted = true
+    video.loop = true
     video.src = `/api/content/${this.id}/blob`
     return new ContentAndCaption({
       content: video,
