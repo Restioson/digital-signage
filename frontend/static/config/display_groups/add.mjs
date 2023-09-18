@@ -1,19 +1,48 @@
-import { choiceOfFieldset, setupPostForms } from '../../config.mjs'
+import {
+  choiceOfFieldset,
+  setupPostForms,
+  setupPreview
+} from '../../config.mjs'
 
 let pageNoCounter = 0
 
 export function main (departmentId, existingPages) {
-  setupPostForms(function (res) {
-    const text = document.createElement('span')
-    text.append('Successfully submitted ')
+  const form = document.getElementById('display-group-form')
 
-    const a = document.createElement('a')
-    a.append('(view here)')
-    a.href = `/display/${departmentId}/${res.id}`
-    text.append(a)
+  if (form.dataset.next) {
+    form.addEventListener('submit', async event => {
+      event.preventDefault()
 
-    return text
-  })
+      const res = await fetch(form.action, {
+        method: 'post',
+        body:
+          form.enctype === 'multipart/form-data'
+            ? new FormData(form)
+            : new URLSearchParams(new FormData(form))
+      })
+
+      if (res.status !== 200) {
+        const postStatusMessage = document.getElementById('status-message')
+        postStatusMessage.className = 'status-message error'
+        postStatusMessage.innerText = await res.text()
+      } else {
+        window.location.href = form.dataset.next
+      }
+    })
+  } else {
+    setupPostForms(function (res) {
+      const text = document.createElement('span')
+      text.append('Successfully submitted ')
+
+      const a = document.createElement('a')
+      a.append('(view here)')
+      a.href = `/display/${departmentId}/${res.id}`
+      text.append(a)
+
+      return text
+    })
+  }
+
   setupAddPage()
 
   if (existingPages) {
@@ -22,7 +51,10 @@ export function main (departmentId, existingPages) {
     }
   }
 
-  setupPreview()
+  setupPreview(
+    document.getElementById('display-group-form'),
+    document.getElementById('preview')
+  )
 }
 
 function addPage (templateId, duration, properties) {
@@ -85,20 +117,4 @@ function setupAddPage () {
   document
     .getElementById('add-page')
     .addEventListener('click', () => addPage(null, null, {}))
-}
-
-function setupPreview () {
-  const form = document.getElementById('display-group-form')
-  async function change () {
-    const iframe = document.getElementById('preview')
-    const res = await fetch(iframe.dataset.previewUrl, {
-      method: 'post',
-      body: new FormData(form)
-    })
-
-    iframe.srcdoc = await res.text()
-  }
-
-  form.addEventListener('change', change)
-  change()
 }

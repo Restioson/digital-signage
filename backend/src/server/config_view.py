@@ -31,6 +31,7 @@ def list_departments():
     return render_template(
         "config/departments/index.j2",
         departments=DatabaseController.get().fetch_all_departments(
+            fetch_displays=True,
             fetch_display_groups=True,
             fetch_content_streams=True,
         ),
@@ -115,6 +116,7 @@ def add_display_group(department_id: int):
         existing=None,
         streams=streams,
         department_id=department_id,
+        next=flask.request.args.get("next"),
     )
 
 
@@ -181,5 +183,20 @@ def load_files(department_id: int):
 
     return render_template(
         "config/departments/files.j2",
+        department=department,
+    )
+
+
+@blueprint.route("/departments/<int:department_id>/displays/add")
+def add_display(department_id: int):
+    department = DatabaseController.get().fetch_department_by_id(
+        department_id, fetch_display_groups=True
+    )
+
+    if not department:
+        flask.abort(404)
+
+    return render_template(
+        "config/displays/add.j2",
         department=department,
     )

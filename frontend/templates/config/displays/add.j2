@@ -1,0 +1,66 @@
+{% extends "base.j2" %}
+
+{% block title %}Add display{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('config') }}
+{% endblock %}
+
+{% block content %}
+  <script type="module">
+    import { main } from "{{ url_for('static', filename='config/displays/add.mjs') }}";
+    main();
+  </script>
+
+  {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
+  <form
+    id="create-display-form"
+    action="/api/departments/{{ department.id }}/displays/"
+    enctype="multipart/form-data"
+    method="post"
+    autocomplete="off"
+  >
+    <label>
+      Name:
+      <input name="name" type="text" required />
+    </label>
+
+    <input
+      name="department_id"
+      type="hidden"
+      value="{{ department.id }}"
+    />
+
+    <label>
+      Layout:
+      <select
+        id="select-group"
+        name="display_group_id"
+        data-department="{{ department.id }}"
+        required
+      >
+        {%- for group in department.display_groups -%}
+          <option value="{{ group.id }}">{{ group.name }}</option>
+        {%- endfor -%}
+        <option disabled selected value>-- Select a layout --</option>
+        <option value="create">-- Create new layout --</option>
+      </select>
+    </label>
+
+    <button type="submit">Create</button>
+  </form>
+{% endblock %}
+
+{% block after_main %}
+  <div class="preview-container">
+    <h1>Preview</h1>
+    <div class="resizer">
+      <iframe
+        title="Preview"
+        id="preview"
+        class="resized"
+        data-preview-url="/api/departments/{{ department.id }}/displays/preview"
+      ></iframe>
+    </div>
+  </div>
+{% endblock %}

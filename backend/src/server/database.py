@@ -8,6 +8,7 @@ from server import free_form_content
 from server.department.department import Department
 from server.department.file import File
 from server.department.person import Person
+from server.display import Display
 from server.display_group import DisplayGroup, PageTemplate
 from server.free_form_content import FreeFormContent, BinaryContent
 from server.free_form_content.content_stream import ContentStream
@@ -174,11 +175,17 @@ class DatabaseController:
             return dept_id
 
     def fetch_all_departments(
-        self, fetch_display_groups=False, fetch_content_streams=False
+        self,
+        fetch_display_groups=False,
+        fetch_displays=False,
+        fetch_content_streams=False,
     ) -> list[Department]:
         """Fetch all departments (but does not fetch their people).
 
         If fetch_display_groups is True, display groups for this
+        Department will also be fetched.
+
+        If fetch_displays is True, displays for this
         Department will also be fetched.
 
         If fetch_content_streams is True, content streams for this
@@ -190,6 +197,10 @@ class DatabaseController:
         departments = list(
             cursor.execute("SELECT id, name, bio FROM departments ORDER BY id")
         )
+
+        if fetch_displays:
+            for department in departments:
+                department.displays = self.fetch_all_displays_in_dept(department.id)
 
         if fetch_display_groups:
             for department in departments:
@@ -292,6 +303,31 @@ class DatabaseController:
                 (department_id,),
             )
 
+    def fetch_all_displays_in_dept(self, department_id: int):
+        """Fetch all displays in a given department from the database"""
+        cursor = self.db.cursor()
+        cursor.row_factory = Display.from_sql
+        return list(
+            cursor.execute(
+                "SELECT id, name, department_id, display_group_id"
+                " FROM displays WHERE department_id = ?",
+                (department_id,),
+            )
+        )
+
+    def fetch_display_by_id(self, display_id: int) -> Optional[Display]:
+        """Fetch the display by its ID"""
+        cursor = self.db.cursor()
+        cursor.row_factory = Display.from_sql
+        return next(
+            cursor.execute(
+                "SELECT id, name, department_id, display_group_id"
+                " FROM displays WHERE id = ?",
+                (display_id,),
+            ),
+            None,
+        )
+
     def fetch_all_display_groups_in_dept(
         self, department_id: int
     ) -> list[DisplayGroup]:
@@ -317,6 +353,19 @@ class DatabaseController:
             ),
             None,
         )
+
+    def upsert_display(self, display: Display):
+        """Insert (or update) the given Display into the database
+        and return the inserted row id"""
+
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "REPLACE INTO displays (id, name, department_id, display_group_id)"
+                " VALUES (?, ?, ?, ?)",
+                (display.id, display.name, display.department, display.group),
+            )
+        return cursor.lastrowid
 
     def upsert_person(self, person: Person, department_id: int) -> int:
         """Insert (or update) the given person into the database

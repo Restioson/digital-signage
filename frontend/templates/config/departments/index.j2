@@ -16,6 +16,25 @@
         ><br />
         <a href="/config/departments/{{ department.id }}/files">View files</a>
 
+        <h4>Displays:</h4>
+        {%- if department.displays -%}
+          <ul>
+            {%- for display in department.displays -%}
+              <li>
+                <a href="/display/{{ display.id }}">{{ display.name }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- else -%}
+          <p>This department has no displays groups.</p>
+        {%- endif -%}
+
+        <p>
+          <a href="/config/departments/{{ department.id }}/displays/add">
+            Add display
+          </a>
+        </p>
+
         <h4>Display groups:</h4>
         {%- if department.display_groups -%}
           <ul>
@@ -50,9 +69,11 @@
           <p>This department has no display groups.</p>
         {%- endif -%}
 
-        <a href="/config/departments/{{ department.id }}/display_group/add"
-          >Add display group</a
-        >
+        <p>
+          <a href="/config/departments/{{ department.id }}/display_group/add">
+            Add display group</a
+          >
+        </p>
 
         <h4>Content streams:</h4>
         {%- if department.content_streams -%}
