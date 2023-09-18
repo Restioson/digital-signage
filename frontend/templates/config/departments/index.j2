@@ -18,13 +18,10 @@
 
 {% block content %}
   <div class="column-list">
-    {%- for department in departments -%}
+    {%- for department in departments.values() -%}
       <div>
         <h2>{{ department.name }}</h2>
-        <p>{{ department.bio }}</p>
-        <a href="/config/departments/{{ department.id }}/people">View people</a
-        ><br />
-        <a href="/config/departments/{{ department.id }}/files">View files</a>
+        <a href="/config/departments/{{ department.id }}/people">View people</a>
 
         <h3>Displays:</h3>
         {%- if department.displays -%}
@@ -66,19 +63,6 @@
                     src="/{{ link }}"
                   ></iframe>
                 </div>
-
-                {%- if display.content_streams -%}
-                  <ul>
-                    {%- for stream in display.content_streams -%}
-                      <li>{{ stream.name }} (ID: {{ stream.id }})</li>
-                    {%- endfor -%}
-                  </ul>
-                {%- endif -%}
-                <p>
-                  <a href="/config/content_stream/add?group={{ display.id }}"
-                    >Add content stream</a
-                  >
-                </p>
               </div>
             {%- endfor -%}
           </div>
@@ -90,7 +74,7 @@
           >Add display</a
         >
 
-        <h4>Content streams:</h4>
+        <h4>Content feeds:</h4>
         {%- if department.content_streams -%}
           <ul>
             {%- for stream in department.content_streams -%}
@@ -98,10 +82,10 @@
             {%- endfor -%}
           </ul>
         {%- else -%}
-          <p>This department owns no content streams.</p>
+          <p>This department owns no content feeds.</p>
         {%- endif -%}
         <a href="/config/content_stream/add?department={{ department.id }}"
-          >Add content stream</a
+          >Add content feed</a
         >
       </div>
     {%- endfor -%}
