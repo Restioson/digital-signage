@@ -1,7 +1,7 @@
 {% extends "base.j2" %}
 {% from "macros.j2" import content_stream %}
 
-{%- if existing is not none -%}
+{%- if existing_pages is not none -%}
   {% set action = 'Edit a display group' %}
 {%- else -%}
   {% set action = 'Add a display group' %}
@@ -159,7 +159,6 @@
     enctype="multipart/form-data"
     method="post"
     class="post-form"
-    data-next="{{ next }}"
   >
     <label for="name">Name:</label>
     <input id="name" name="name" type="text" required value="{{ name }}" />
@@ -214,7 +213,7 @@
   </form>
 {% endblock %}
 {% block after_main %}
-  <div class="preview-container">
+  <div id="preview-container">
     <h1>Preview</h1>
     <div class="resizer">
       <iframe

@@ -218,9 +218,12 @@ def test_create_display_group(database: DatabaseController):
     groups = database.fetch_all_display_groups_in_dept(1)
     assert len(groups) == 2, "Only 1 department should be inserted"
 
-    assert groups[0].id == group_id, "group ids should match"
-    assert groups[0].name == group.name, "names should match"
-    assert groups[0].pages == group.pages, "pages should match"
+    assert groups[0].id == 1, "default group id should be 1"
+    assert groups[0].name == "Default", "default name should be 'Default'"
+
+    assert groups[1].id == group_id, "group ids should match"
+    assert groups[1].name == group.name, "names should match"
+    assert groups[1].pages == group.pages, "pages should match"
 
 
 def test_display_group_has_valid_dept(database: DatabaseController):

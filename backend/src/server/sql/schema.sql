@@ -1,7 +1,7 @@
 PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS content (
   id INTEGER PRIMARY KEY,
-  stream INTEGER NOT NULL REFERENCES content_streams(id) ON DELETE CASCADE,
+  stream INTEGER NOT NULL REFERENCES content_streams(id),
   posted INTEGER NOT NULL,
   content_type TEXT NOT NULL CHECK (
     content_type IN (
@@ -79,16 +79,10 @@ CREATE TABLE IF NOT EXISTS loadshedding_schedules (
   schedule_json TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS files (
-  department_id INTEGER NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
+  department_id INTEGER NOT NULL REFERENCES departments(id),
   filename TEXT NOT NULL,
   file_content BLOB NOT NULL,
   mime_type TEXT NOT NULL,
   PRIMARY KEY (department_id, filename)
 );
 CREATE TABLE IF NOT EXISTS templates (id TEXT PRIMARY KEY, xml TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS displays (
-  id INTEGER PRIMARY KEY,
-  name TEXT NOT NULL,
-  department_id INTEGER NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
-  display_group_id INTEGER NOT NULL REFERENCES display_groups(id) ON DELETE CASCADE
-);
