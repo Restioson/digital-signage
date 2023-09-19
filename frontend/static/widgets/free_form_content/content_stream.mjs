@@ -5,8 +5,8 @@ import { deserializeFreeFormContent } from './free_form_content_factory.mjs'
 import { PaginatedContainer } from '../containers/paginated_container.mjs'
 import { RSSItem } from './rss_item.mjs'
 
-const REFRESH_INTERVAL_MS = 1000
-const RSS_REFRESH_INTERVAL_MS = 5000
+const REFRESH_INTERVAL_MS = 5000
+const RSS_REFRESH_INTERVAL_MS = 1000 * 60 * 60 // 1 hour
 
 /**
  * A container which displays a live view of all the {@link FreeFormContent} on the server.
