@@ -175,7 +175,7 @@ class DatabaseController:
 
     def fetch_all_departments(
         self, fetch_displays=False, fetch_content_streams=False
-    ) -> list[Department]:
+    ) -> dict[int, Department]:
         """Fetch all departments (but does not fetch their people).
 
         If fetch_displays is True, display groups for this
@@ -200,10 +200,7 @@ class DatabaseController:
             for department in departments:
                 department.content_streams = streams.by_department.get(department.id)
 
-                for display in department.displays:
-                    display.content_streams = streams.by_display.get(display.id)
-
-        return departments
+        return {dept.id: dept for dept in departments}
 
     def fetch_department_by_id(
         self,
@@ -447,9 +444,8 @@ class DatabaseController:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO content_streams (name, department, display) "
-                "VALUES (?, ?, ?)",
-                (stream.name, stream.department, stream.display),
+                "INSERT INTO content_streams (name, department) VALUES (?, ?)",
+                (stream.name, stream.department),
             )
         return cursor.lastrowid
 
@@ -459,11 +455,7 @@ class DatabaseController:
         cursor = self.db.cursor()
         cursor.row_factory = ContentStream.from_sql
         return GroupedContentStreams(
-            list(
-                cursor.execute(
-                    "SELECT id, name, display, department FROM content_streams"
-                )
-            )
+            list(cursor.execute("SELECT id, name, department FROM content_streams"))
         )
 
     def update_loadshedding_schedule(self, region, schedule):

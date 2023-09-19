@@ -33,14 +33,7 @@ CREATE INDEX IF NOT EXISTS content_by_stream ON content(stream);
 CREATE TABLE IF NOT EXISTS content_streams (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL,
-  display INTEGER REFERENCES displays(id) ON DELETE CASCADE,
-  department INTEGER REFERENCES departments(id) ON DELETE CASCADE,
-  CHECK (
-    NOT (
-      department IS NOT NULL
-      AND display IS NOT NULL
-    )
-  ) -- Only one (or none, for public) must be present
+  department INTEGER REFERENCES departments(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS people (
   id INTEGER PRIMARY KEY,

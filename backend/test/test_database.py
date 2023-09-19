@@ -197,15 +197,13 @@ def test_create_dept(database: DatabaseController):
     depts = database.fetch_all_departments()
     assert len(depts) == 2, "Only 1 department should be inserted"
 
-    assert depts[0].id == 1, "default department's id should be 1"
-    assert depts[0].name == "Default", "default name should be 'Default'"
+    assert depts[1].name == "Default", "default name should be 'Default'"
     assert (
-        depts[0].bio == "Default department"
+        depts[1].bio == "Default department"
     ), "default bio should be 'Default department'"
 
-    assert depts[1].id == dept_id, "ids should match"
-    assert depts[1].name == dept.name, "name should match"
-    assert depts[1].bio == dept.bio, "bios should match"
+    assert depts[dept_id].name == dept.name, "name should match"
+    assert depts[dept_id].bio == dept.bio, "bios should match"
 
 
 def test_create_display(database: DatabaseController):

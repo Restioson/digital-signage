@@ -21,6 +21,7 @@ def index():
     return render_template(
         "config/index.j2",
         content_streams=DatabaseController.get().fetch_all_content_streams(),
+        departments=DatabaseController.get().fetch_all_departments(),
     )
 
 
@@ -112,6 +113,7 @@ def add_display(department_id: int):
 
     return render_template(
         "config/display/add.j2",
+        departments=db.fetch_all_departments(),
         templates=db.fetch_all_page_templates(),
         existing=None,
         streams=streams,
@@ -131,6 +133,7 @@ def edit_display(department_id: int, display_id: int):
 
     return render_template(
         "config/display/add.j2",
+        departments=db.fetch_all_departments(),
         templates=db.fetch_all_page_templates(),
         existing=db.fetch_display_by_id(display_id),
         streams=streams,
