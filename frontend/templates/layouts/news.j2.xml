@@ -9,6 +9,12 @@
     </property>
 
     <property>
+      <name>RSS feeds</name>
+      <variable>rss_feeds</variable>
+      <type>rss_feeds</type>
+    </property>
+
+    <property>
       <name>Department name</name>
       <variable>department_name</variable>
       <type>string</type>
@@ -122,9 +128,9 @@
       .content-stream {
         display: grid;
         grid-auto-rows: 1fr;
-        flex: 1;
         margin: var(--content-gap);
         color: var(--content-body-color);
+        height: unset;
       }
 
       .free-form-content {
@@ -160,6 +166,10 @@
     >
       {% for stream in streams %}
         <stream id="{{ stream }}" />
+      {% endfor %}
+
+      {% for rss in rss_feeds %}
+        <stream rss-url="{{ rss }}" />
       {% endfor %}
     </content-stream>
   </page>

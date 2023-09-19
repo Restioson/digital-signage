@@ -3,8 +3,10 @@ import { DeserializableWidget } from '../deserializable/deserializable_widget.mj
 import { Container } from '../containers/container.mjs'
 import { deserializeFreeFormContent } from './free_form_content_factory.mjs'
 import { PaginatedContainer } from '../containers/paginated_container.mjs'
+import { RSSItem } from './rss_item.mjs'
 
 const REFRESH_INTERVAL_MS = 1000
+const RSS_REFRESH_INTERVAL_MS = 5000
 
 /**
  * A container which displays a live view of all the {@link FreeFormContent} on the server.
@@ -14,16 +16,19 @@ const REFRESH_INTERVAL_MS = 1000
 export class ContentStream extends DeserializableWidget {
   /**
    * @param {number[]} streams which content streams this widget subscribes to
+   * @param {string[]} rssFeeds which RSS feeds to subscribe to
    * @param {?number} the amount of posts to fetch
    */
-  constructor ({ fetchAmount, streams, pageSize, rotateEveryNSec }) {
+  constructor ({ fetchAmount, streams, rssFeeds, pageSize, rotateEveryNSec }) {
     super()
     this.children = []
-    this.fetchAmount = fetchAmount
+    this.fetchAmount = fetchAmount || 5
     this.streams = streams
+    this.rssFeeds = rssFeeds || []
     this.pageSize = parseInt(pageSize)
     this.page = -1
     this.rotationPeriod = (rotateEveryNSec || 10) * 1000
+    this.refreshedTimes = 0
   }
 
   /**
@@ -39,31 +44,81 @@ export class ContentStream extends DeserializableWidget {
       res => res.json()
     )
 
-    let dirty = update.content.length !== this.children.length
-
+    const rssRefresh =
+      this.refreshedTimes %
+        Math.floor(RSS_REFRESH_INTERVAL_MS / REFRESH_INTERVAL_MS) ===
+      0
+    let dirty = rssRefresh
     if (!dirty) {
-      for (let i = 0; i < update.content.length; i++) {
+      // eslint-disable-next-line space-in-parens
+      for (let i = 0; i < update.content.length; ) {
+        if (this.children[i] instanceof RSSItem) {
+          continue
+        }
+
         dirty |= update.content[i].id !== this.children[i].id
 
         if (dirty) {
           break
         }
+
+        i++ // Only inc if this wasn't an RSS item
       }
     }
 
     if (dirty) {
-      this.children = update.content.map(content =>
-        deserializeFreeFormContent(content)
+      const childrenAndPosted = update.content.map(
+        content => [deserializeFreeFormContent(content), content.posted * 1000] // posted is in secs
       )
+
+      if (rssRefresh) {
+        for (const rss of this.rssFeeds) {
+          const res = await fetch(rss)
+          const text = await res.text()
+          const dom = new window.DOMParser().parseFromString(text, 'text/xml')
+
+          const items = Array.from(dom.querySelectorAll('item'))
+
+          for (const item of items) {
+            const published = new Date(
+              item.querySelector('pubDate').textContent
+            ).getTime()
+            childrenAndPosted.push([RSSItem.parseFromXML(item), published])
+          }
+
+          console.log(`fetched from ${rss}`)
+        }
+      }
+
+      console.log('presort', childrenAndPosted)
+
+      childrenAndPosted.sort(
+        ([_a, aPosted], [_b, bPosted]) => bPosted - aPosted
+      )
+
+      console.log('postsort', childrenAndPosted)
+
+      this.children = childrenAndPosted
+        .slice(0, this.fetchAmount)
+        .map(([child, _posted]) => child)
     }
 
+    this.refreshedTimes += 1
     return dirty
   }
 
   static fromXML (tag) {
     return new ContentStream({
       fetchAmount: tag.attribute('fetch-amount'),
-      streams: tag.children().map(stream => parseInt(stream.attribute('id'))),
+      streams: tag
+        .children()
+        .filter(stream => stream.attribute('id'))
+        .map(stream => parseInt(stream.attribute('id')))
+        .filter(id => id), // Ignore ids that don't parse
+      rssFeeds: tag
+        .children()
+        .map(stream => stream.attribute('rss-url'))
+        .filter(stream => stream), // Ignore streams without rss-url
       pageSize: tag.attribute('page-size'),
       rotateEveryNSec: tag.attribute('secs-per-page')
     })

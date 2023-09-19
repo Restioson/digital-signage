@@ -91,6 +91,7 @@ body,
   overflow: hidden;
 }
 
+.rss-item img,
 .image img,
 .video video,
 .qrcode {
@@ -109,6 +110,10 @@ body,
 .qrcode {
   height: unset !important;
   width: unset !important;
+}
+
+.rss-item .qrcode {
+  float: right;
 }
 
 :is(.image img, .qrcode canvas, .video video):last-child {
