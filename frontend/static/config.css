@@ -76,3 +76,27 @@ a.button-link {
   border: 6px inset;
   transform-origin: top left;
 }
+
+h2 {
+  text-align: center;
+}
+
+a {
+  text-decoration: none;
+  color: #226ea0;
+  font-weight: bold;
+}
+
+li a {
+  text-decoration: none;
+  color: #226ea0;
+  font-weight: bold;
+}
+
+a:hover {
+  color: #c76210;
+}
+
+li a:hover {
+  color: #c76210;
+}

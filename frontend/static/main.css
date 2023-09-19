@@ -62,7 +62,7 @@ form {
   max-width: 600px;
   padding: 20px;
   border: 1px solid #ddd;
-  box-shadow: 0 0 10px rgba(0 0 0 / 10%);
+  box-shadow: 0 0 10px #e7e5e5;
 }
 
 form,
@@ -71,6 +71,8 @@ fieldset,
   display: flex;
   flex-direction: column;
   gap: 16px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px 4px #e7e5e5;
 }
 
 *[hidden] {
@@ -79,6 +81,7 @@ fieldset,
 
 input[type="text"],
 input[type="email"],
+input[type="password"],
 input[type="tel"] {
   width: 100%;
   padding: 10px;

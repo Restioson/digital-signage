@@ -14,14 +14,25 @@ def check_logged_in():
         return current_app.login_manager.unauthorized()
 
 
+@blueprint.route("/add_posts")
+def add_posts():
+    """Return the add posts page"""
+
+    return render_template(
+        "config/add_content.j2",
+        content_streams=DatabaseController.get().fetch_all_content_streams(),
+        departments=DatabaseController.get().fetch_all_departments(),
+    )
+
+
 @blueprint.route("/")
 def index():
     """Return the config index page"""
+    content_stream_ids = DatabaseController.get().fetch_all_content_stream_ids()
 
     return render_template(
         "config/index.j2",
-        content_streams=DatabaseController.get().fetch_all_content_streams(),
-        departments=DatabaseController.get().fetch_all_departments(),
+        content_stream_ids=content_stream_ids,
     )
 
 
