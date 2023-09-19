@@ -207,21 +207,14 @@ def test_create_dept(database: DatabaseController):
 
 
 def test_create_display(database: DatabaseController):
-    assert (
-        len(database.fetch_all_displays_in_dept(1)) == 1
-    ), "DB should start with 1 default display group"
-
     display = Display("Test Display", "<clock/>")
     display_id = database.upsert_display(display, 1)
     displays = database.fetch_all_displays_in_dept(1)
-    assert len(displays) == 2, "Only 1 department should be inserted"
+    assert len(displays) == 1, "Only 1 display should be inserted"
 
-    assert displays[0].id == 1, "default group id should be 1"
-    assert displays[0].name == "Default", "default name should be 'Default'"
-
-    assert displays[1].id == display_id, "group ids should match"
-    assert displays[1].name == display.name, "names should match"
-    assert displays[1].pages == display.pages, "pages should match"
+    assert displays[0].id == display_id, "group ids should match"
+    assert displays[0].name == display.name, "names should match"
+    assert displays[0].pages == display.pages, "pages should match"
 
 
 def test_display_has_valid_dept(database: DatabaseController):
