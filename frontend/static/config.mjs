@@ -6,7 +6,8 @@ export function setupPostForms (createSuccessText) {
 
     form
       .querySelector('button[type="submit"]')
-      .addEventListener('click', function () {
+      .addEventListener('click', function (evt) {
+        evt.preventDefault()
         submitPost(null, form, createSuccessText)
       })
   }
