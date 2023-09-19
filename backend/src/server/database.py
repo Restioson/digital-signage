@@ -706,7 +706,7 @@ class DatabaseController:
             count = cursor.fetchone()[0]
         return count > 0
 
-    def create_department(self, name: str):
+    def create_new_department(self, name: str):
         """Creates a new department"""
         with self.db:
             cursor = self.db.cursor()

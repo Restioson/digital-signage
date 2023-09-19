@@ -16,7 +16,7 @@ from server import department
 from server.database import DatabaseController
 from server.department.file import File
 from server.department.person import Person
-from server.display import display
+from server.display import Display
 from server.free_form_content import BinaryContent
 from server.free_form_content.content_stream import ContentStream
 from server.user import User
@@ -340,7 +340,7 @@ def create_department():
         return flask.abort(400)
     else:
         # if not make department
-        DatabaseController.get().create_department(name)
+        DatabaseController.get().create_new_department(name)
         return {
             "id": "response needed",
             "response": "Department created",
@@ -368,14 +368,14 @@ def content_blob(content_id: int):
         flask.abort(404)
 
 
-@blueprint.route("/departments/<int:department_id>/display", methods=["POST"])
-def display(department_id: int):
+@blueprint.route("/departments/<int:department_id>/displays", methods=["POST"])
+def displays(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
     db = DatabaseController.get()
-    group_id = db.create_display(
-        display.from_form(department_id, flask.request.form, flask.request.files, db),
+    group_id = db.upsert_display(
+        Display.from_form(department_id, flask.request.form, flask.request.files, db),
         department_id,
     )
     return {"id": group_id}
@@ -402,7 +402,7 @@ def preview_display(department_id: int):
         return current_app.login_manager.unauthorized()
 
     db = DatabaseController.get()
-    group = display.from_form(
+    group = Display.from_form(
         department_id,
         flask.request.form,
         flask.request.files,
