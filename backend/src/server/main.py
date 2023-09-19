@@ -52,6 +52,14 @@ def create_app(testing=False):
     # Setup database
     with app.app_context():
         DatabaseController.get().create_db()
+        if not (DatabaseController.get().user_exists("A@ADMIN")): 
+            DatabaseController.get().insert_user(
+                "A@ADMIN",
+                "ADMIN",
+                "PASSWORD",
+                1,
+                "superuser",
+            )
 
     @app.teardown_appcontext
     def teardown_db(exception):
@@ -64,7 +72,7 @@ def create_app(testing=False):
         args=(Loadshedding.interval, app.app_context()),
         daemon=True,
     ).start()
-
+    
     return app
 
 

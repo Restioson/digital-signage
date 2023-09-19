@@ -493,6 +493,14 @@ class DatabaseController:
 
         return user_fields
 
+    def fetch_all_users(self)-> dict[int, User]: 
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.row_factory = User.from_sql
+            return list(cursor.execute(
+                "SELECT email, screen_name, department, permissions  FROM users",
+                ))
+
     # checks if the user is in the db
     def user_exists(self, email: str) -> bool:
         """checks the db for the user with specified email, using count > 0"""
@@ -520,7 +528,6 @@ class DatabaseController:
                 return User(
                     email,
                     db_user_data["screen_name"],
-                    db_user_data["password_hash"],
                     db_user_data["department"],
                     db_user_data["permissions"],
                 )
@@ -586,7 +593,7 @@ class DatabaseController:
 
     def update_loadshedding_schedule(self, region, schedule):
         """Updates the loadshedding schedule for the given region"""
-
+        
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(

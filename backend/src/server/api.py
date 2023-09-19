@@ -13,6 +13,7 @@ from flask_login import (
 )
 from server import free_form_content
 from server import department
+from server import display
 from server.database import DatabaseController
 from server.department.file import File
 from server.department.person import Person
@@ -73,7 +74,6 @@ def list_departments():
     """The /api/department/list endpoint.
     GETting this endpoint returns the list of departments with their IDs in json form
     """
-    print("test")
     departments = DatabaseController.get().fetch_all_departments(fetch_list=True)
     department_list = [
         {"id": department.id, "name": department.name} for department in departments
@@ -82,6 +82,18 @@ def list_departments():
 
     return Response(response_data, content_type="application/json")
 
+@blueprint.route("/users/list", methods=["GET"])
+def list_users():
+    """The /api/users/list endpoint.
+    GETting this endpoint returns the list of users with their emails and usernames in json form
+    """
+    users = DatabaseController.get().fetch_all_users()
+    user_list = [
+        {"email": user.get_id(), "username": user.screen_name, "department" : user.department,"permissions" : user.permissions} for user in users
+    ]
+    response_data = json.dumps({"departments": user_list})
+
+    return Response(response_data, content_type="application/json")
 
 @blueprint.route("/content", methods=["POST", "GET", "DELETE"])
 def content():
@@ -281,14 +293,10 @@ def registration_route():
             user = User(form["email"], form["screen_name"], department, permissions)
             login_user(user)
 
-            redirect_to = flask.request.args.get("next")
-            # url_has_allowed_host_and_scheme should check if the url is safe
-            if redirect_to and not url_has_allowed_host_and_scheme(
-                redirect_to, flask.request.host
-            ):
-                return flask.abort(400)
-
-            return flask.redirect(redirect_to or flask.url_for("config_view.index"))
+            return {
+            "id": "response needed",
+            "response": "User "+form["screen_name"]+" has been created",
+        }
 
         else:
             flask.abort(401)
@@ -297,20 +305,11 @@ def registration_route():
 @blueprint.route("/login", methods=["POST", "GET"])
 def login_route():
     form = flask.request.form
-
     if DatabaseController.get().user_exists(form["email"]):
         user = DatabaseController.get().try_login(form["email"], form["password"])
         if user:
             login_user(user)
-
-            redirect_to = flask.request.args.get("next")
-            # url_has_allowed_host_and_scheme should check if the url is safe
-            if redirect_to and not url_has_allowed_host_and_scheme(
-                redirect_to, flask.request.host
-            ):
-                return flask.abort(400)
-
-            return flask.redirect(redirect_to or flask.url_for("config_view.index"))
+            return flask.redirect(flask.url_for("config_view.index"))
         else:
             return flask.abort(401)
             # custom error

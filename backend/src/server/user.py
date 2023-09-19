@@ -1,3 +1,5 @@
+import sqlite3
+
 class User:
     def __init__(self, email: str, screen_name: str, department: int, permissions: str):
         self.user_id = email  # the login_manager required an id
@@ -20,3 +22,15 @@ class User:
 
     def get_department(self) -> str:
         return self.department
+
+    @staticmethod
+    def from_sql(cursor: sqlite3.Cursor, row: tuple):
+        """Parse the given SQL row into a Department object"""
+
+        row = sqlite3.Row(cursor, row)
+        return User(
+            email=row["email"],
+            screen_name=row["screen_name"],
+            department=row["department"],
+            permissions=row["permissions"]
+        )

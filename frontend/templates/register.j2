@@ -3,14 +3,14 @@
 {% block title %}Register a new user{% endblock %}
 {% block head %}
   {{ super() }}
-  {{ css('main') }}
+  {{ css('config/users') }}
 {% endblock %}
 
 {% block content %}
   <script type="module">
     import {
       setupPostForms,
-      populateDepartments,
+      populateUsersAndDepartments,
     } from "{{ url_for('static', filename='config.mjs') }}";
     setupPostForms(function (res) {
       if (res.id === "response needed") {
@@ -19,15 +19,33 @@
         return `Successfully submitted (id: ${res.id})`;
       }
     });
-    populateDepartments();
+    populateUsersAndDepartments();
   </script>
 
 
+  <h2>User List</h2>
+  <table id="user-list">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Username</th>
+        <th>Department ID</th>
+        <th>Permissions</th>
+        <th>Delete User</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- User data will be populated here -->
+    </tbody>
+  </table>
+
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
   <form
-    action="/api/register?next={{ next }}"
+    action="/api/register"
     method="post"
     classname="register"
+    class="post-form"
+    enctype="multipart/form-data"
   >
     <label
       >Email Address:
@@ -35,7 +53,7 @@
     </label>
 
     <label
-      >Screen Name:
+      >Username:
       <input type="text" id="screen_name" name="screen_name" required />
     </label>
 
@@ -80,7 +98,7 @@
       >Department name:
       <input type="name" id="name" name="name" required />
     </label>
-    <p hidden id="status-message"></p>
     <button type="submit">Create department</button>
+    <p hidden id="status-message"></p>
   </form>
 {% endblock %}

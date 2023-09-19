@@ -42,22 +42,46 @@ export function setupSelectMultiple (select) {
   })
 }
 
-export function populateDepartments () {
-  const departmentSelect = document.getElementById('department')
+export function populateUsersAndDepartments() {
+  const userListTable = document.getElementById('user-list').querySelector('tbody');
+  const departmentSelect = document.getElementById('department');
 
-  fetch('/api/department/list')
-    .then(response => response.json())
-    .then(data => {
-      data.departments.forEach(department => {
-        const option = document.createElement('option')
-        option.value = department.id
-        option.text = department.name
-        departmentSelect.appendChild(option)
-      })
+  // Fetch both user and department data in parallel
+  Promise.all([fetch('/api/users/list'), fetch('/api/department/list')])
+    .then(([userResponse, departmentResponse]) =>
+      Promise.all([userResponse.json(), departmentResponse.json()])
+    )
+    .then(([userData, departmentData]) => {
+      if (userData && Array.isArray(userData.departments) && departmentData && Array.isArray(departmentData.departments)) {
+        // Create a department map for easier lookup
+        const departmentMap = new Map(departmentData.departments.map(dep => [dep.id, dep.name]));
+
+        // Iterate through the list of users and add rows to the table
+        userData.departments.forEach(user => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${user.email}</td>
+            <td>${user.username}</td>
+            <td>${departmentMap.get(user.department)}</td>
+            <td>${user.permissions}</td>
+          `;
+          userListTable.appendChild(row);
+        });
+
+        // Populate the department select dropdown
+        departmentData.departments.forEach(department => {
+          const option = document.createElement('option');
+          option.value = department.id;
+          option.text = department.name;
+          departmentSelect.appendChild(option);
+        });
+      } else {
+        console.error('Invalid data format:', userData, departmentData);
+      }
     })
     .catch(error => {
-      console.error('Error fetching departments:', error)
-    })
+      console.error('Error fetching data:', error);
+    });
 }
 
 export function setupBackButton () {
