@@ -25,17 +25,22 @@ export function main (departmentId, existingPages) {
   setupPreview()
 }
 
-function setName (elt, pageNo, properties) {
-  const variable = elt.dataset.variableName
+function setNameAndVal (elt, pageNo, properties) {
+  let variable = elt.dataset.variableName
   elt.name = `page-${pageNo}-template-${variable}`
+
+  if (variable.endsWith('[]')) {
+    variable = variable.substring(0, variable.length - 2)
+  }
 
   const val = properties[variable]
   if (val !== undefined) {
+    console.log(elt.tagName)
     if (elt.tagName === 'SELECT' && elt.multiple) {
       for (const option of elt.options) {
         option.selected = val.includes(option.value)
       }
-    } else if (elt.type !== 'file') {
+    } else if (elt.tagName === 'INPUT' && elt.type !== 'file') {
       elt.value = val
     }
   }
@@ -65,7 +70,7 @@ function addPage (templateId, duration, properties) {
   }
 
   for (const elt of template.querySelectorAll('[data-variable-name]')) {
-    setName(elt, pageNo, properties)
+    setNameAndVal(elt, pageNo, properties)
   }
 
   for (const elt of template.querySelectorAll('.select-file-or-url')) {
@@ -82,29 +87,38 @@ function addPage (templateId, duration, properties) {
   })
 
   for (const addBtn of fieldset.querySelectorAll('button.add-rss-feed')) {
-    const container = addBtn.parentElement
-    addBtn.addEventListener('click', () => {
-      const template = container
-        .querySelector('template')
-        .content.cloneNode(true)
+    let variable = addBtn.dataset.variableName
+    variable = variable.substring(0, variable.length)
 
-      template
-        .querySelector('button.delete-rss-feed')
-        .addEventListener('click', evt => {
-          form.dispatchEvent(new Event('change'))
-          evt.target.parentElement.remove()
-        })
+    addBtn.addEventListener('click', () => addRssFeed(form, addBtn, pageNo, {}))
 
-      for (const elt of template.querySelectorAll('[data-variable-name]')) {
-        setName(elt, pageNo, properties)
-      }
-
-      container.insertBefore(template, addBtn)
-      form.dispatchEvent(new Event('change'))
-    })
+    for (const feed of properties[variable] || []) {
+      const props = {}
+      props[variable] = feed
+      addRssFeed(form, addBtn, pageNo, props)
+    }
   }
 
   form.insertBefore(template, document.getElementById('add-page'))
+  form.dispatchEvent(new Event('change'))
+}
+
+function addRssFeed (form, addBtn, pageNo, properties) {
+  const container = addBtn.parentElement
+  const template = container.querySelector('template').content.cloneNode(true)
+
+  template
+    .querySelector('button.delete-rss-feed')
+    .addEventListener('click', evt => {
+      form.dispatchEvent(new Event('change'))
+      evt.target.parentElement.remove()
+    })
+
+  for (const elt of template.querySelectorAll('[data-variable-name]')) {
+    setNameAndVal(elt, pageNo, properties)
+  }
+
+  container.insertBefore(template, addBtn)
   form.dispatchEvent(new Event('change'))
 }
 

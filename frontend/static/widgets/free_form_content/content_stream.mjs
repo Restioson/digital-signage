@@ -48,22 +48,31 @@ export class ContentStream extends DeserializableWidget {
       this.refreshedTimes %
         Math.floor(RSS_REFRESH_INTERVAL_MS / REFRESH_INTERVAL_MS) ===
       0
+
     let dirty = rssRefresh
+
     if (!dirty) {
       // eslint-disable-next-line space-in-parens
-      for (let i = 0; i < update.content.length; ) {
-        if (this.children[i] instanceof RSSItem) {
+      let freeFormContentIdx = 0
+
+      // Check if all the free form content children are the same
+      for (let childIdx = 0; childIdx < this.children.length; childIdx++) {
+        if (this.children[childIdx] instanceof RSSItem) {
           continue
         }
 
-        dirty |= update.content[i].id !== this.children[i].id
+        dirty |=
+          update.content[freeFormContentIdx].id !== this.children[childIdx].id
 
         if (dirty) {
           break
         }
 
-        i++ // Only inc if this wasn't an RSS item
+        freeFormContentIdx++ // Only inc if this wasn't an RSS item
       }
+
+      // Didn't have all the free form content children - must be refreshed
+      dirty |= freeFormContentIdx !== update.content.length - 1
     }
 
     if (dirty) {

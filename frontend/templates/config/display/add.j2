@@ -104,7 +104,13 @@
         </div>
       </template>
 
-      <button type="button" class="add-rss-feed">Add feed</button>
+      <button
+        type="button"
+        data-variable-name="{{ property.variable }}"
+        class="add-rss-feed"
+      >
+        Add feed
+      </button>
     </div>
   {%- elif property.type in ["html", "xml-attribute"] -%}
     <label
