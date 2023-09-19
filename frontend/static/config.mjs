@@ -60,7 +60,6 @@ export function populateDepartments () {
     })
 }
 
-
 export function setupBackButton () {
   document.getElementById('backButton').addEventListener('click', function () {
     window.history.back()

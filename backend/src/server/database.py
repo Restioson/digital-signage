@@ -235,39 +235,69 @@ class DatabaseController:
         """Fetch the given Department by its ID"""
         cursor = self.db.cursor()
         cursor.row_factory = Department.from_sql
-        dept = next(
-            cursor.execute(
-                "SELECT id, name, bio FROM departments WHERE id = ?", (department_id,)
-            ),
-            None,
-        )
+        if department_id == 1:
+            dept = next(
+                cursor.execute(
+                    "SELECT id, name, bio FROM departments",
+                ),
+                None,
+            )
+        else:
+            dept = next(
+                cursor.execute(
+                    "SELECT id, name, bio FROM departments WHERE id = ?",
+                    (department_id,),
+                ),
+                None,
+            )
 
         if dept and fetch_people:
             cursor = self.db.cursor()
             cursor.row_factory = Person.from_sql
-            dept.people = list(
-                cursor.execute(
-                    "SELECT id, department, title, "
-                    "full_name, position, office_hours,"
-                    "office_location, email, phone FROM people "
-                    " WHERE department = ?"
-                    " ORDER BY id",
-                    (department_id,),
+            if department_id == 1:
+                dept.people = list(
+                    cursor.execute(
+                        "SELECT id, department, title, "
+                        "full_name, position, office_hours,"
+                        "office_location, email, phone FROM people "
+                        " ORDER BY id",
+                    )
                 )
-            )
+            else:
+                dept.people = list(
+                    cursor.execute(
+                        "SELECT id, department, title, "
+                        "full_name, position, office_hours,"
+                        "office_location, email, phone FROM people "
+                        " WHERE department = ?"
+                        " ORDER BY id",
+                        (department_id,),
+                    )
+                )
 
         if dept and fetch_files:
             cursor = self.db.cursor()
             cursor.row_factory = File.from_sql
-            dept.files = list(
-                cursor.execute(
-                    "SELECT filename, department_id, file_content, "
-                    "mime_type FROM files "
-                    " WHERE department_id = ?"
-                    " ORDER BY filename",
-                    (department_id,),
+            if department_id == 1:
+                dept.files = list(
+                    cursor.execute(
+                        "SELECT filename, department_id, file_content, "
+                        "mime_type FROM files "
+                        " WHERE department_id = ?"
+                        " ORDER BY filename",
+                        (department_id,),
+                    )
                 )
-            )
+            else:
+                dept.files = list(
+                    cursor.execute(
+                        "SELECT filename, department_id, file_content, "
+                        "mime_type FROM files "
+                        " WHERE department_id = ?"
+                        " ORDER BY filename",
+                        (department_id,),
+                    )
+                )
 
         if dept and fetch_displays:
             dept.displays = self.fetch_all_displays_in_dept(dept.id)
@@ -335,12 +365,19 @@ class DatabaseController:
         """Fetch all display groups from the database"""
         cursor = self.db.cursor()
         cursor.row_factory = Display.from_sql
-        return list(
-            cursor.execute(
-                "SELECT id, name, pages_json FROM displays WHERE department = ?",
-                (department_id,),
+        if department_id == 1:
+            return list(
+                cursor.execute(
+                    "SELECT id, name, pages_json FROM displays",
+                )
             )
-        )
+        else:
+            return list(
+                cursor.execute(
+                    "SELECT id, name, pages_json FROM displays WHERE department = ?",
+                    (department_id,),
+                )
+            )
 
     def fetch_display_by_id(self, display_id: int) -> Optional[Display]:
         """Fetch the given display group from the database"""

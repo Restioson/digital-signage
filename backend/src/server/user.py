@@ -14,3 +14,9 @@ class User:
     # get id method changed
     def get_id(self) -> str:
         return self.user_id
+
+    def get_permissions(self) -> str:
+        return self.permissions
+
+    def get_department(self) -> str:
+        return self.department
