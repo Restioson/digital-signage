@@ -48,17 +48,74 @@ class Display:
 
         if "display_id" in form:
             display_id = form["display_id"]
-
-            if not is_preview:
-                db.delete_files_for_display(
-                    department_id, int(display_id)
-                )  # Wipe old files
-
         elif not is_preview:
             display_id = db.reserve_display_id(department_id)
         else:
             display_id = None
 
+        filenames = Display._extract_files(
+            department_id, form, files, pages, display_id, db, is_preview
+        )
+
+        for prop in form.keys():
+            if prop.startswith("page-"):
+                tokens = prop.split("-", maxsplit=4)
+                page_no = int(tokens[1])
+                variable_name = tokens[3]
+                page = pages[page_no]
+
+                if variable_name.endswith("[]"):
+                    val = form.getlist(prop)
+                else:
+                    val = form[prop]
+
+                file_prefix = f"/api/departments/{department_id}/files/"
+                if val.startswith(file_prefix):
+                    filenames.append(val[len(file_prefix) :])
+
+                page["properties"][variable_name] = val
+            elif prop.startswith("duration-page-"):
+                page_no = int(prop[14:])
+                pages[page_no]["duration"] = int(form[prop])
+
+        # Wipe files that are no longer in use
+        if "display_id" in form and not is_preview:
+            Display._wipe_old_files(filenames, department_id, db, display_id)
+
+        pages = [
+            (page["template"], page["duration"], page["properties"])
+            for page_no, page in sorted(pages.items())
+        ]
+
+        return Display(
+            name=form["name"],
+            pages=pages,
+            display_id=display_id,
+        )
+
+    @staticmethod
+    def _wipe_old_files(filenames_in_use, department_id, db, display_id):
+        dept = db.fetch_department_by_id(department_id, fetch_files=True)
+        for file in dept.files:
+            if (
+                file.name.startswith(f"_group-{display_id}")
+                and file.name not in filenames_in_use
+            ):
+                db.delete_file_by_name_and_department(file.name, department_id)
+
+    @staticmethod
+    def _extract_files(
+        department_id: int,
+        form: ImmutableMultiDict,
+        files: ImmutableMultiDict,
+        pages,
+        display_id,
+        db,
+        is_preview=False,
+    ) -> list[str]:
+        """Extract any files, uploading them, putting them into the properties as links,
+        and returning their names"""
+        filenames = []
         for prop, file in files.items():
             tokens = prop.split("-", maxsplit=4)
             page_no = int(tokens[1])
@@ -68,6 +125,7 @@ class Display:
 
             if not is_preview:
                 name = f"_group-{display_id}-{form['name']}-{prop}{ext}"
+                filenames.append(name)
 
                 db.upload_department_file(
                     File(
@@ -85,33 +143,7 @@ class Display:
 
             page["properties"][variable_name] = url
 
-        for prop in form.keys():
-            if prop.startswith("page-"):
-                tokens = prop.split("-", maxsplit=4)
-                page_no = int(tokens[1])
-                variable_name = tokens[3]
-                page = pages[page_no]
-
-                if variable_name.endswith("[]"):
-                    val = form.getlist(prop)
-                else:
-                    val = form[prop]
-
-                page["properties"][variable_name] = val
-            elif prop.startswith("duration-page-"):
-                page_no = int(prop[14:])
-                pages[page_no]["duration"] = int(form[prop])
-
-        pages = [
-            (page["template"], page["duration"], page["properties"])
-            for page_no, page in sorted(pages.items())
-        ]
-
-        return Display(
-            name=form["name"],
-            pages=pages,
-            display_id=display_id,
-        )
+        return filenames
 
     def render(self, db):
         print(json.dumps(self.pages))

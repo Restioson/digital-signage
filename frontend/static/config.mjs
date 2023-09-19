@@ -1,8 +1,14 @@
 export function setupPostForms (createSuccessText) {
   for (const form of document.getElementsByClassName('post-form')) {
     form.addEventListener('submit', event =>
-      submitPost(event, createSuccessText)
+      submitPost(event, form, createSuccessText)
     )
+
+    form
+      .querySelector('button[type="submit"]')
+      .addEventListener('click', function () {
+        submitPost(null, form, createSuccessText)
+      })
   }
 }
 
@@ -53,9 +59,10 @@ class ApiError extends Error {
  * @param event the HTML form submit event
  * @returns {Promise<void>}
  */
-async function submitPost (event, createText) {
-  event.preventDefault()
-  const form = event.target
+async function submitPost (event, form, createText) {
+  if (event) {
+    event.preventDefault()
+  }
 
   const postStatusMessage = document.getElementById('status-message')
   postStatusMessage.className = '' // Clear success/error class
