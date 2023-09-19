@@ -73,7 +73,7 @@
   {%- elif property.type == "content_streams" -%}
     <label
       >{{ property.name }}:
-      <select data-variable-name="{{ property.variable }}" multiple>
+      <select data-variable-name="{{ property.variable }}[]" multiple>
         <optgroup label="Public">
           {%- for stream in streams.public -%}
             <option value="{{ stream.id }}">{{ stream.name }}</option>
@@ -89,6 +89,29 @@
         {%- endfor -%}
       </select>
     </label>
+  {%- elif property.type == "rss_feeds" -%}
+    <div class="column-list">
+      {{ property.name }}
+
+      <template>
+        <div>
+          <label>
+            RSS Feed URL:
+            <input type="url" data-variable-name="{{ property.variable }}[]" />
+          </label>
+
+          <button type="button" class="delete-rss-feed">Delete</button>
+        </div>
+      </template>
+
+      <button
+        type="button"
+        data-variable-name="{{ property.variable }}"
+        class="add-rss-feed"
+      >
+        Add feed
+      </button>
+    </div>
   {%- elif property.type in ["html", "xml-attribute"] -%}
     <label
       >{{ property.name }}

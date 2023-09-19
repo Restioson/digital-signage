@@ -25,6 +25,27 @@ export function main (departmentId, existingPages) {
   setupPreview()
 }
 
+function setNameAndVal (elt, pageNo, properties) {
+  let variable = elt.dataset.variableName
+  elt.name = `page-${pageNo}-template-${variable}`
+
+  if (variable.endsWith('[]')) {
+    variable = variable.substring(0, variable.length - 2)
+  }
+
+  const val = properties[variable]
+  if (val !== undefined) {
+    console.log(elt.tagName)
+    if (elt.tagName === 'SELECT' && elt.multiple) {
+      for (const option of elt.options) {
+        option.selected = val.includes(option.value)
+      }
+    } else if (elt.tagName === 'INPUT' && elt.type !== 'file') {
+      elt.value = val
+    }
+  }
+}
+
 function addPage (templateId, duration, properties) {
   const pageNo = pageNoCounter++
   const template = document
@@ -49,19 +70,7 @@ function addPage (templateId, duration, properties) {
   }
 
   for (const elt of template.querySelectorAll('[data-variable-name]')) {
-    const variable = elt.dataset.variableName
-    elt.name = `page-${pageNo}-template-${variable}`
-
-    const val = properties[variable]
-    if (val !== undefined) {
-      if (elt.tagName === 'SELECT' && elt.multiple) {
-        for (const option of elt.options) {
-          option.selected = val.includes(option.value)
-        }
-      } else if (elt.type !== 'file') {
-        elt.value = val
-      }
-    }
+    setNameAndVal(elt, pageNo, properties)
   }
 
   for (const elt of template.querySelectorAll('.select-file-or-url')) {
@@ -77,7 +86,39 @@ function addPage (templateId, duration, properties) {
     form.dispatchEvent(new Event('change'))
   })
 
+  for (const addBtn of fieldset.querySelectorAll('button.add-rss-feed')) {
+    let variable = addBtn.dataset.variableName
+    variable = variable.substring(0, variable.length)
+
+    addBtn.addEventListener('click', () => addRssFeed(form, addBtn, pageNo, {}))
+
+    for (const feed of properties[variable] || []) {
+      const props = {}
+      props[variable] = feed
+      addRssFeed(form, addBtn, pageNo, props)
+    }
+  }
+
   form.insertBefore(template, document.getElementById('add-page'))
+  form.dispatchEvent(new Event('change'))
+}
+
+function addRssFeed (form, addBtn, pageNo, properties) {
+  const container = addBtn.parentElement
+  const template = container.querySelector('template').content.cloneNode(true)
+
+  template
+    .querySelector('button.delete-rss-feed')
+    .addEventListener('click', evt => {
+      form.dispatchEvent(new Event('change'))
+      evt.target.parentElement.remove()
+    })
+
+  for (const elt of template.querySelectorAll('[data-variable-name]')) {
+    setNameAndVal(elt, pageNo, properties)
+  }
+
+  container.insertBefore(template, addBtn)
   form.dispatchEvent(new Event('change'))
 }
 

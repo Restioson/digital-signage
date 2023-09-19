@@ -65,13 +65,14 @@ class Display:
                 page = pages[page_no]
 
                 if variable_name.endswith("[]"):
+                    variable_name = variable_name[:-2]
                     val = form.getlist(prop)
                 else:
                     val = form[prop]
 
-                file_prefix = f"/api/departments/{department_id}/files/"
-                if val.startswith(file_prefix):
-                    filenames.append(val[len(file_prefix) :])
+                    file_prefix = f"/api/departments/{department_id}/files/"
+                    if val.startswith(file_prefix):
+                        filenames.append(val[len(file_prefix) :])
 
                 page["properties"][variable_name] = val
             elif prop.startswith("duration-page-"):
