@@ -12,6 +12,7 @@ from flask_login import (
     current_user,
 )
 from server import free_form_content
+from server import department
 from server.database import DatabaseController
 from server.department.file import File
 from server.department.person import Person
@@ -55,7 +56,7 @@ def list_content_streams():
     POSTing to this endpoint with a form representing a new content stream
     will create the content stream and return its id.
     """
-
+    # TODO
     db = DatabaseController.get()
 
     if not current_user.is_authenticated:
@@ -64,6 +65,21 @@ def list_content_streams():
     stream_id = db.create_content_stream(ContentStream.from_form(flask.request.form))
 
     return {"id": stream_id}
+
+
+
+@blueprint.route("/department/list", methods=["GET"])
+def list_departments():
+    """The /api/department/list endpoint.
+    GETting this endpoint returns the list of departments with their IDs in json form
+    """
+    departments = DatabaseController.get().fetch_all_departments()
+    department_list = [
+        {"id": department.id, "name": department.name} for department in departments
+    ]
+    response_data = json.dumps({"departments": department_list})
+
+    return Response(response_data, content_type="application/json")
 
 
 @blueprint.route("/content", methods=["POST", "GET", "DELETE"])
@@ -109,6 +125,8 @@ def people_route(department_id: int):
 
     POSTing to this end point inserts a new person into the database
     """
+
+    # TODO
     dept = DatabaseController.get().fetch_department_by_id(
         department_id, fetch_people=True
     )
@@ -242,13 +260,23 @@ def registration_route():
     form = flask.request.form
 
     if flask.request.method == "POST":
+        department = form["department"]
+        permissions = form["permissions"]
+        # superuser/admin
+        if department == "1":
+            permissions = "superuser"
+        elif permissions == "superuser":
+            department = "1"
+
         if not (DatabaseController.get().user_exists(form["email"])):
             DatabaseController.get().insert_user(
                 form["email"],
                 form["screen_name"],
                 form["password"],
+                department,
+                permissions,
             )
-            user = User(form["email"], form["screen_name"])
+            user = User(form["email"], form["screen_name"], department, permissions)
             login_user(user)
 
             redirect_to = flask.request.args.get("next")
@@ -301,6 +329,26 @@ def delete_content(content_id: int):
         return {"deleted": True}
     else:
         flask.abort(404)
+
+@blueprint.route("/department/create", methods=["POST"])
+def create_department():
+    # check if department already exists
+    name = flask.request.form["name"]
+    if DatabaseController.get().check_department(name):
+        return flask.abort(400)
+    else:
+        # if not make department
+        DatabaseController.get().create_department(name)
+        return {
+            "id": "response needed",
+            "response": "Department created",
+        }
+
+
+@blueprint.route("/checkuser/", methods=["GET"])
+def checkuser():
+
+    return current_user.permissions
 
 
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])

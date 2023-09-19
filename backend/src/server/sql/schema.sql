@@ -45,10 +45,27 @@ CREATE TABLE IF NOT EXISTS content (
     )
   )
 );
+<<<<<<< HEAD
 CREATE TABLE IF NOT EXISTS content_stream_membership (
   stream INTEGER NOT NULL REFERENCES content_streams(id) ON DELETE CASCADE,
   content INTEGER NOT NULL REFERENCES content(id) ON DELETE CASCADE,
   PRIMARY KEY (stream, content)
+=======
+CREATE INDEX IF NOT EXISTS content_by_stream ON content(stream);
+CREATE TABLE IF NOT EXISTS content_streams (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  display_group INTEGER REFERENCES display_groups(id) ON DELETE CASCADE,
+  department INTEGER REFERENCES departments(id) ON DELETE CASCADE,
+  permissions TEXT NOT NULL CHECK (
+    permissions IN (
+      'private',
+      'readable',
+      'writeable'
+    )
+  ),
+  display INTEGER REFERENCES displays(id) ON DELETE CASCADE
+>>>>>>> 2bda457 (Begining of work)
 );
 CREATE TABLE IF NOT EXISTS people (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,7 +86,15 @@ CREATE TABLE IF NOT EXISTS users (
   --make email primary key
   email TEXT PRIMARY KEY,
   screen_name TEXT NOT NULL,
-  password_hash TEXT NOT NULL
+  password_hash TEXT NOT NULL,
+  department INTEGER NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
+  permissions TEXT NOT NULL CHECK (
+    permissions IN (
+      'superuser',
+      'edituser',
+      'postinguser'
+    )
+  )
 );
 CREATE TABLE IF NOT EXISTS loadshedding_schedules (
   id INTEGER PRIMARY KEY,

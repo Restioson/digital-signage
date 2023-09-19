@@ -42,6 +42,25 @@ export function setupSelectMultiple (select) {
   })
 }
 
+export function populateDepartments () {
+  const departmentSelect = document.getElementById('department')
+
+  fetch('/api/department/list')
+    .then(response => response.json())
+    .then(data => {
+      data.departments.forEach(department => {
+        const option = document.createElement('option')
+        option.value = department.id
+        option.text = department.name
+        departmentSelect.appendChild(option)
+      })
+    })
+    .catch(error => {
+      console.error('Error fetching departments:', error)
+    })
+}
+
+
 export function setupBackButton () {
   document.getElementById('backButton').addEventListener('click', function () {
     window.history.back()

@@ -441,13 +441,15 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.row_factory = sqlite3.Row
             cursor.execute(
-                "SELECT email, screen_name FROM users WHERE email = ?",
+                "SELECT email, screen_name, department, permissions  FROM users WHERE email = ?",
                 (email,),
             )
             db_user_data = cursor.fetchone()  # Fetch the user data from the database
 
             user_fields.append(db_user_data[0])
             user_fields.append(db_user_data[1])
+            user_fields.append(db_user_data[2])
+            user_fields.append(db_user_data[3])
 
         return user_fields
 
@@ -470,16 +472,29 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.row_factory = sqlite3.Row
             cursor.execute(
-                "SELECT email, screen_name, password_hash FROM users WHERE email = ?",
+                "SELECT email, screen_name, password_hash, department, permissions FROM users WHERE email = ?",
                 (email,),
             )
             db_user_data = cursor.fetchone()
             if check_password_hash(db_user_data["password_hash"], password):
-                return User(email, db_user_data["screen_name"])
+                return User(
+                    email,
+                    db_user_data["screen_name"],
+                    db_user_data["password_hash"],
+                    db_user_data["department"],
+                    db_user_data["permissions"],
+                )
             else:
                 return None
 
-    def insert_user(self, email: str, screen_name: str, password: str) -> int:
+    def insert_user(
+        self,
+        email: str,
+        screen_name: str,
+        password: str,
+        department: int,
+        permissions: str,
+    ) -> int:
         """Insert the given user into the user table
         and returns the inserted row id"""
 
@@ -487,12 +502,14 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.execute(
                 "INSERT INTO users "
-                "(email, screen_name, password_hash)"
-                " VALUES (?, ?, ?)",
+                "(email, screen_name, password_hash, department, permissions)"
+                " VALUES (?, ?, ?, ?, ?)",
                 (
                     email,
                     screen_name,
                     generate_password_hash(password),
+                    department,
+                    permissions,
                 ),
             )
         return cursor.lastrowid
@@ -636,3 +653,34 @@ class DatabaseController:
                 ),
             )
         return cursor.lastrowid
+
+    def check_department(self, name: str):
+        """Checks whether department exists"""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.row_factory = sqlite3.Row
+            cursor.execute(
+                "SELECT COUNT(*) FROM departments WHERE name = ?",
+                (name,),
+            )
+            count = cursor.fetchone()[0]
+        return count > 0
+
+    def create_department(self, name: str):
+        """Creates a new department"""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "INSERT INTO departments (name) VALUES (?)",
+                (name,),
+            )
+        return cursor.lastrowid
+
+    def checkuserrank(self, user: User):
+        """Creates a new department"""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "SELECT permissions FROM users WHERE id = ?",
+                (user.get_id,),
+            )

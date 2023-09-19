@@ -1,8 +1,10 @@
 class User:
-    def __init__(self, email: str, screen_name: str):
+    def __init__(self, email: str, screen_name: str, department: int, permissions: str):
         self.user_id = email  # the login_manager required an id
         # self.email = email
         self.screen_name = screen_name
+        self.department = department
+        self.permissions = permissions
 
         # are now variables
         self.is_active = True

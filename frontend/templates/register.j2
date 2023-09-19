@@ -8,13 +8,24 @@
 
 {% block content %}
   <script type="module">
-    import { setupPostForms } from "{{ url_for('static', filename='config.mjs') }}";
-    setupPostForms();
+    import {
+      setupPostForms,
+      populateDepartments,registerpage,
+    } from "{{ url_for('static', filename='config.mjs') }}";
+    setupPostForms(function (res) {
+      if (res.id === "response needed") {
+        return `Response: ${res.response}`;
+      } else {
+        return `Successfully submitted (id: ${res.id})`;
+      }
+    });
+    populateDepartments();
   </script>
 
-
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
-  <form action="/api/register?next={{ next }}" method="post" name="register">
+  <form action="/api/register?next={{ next }}" 
+    method="post" 
+    classname="register">
     <label
       >Email Address:
       <input type="email" id="email" name="email" required />
@@ -37,6 +48,37 @@
       />
     </label>
 
-    <button type="submit" name="register">Create Account</button>
+    <label for="department"
+      >Department:
+      <select id="department" name="department">
+        <!-- Options will be dynamically populated here -->
+      </select>
+    </label>
+
+    <label for="permissions"
+      >Select permission:
+      <select id="permissions" name="permissions">
+        <option value="superuser">Superuser</option>
+        <option value="edituser">Edituser</option>
+        <option value="postinguser">Postinguser</option>
+      </select>
+    </label>
+    <p hidden id="status-message"></p>
+    <button type="submit" name="register">Create account</button>
+  </form>
+
+  <form
+    action="/api/department/create"
+    method="post"
+    class="post-form"
+    enctype="multipart/form-data"
+    classname="create_department"
+  >
+    <label
+      >Department name:
+      <input type="name" id="name" name="name" required />
+    </label>
+    <p hidden id="status-message"></p>
+    <button type="submit">Create department</button>
   </form>
 {% endblock %}
