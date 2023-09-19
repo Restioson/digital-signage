@@ -128,7 +128,6 @@ def test_can_access_public_routes(client):
     assert client.get("/").status == "200 OK"
     assert client.get("/static/config.css").status == "200 OK"
     assert client.get("/static/config.css").status == "200 OK"
-    assert client.get("/display/").status == "200 OK"
 
 
 def assert_redirects_login(res):

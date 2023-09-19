@@ -6,12 +6,6 @@ from server.database import DatabaseController
 blueprint = Blueprint("display_view", __name__, url_prefix="/display")
 
 
-@blueprint.route("/")
-def default_display():
-    """Return the display view page for the default display group"""
-    return display(1, 1)
-
-
 @blueprint.route("/<int:department_id>/<int:display_id>/")
 def display(department_id: int, display_id: int):
     """Return the display view page for a given group"""
