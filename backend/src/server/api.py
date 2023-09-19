@@ -16,7 +16,7 @@ from server import department
 from server.database import DatabaseController
 from server.department.file import File
 from server.department.person import Person
-from server.display_group import DisplayGroup
+from server.display import display
 from server.free_form_content import BinaryContent
 from server.free_form_content.content_stream import ContentStream
 from server.user import User
@@ -73,7 +73,8 @@ def list_departments():
     """The /api/department/list endpoint.
     GETting this endpoint returns the list of departments with their IDs in json form
     """
-    departments = DatabaseController.get().fetch_all_departments()
+    print("test")
+    departments = DatabaseController.get().fetch_all_departments(fetch_list=True)
     department_list = [
         {"id": department.id, "name": department.name} for department in departments
     ]
@@ -367,16 +368,14 @@ def content_blob(content_id: int):
         flask.abort(404)
 
 
-@blueprint.route("/departments/<int:department_id>/display_groups", methods=["POST"])
-def display_groups(department_id: int):
+@blueprint.route("/departments/<int:department_id>/display", methods=["POST"])
+def display(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
     db = DatabaseController.get()
-    group_id = db.create_display_group(
-        DisplayGroup.from_form(
-            department_id, flask.request.form, flask.request.files, db
-        ),
+    group_id = db.create_display(
+        display.from_form(department_id, flask.request.form, flask.request.files, db),
         department_id,
     )
     return {"id": group_id}
@@ -403,7 +402,7 @@ def preview_display(department_id: int):
         return current_app.login_manager.unauthorized()
 
     db = DatabaseController.get()
-    group = DisplayGroup.from_form(
+    group = display.from_form(
         department_id,
         flask.request.form,
         flask.request.files,

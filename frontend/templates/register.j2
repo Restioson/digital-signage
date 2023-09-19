@@ -11,7 +11,6 @@
     import {
       setupPostForms,
       populateDepartments,
-      registerpage,
     } from "{{ url_for('static', filename='config.mjs') }}";
     setupPostForms(function (res) {
       if (res.id === "response needed") {
@@ -67,7 +66,6 @@
         <option value="postinguser">Postinguser</option>
       </select>
     </label>
-    <p hidden id="status-message"></p>
     <button type="submit" name="register">Create account</button>
   </form>
 

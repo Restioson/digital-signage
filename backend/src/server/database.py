@@ -197,7 +197,7 @@ class DatabaseController:
             return dept_id
 
     def fetch_all_departments(
-        self, fetch_displays=False, fetch_content_streams=False
+        self, fetch_displays=False, fetch_content_streams=False, fetch_list=False
     ) -> dict[int, Department]:
         """Fetch all departments (but does not fetch their people).
 
@@ -223,7 +223,10 @@ class DatabaseController:
             for department in departments:
                 department.content_streams = streams.by_department.get(department.id)
 
-        return {dept.id: dept for dept in departments}
+        if fetch_list:
+            return departments
+        else:
+            return {dept.id: dept for dept in departments}
 
     def fetch_department_by_id(
         self,
