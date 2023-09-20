@@ -28,6 +28,13 @@
         </property>
 
         <property>
+          <name>Theme colour - background</name>
+          <variable>theme_color_lighter</variable>
+          <type>color</type>
+          <default>#bfcfea</default>
+        </property>
+
+        <property>
           <name>Clock text colour</name>
           <variable>clock_text_color</variable>
           <type>color</type>
@@ -65,7 +72,7 @@
     <style>
         .twitter-embed-page {
             --theme-color: {{ theme_color }};
-            --theme-color-lighter: color-mix(in srgb, var(--theme-color) 25%, white);
+            --theme-color-lighter: {{ theme_color_lighter }};
             --accent-color: {{ accent_color }};
             --clock-text-color: {{ clock_text_color }};
         }
