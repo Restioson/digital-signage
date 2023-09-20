@@ -3,9 +3,9 @@
 
   <properties>
     <property>
-      <type>string</type>
+      <type>file_or_url</type>
       <variable>bg_loadshedding_url</variable>
-      <name>Background image (URL)</name>
+      <name>Background image</name>
       <default>
         <![CDATA[https://media.istockphoto.com/id/1408155641/photo/concept-of-loadshedding.jpg?s=612x612&w=0&k=20&c=yjAcwlmeUfjxW62emflmKoIQ3yjyBowK7H4JdlliIIg=]]>
       </default>
@@ -17,6 +17,14 @@
       <name>Text color</name>
       <default>lightgray</default>
     </property>
+
+    <advanced>
+      <property>
+        <name>Custom CSS</name>
+        <variable>css</variable>
+        <type>html</type>
+      </property>
+    </advanced>
   </properties>
 
   <page>
@@ -47,6 +55,9 @@
         font-size: 2.5rem;
       }
     </style>
+
+    <!-- prettier-ignore -->
+    <style>{{ css }}</style>
     <loadshedding />
   </page>
 </template>

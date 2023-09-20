@@ -45,10 +45,10 @@
       <property>
         <name>Sidebar logo</name>
         <variable>sidebar_logo</variable>
-        <type>string</type>
-        <default
-          ><![CDATA[https://upload.wikimedia.org/wikipedia/en/7/7c/University_of_Cape_Town_logo.svg]]></default
-        >
+        <type>file_or_url</type>
+        <default>
+          <![CDATA[https://upload.wikimedia.org/wikipedia/en/7/7c/University_of_Cape_Town_logo.svg]]>
+        </default>
       </property>
 
       <property>
@@ -62,6 +62,12 @@
 [<div class='date'>]D MMMM YYYY[</div>]
 [<div class='time'>]HH:mm:ss[</div>]
 ]]>        </default>
+      </property>
+
+      <property>
+        <name>Custom CSS</name>
+        <variable>css</variable>
+        <type>html</type>
       </property>
     </advanced>
   </properties>
@@ -153,6 +159,9 @@
         font-size: 0.7em;
       }
     </style>
+
+    <!-- prettier-ignore -->
+    <style>{{ css }}</style>
 
     <container html:class="twitter-embed-page page">
       <container html:class="sidebar">

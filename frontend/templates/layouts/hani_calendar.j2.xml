@@ -10,9 +10,9 @@
     </property>
 
     <property>
-      <name>Background image (URL)</name>
+      <name>Background image</name>
       <variable>bg_url</variable>
-      <type>string</type>
+      <type>file_or_url</type>
       <default>
         <![CDATA[https://static.vecteezy.com/system/resources/previews/008/139/407/large_2x/the-scientists-chemists-researcher-discover-the-chemical-formula-write-on-whiteboard-in-laboratory-the-researcher-discover-vaccine-or-drug-for-treatment-patients-infected-covid19-photo.jpg]]>
       </default>
@@ -74,6 +74,12 @@
           <default>h:mm:ss a</default>
         </property>
       </group>
+
+      <property>
+        <name>Custom CSS</name>
+        <variable>css</variable>
+        <type>html</type>
+      </property>
     </advanced>
   </properties>
 
@@ -149,6 +155,9 @@
         -webkit-text-stroke-color: black;
       }
     </style>
+
+    <!-- prettier-ignore -->
+    <style>{{ css }}</style>
 
     <html html:id="header-text">
       {{ room_name }}

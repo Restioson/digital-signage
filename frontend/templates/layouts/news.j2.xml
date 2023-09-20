@@ -71,10 +71,10 @@
       <property>
         <name>Sidebar logo</name>
         <variable>sidebar_logo</variable>
-        <type>string</type>
-        <default
-          ><![CDATA[https://upload.wikimedia.org/wikipedia/en/7/7c/University_of_Cape_Town_logo.svg]]></default
-        >
+        <type>file_or_url</type>
+        <default>
+          <![CDATA[https://upload.wikimedia.org/wikipedia/en/7/7c/University_of_Cape_Town_logo.svg]]>
+        </default>
       </property>
 
       <property>
@@ -112,6 +112,12 @@
           <type>number</type>
         </property>
       </group>
+
+      <property>
+        <name>Custom CSS</name>
+        <variable>css</variable>
+        <type>html</type>
+      </property>
     </advanced>
   </properties>
 
@@ -152,6 +158,9 @@
         background-color: var(--theme-color);
       }
     </style>
+
+    <!-- prettier-ignore -->
+    <style>{{ css }}</style>
 
     <container html:class="sidebar">
       <html>

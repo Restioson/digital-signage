@@ -19,7 +19,7 @@
 
     <advanced>
       <property>
-        <name>Video layout CSS</name>
+        <name>Custom CSS</name>
         <variable>css</variable>
         <type>html</type>
         <!-- prettier-ignore -->

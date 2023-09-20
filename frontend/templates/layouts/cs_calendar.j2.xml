@@ -65,9 +65,9 @@
         <name>Sidebar logo</name>
         <variable>sidebar_logo</variable>
         <type>file_or_url</type>
-        <default
-          ><![CDATA[https://upload.wikimedia.org/wikipedia/en/7/7c/University_of_Cape_Town_logo.svg]]></default
-        >
+        <default>
+          <![CDATA[https://upload.wikimedia.org/wikipedia/en/7/7c/University_of_Cape_Town_logo.svg]]>
+        </default>
       </property>
 
       <property>
@@ -82,6 +82,12 @@
 [<div class='time'>]HH:mm:ss[</div>]
 ]]>
         </default>
+      </property>
+
+      <property>
+        <name>Custom CSS</name>
+        <variable>css</variable>
+        <type>html</type>
       </property>
     </advanced>
   </properties>
@@ -102,13 +108,14 @@
         #calendar {
           --scale: {{ calendar_scale }};
         }
+
+        #calendar-container {
+          padding: 25px;
+        }
     </style>
 
-    <style>
-      #calendar-container {
-        padding: 25px;
-      }
-    </style>
+    <!-- prettier-ignore -->
+    <style>{{ css }}</style>
 
     <container html:class="sidebar">
       <html>
