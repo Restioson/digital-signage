@@ -252,7 +252,6 @@ class DatabaseController:
         return dept
 
     def reserve_display_id(self, department_id: int) -> int:
-        print("reserved!", department_id)
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
@@ -266,7 +265,6 @@ class DatabaseController:
         self, display: Display, department_id: int, is_create=False
     ) -> int:
         """Create a display ground and return its row id."""
-        print("created!", display.id, display.name)
 
         with self.db:
             cursor = self.db.cursor()
