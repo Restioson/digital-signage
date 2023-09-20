@@ -94,18 +94,12 @@ export class ContentStream extends DeserializableWidget {
             ).getTime()
             childrenAndPosted.push([RSSItem.parseFromXML(item), published])
           }
-
-          console.log(`fetched from ${rss}`)
         }
       }
-
-      console.log('presort', childrenAndPosted)
 
       childrenAndPosted.sort(
         ([_a, aPosted], [_b, bPosted]) => bPosted - aPosted
       )
-
-      console.log('postsort', childrenAndPosted)
 
       this.children = childrenAndPosted
         .slice(0, this.fetchAmount)
