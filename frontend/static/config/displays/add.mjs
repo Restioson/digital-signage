@@ -35,7 +35,6 @@ function setNameAndVal (elt, pageNo, properties) {
 
   const val = properties[variable]
   if (val !== undefined) {
-    console.log(elt.tagName)
     if (elt.tagName === 'SELECT' && elt.multiple) {
       for (const option of elt.options) {
         option.selected = val.includes(option.value)

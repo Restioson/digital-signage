@@ -33,10 +33,17 @@
         <name>Colours</name>
 
         <property>
-          <name>Theme colour</name>
+          <name>Theme colour - foreground</name>
           <variable>theme_color</variable>
           <type>color</type>
           <default>#003eaa</default>
+        </property>
+
+        <property>
+          <name>Theme colour - background</name>
+          <variable>theme_color_lighter</variable>
+          <type>color</type>
+          <default>#bfcfea</default>
         </property>
 
         <property>
@@ -116,7 +123,7 @@
 
         :host {
             --theme-color: {{ theme_color }};
-            --theme-color-lighter: color-mix(in srgb, var(--theme-color) 25%, white);
+            --theme-color-lighter: {{ theme_color_lighter }};
             --department-color: {{ department_color }};
             --clock-text-color: {{ clock_text_color }};
             --content-title-color: {{ content_title_color }};
