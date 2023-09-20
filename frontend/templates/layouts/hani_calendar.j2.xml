@@ -157,7 +157,7 @@
     <clock html:id="calendar-date" format="{{ date_format }}" />
     <refresh>
       <html html:id="calendar" html:class="scaled-iframe">
-        {{ calendar_iframe }}
+        {{ calendar_iframe|safe }}
       </html>
     </refresh>
 

@@ -353,7 +353,7 @@ def preview_display(department_id: int):
         flask.request.form,
         flask.request.files,
         db,
-        is_preview=True,
+        preview_pages=flask.request.args.getlist("preview_page", type=int) or [],
     )
 
     return render_template(

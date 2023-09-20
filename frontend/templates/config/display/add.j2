@@ -165,6 +165,10 @@
     main("{{ department_id }}", {{ pages|tojson }});
   </script>
 
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+  />
 
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
   <form
@@ -173,69 +177,75 @@
     enctype="multipart/form-data"
     method="post"
     class="post-form"
+    data-department-id="{{ department_id }}"
   >
-    <label for="name">Name:</label>
-    <input id="name" name="name" type="text" required value="{{ name }}" />
+    <div id="tab-list"></div>
 
-    {%- if existing is not none -%}
-      <input type="hidden" name="display_id" value="{{ existing.id }}" />
-    {%- endif -%}
+    <div class="tab" id="overview-tab">
+      <div id="overview-fields">
+        <label for="name">Name:</label>
+        <input id="name" name="name" type="text" required value="{{ name }}" />
+
+        {%- if existing is not none -%}
+          <input type="hidden" name="display_id" value="{{ existing.id }}" />
+        {%- endif -%}
+
+        <button type="submit">
+          {%- if existing is not none -%}
+            Save and edit display
+          {%- else -%}
+            Create display
+          {%- endif -%}
+        </button>
+        <p hidden id="status-message"></p>
+      </div>
+
+      <div class="preview-container" id="preview-all-container">
+        <iframe title="Preview" id="preview-all" class="preview"></iframe>
+      </div>
+    </div>
 
     <template id="new-page-template">
-      <fieldset>
-        <legend>Page</legend>
+      <div class="page-tab tab">
+        <fieldset>
+          <legend>Page</legend>
 
-        <label
-          >Template:
-          <select class="template-select">
-            {%- for template in templates -%}
-              <option value="{{ template.id }}">{{ template.name }}</option>
-            {%- endfor -%}
-          </select>
-        </label>
+          <label
+            >Template:
+            <select class="template-select">
+              {%- for template in templates -%}
+                <option value="{{ template.id }}">{{ template.name }}</option>
+              {%- endfor -%}
+            </select>
+          </label>
 
-        <label
-          >Duration to show page (secs):
-          <input class="template-duration" type="number" value="10" />
-        </label>
+          <label
+            >Duration to show page (secs):
+            <input class="template-duration" type="number" value="10" />
+          </label>
 
-        {%- for template in templates -%}
-          <fieldset
-            class="template-{{ template.id.replace('.', '-').replace('/', '-') }}"
-          >
-            <legend>{{ template.name }}</legend>
+          {%- for template in templates -%}
+            <fieldset
+              class="template-{{ template.id.replace('.', '-').replace('/', '-') }}"
+            >
+              <legend>{{ template.name }}</legend>
 
-            {{ render_props_and_groups(template.properties.root) }}
+              {{ render_props_and_groups(template.properties.root) }}
 
-            {%- if template.properties.advanced -%}
-              <details>
-                <summary>Advanced</summary>
-                {{ render_props_and_groups(template.properties.advanced) }}
-              </details>
-            {%- endif -%}
-          </fieldset>
-        {%- endfor -%}
+              {%- if template.properties.advanced -%}
+                <details>
+                  <summary>Advanced</summary>
+                  {{ render_props_and_groups(template.properties.advanced) }}
+                </details>
+              {%- endif -%}
+            </fieldset>
+          {%- endfor -%}
+        </fieldset>
 
-        <button type="button" class="delete-page">Delete page</button>
-      </fieldset>
+        <div class="preview-container">
+          <iframe title="Preview" class="preview"></iframe>
+        </div>
+      </div>
     </template>
-
-    <button type="button" id="add-page">Add page</button>
-
-    <button type="submit">Submit</button>
-    <p hidden id="status-message"></p>
   </form>
-{% endblock %}
-{% block after_main %}
-  <div id="preview-container">
-    <h1>Preview</h1>
-    <div class="resizer">
-      <iframe
-        title="Preview"
-        id="preview"
-        class="resized"
-        data-preview-url="/api/departments/{{ department_id }}/preview_display"
-      ></iframe>
-    </div>
-  </div>
 {% endblock %}

@@ -14,7 +14,9 @@ export function main (departmentId, existingPages) {
 
     return text
   })
+
   setupAddPage()
+  addTab('Overview', document.getElementById('overview-tab'), false)
 
   if (existingPages) {
     for (const [templateId, duration, properties] of existingPages) {
@@ -22,7 +24,7 @@ export function main (departmentId, existingPages) {
     }
   }
 
-  setupPreview()
+  setupPreview(null, document.getElementById('preview-all'))
 }
 
 function setNameAndVal (elt, pageNo, properties) {
@@ -43,6 +45,52 @@ function setNameAndVal (elt, pageNo, properties) {
       elt.value = val
     }
   }
+}
+
+function addTab (title, element, withDelete) {
+  const list = document.getElementById('tab-list')
+  const tabHeader = document.createElement('div')
+
+  tabHeader.className = 'tab-select'
+  tabHeader.append(title)
+
+  if (withDelete) {
+    const deleteButton = document.createElement('span')
+    deleteButton.className = 'material-symbols-outlined delete-page-button'
+    deleteButton.innerText = 'close'
+
+    deleteButton.addEventListener('click', evt => {
+      evt.stopPropagation()
+      tabHeader.remove()
+      element.remove()
+
+      const form = document.getElementById('display-group-form')
+      form.dispatchEvent(new Event('change'))
+      list.querySelector('*').click()
+      console.log(list.querySelector('*'))
+    })
+
+    tabHeader.append(deleteButton)
+  }
+
+  list.insertBefore(tabHeader, document.getElementById('add-page'))
+
+  tabHeader.addEventListener('click', () => {
+    console.log('click!', title)
+    for (const tab of document.getElementsByClassName('tab')) {
+      tabHeader.classList.add('selected')
+      tab.hidden = true
+    }
+
+    for (const header of list.querySelectorAll('*')) {
+      header.classList.remove('selected')
+    }
+
+    element.hidden = false
+    tabHeader.classList.add('selected')
+  })
+
+  tabHeader.click()
 }
 
 function addPage (templateId, duration, properties) {
@@ -80,11 +128,6 @@ function addPage (templateId, duration, properties) {
 
   const form = document.getElementById('display-group-form')
 
-  fieldset.querySelector('button.delete-page').addEventListener('click', () => {
-    fieldset.remove()
-    form.dispatchEvent(new Event('change'))
-  })
-
   for (const addBtn of fieldset.querySelectorAll('button.add-rss-feed')) {
     let variable = addBtn.dataset.variableName
     variable = variable.substring(0, variable.length)
@@ -98,7 +141,10 @@ function addPage (templateId, duration, properties) {
     }
   }
 
-  form.insertBefore(template, document.getElementById('add-page'))
+  setupPreview(pageNo, template.querySelector('iframe'))
+  const appended = form.appendChild(template.firstElementChild)
+  addTab(`Page ${pageNo + 1}`, appended, true)
+
   form.dispatchEvent(new Event('change'))
 }
 
@@ -122,16 +168,39 @@ function addRssFeed (form, addBtn, pageNo, properties) {
 }
 
 function setupAddPage () {
-  document
-    .getElementById('add-page')
-    .addEventListener('click', () => addPage(null, null, {}))
+  const btn = document.createElement('div')
+  btn.id = 'add-page'
+
+  const icon = document.createElement('span')
+  icon.className = 'material-symbols-outlined add-page-plus'
+  icon.innerText = 'add'
+
+  btn.append(icon)
+  btn.append('Add page')
+
+  btn.addEventListener('click', () => addPage(null, null, {}))
+  document.getElementById('tab-list').append(btn)
 }
 
-function setupPreview () {
+function setupPreview (pageNo, iframe) {
   const form = document.getElementById('display-group-form')
+
   async function change () {
-    const iframe = document.getElementById('preview')
-    const res = await fetch(iframe.dataset.previewUrl, {
+    const deptId = form.dataset.departmentId
+    let pagesParams
+
+    if (pageNo === null) {
+      // Preview all pages
+      pagesParams = [...Array(pageNoCounter).keys()]
+        .map(no => `preview_page=${no}`)
+        .join('&')
+    } else {
+      pagesParams = `preview_page=${pageNo}`
+    }
+
+    const previewUrl = `/api/departments/${deptId}/preview_display?${pagesParams}`
+
+    const res = await fetch(previewUrl, {
       method: 'post',
       body: new FormData(form)
     })

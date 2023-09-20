@@ -34,7 +34,7 @@ class Display:
         form: ImmutableMultiDict,
         files: ImmutableMultiDict,
         db,
-        is_preview=False,
+        preview_pages=None,
     ):
         pages = {
             int(prop[14:]): {
@@ -47,13 +47,13 @@ class Display:
 
         if "display_id" in form:
             display_id = form["display_id"]
-        elif not is_preview:
+        elif preview_pages is None:
             display_id = db.reserve_display_id(department_id)
         else:
             display_id = None
 
         filenames = Display._extract_files(
-            department_id, form, files, pages, display_id, db, is_preview
+            department_id, form, files, pages, display_id, db, preview_pages is None
         )
 
         for prop in form.keys():
@@ -79,12 +79,16 @@ class Display:
                 pages[page_no]["duration"] = int(form[prop])
 
         # Wipe files that are no longer in use
-        if "display_id" in form and not is_preview:
+        if "display_id" in form and preview_pages is not None:
             Display._wipe_old_files(filenames, department_id, db, display_id)
 
         pages = [
+            # This is the format of the page in the DB
             (page["template"], page["duration"], page["properties"])
+            # Sort by the page number
             for page_no, page in sorted(pages.items())
+            # Filter by page number if previewing
+            if preview_pages is None or page_no in preview_pages
         ]
 
         return Display(

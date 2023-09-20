@@ -1,5 +1,109 @@
 @import url("../../config.css");
 
+:root {
+  height: 100vh;
+}
+
+body,
+#main-wrap,
+main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+}
+
+main {
+  padding: 20px;
+}
+
+form {
+  height: 100%;
+  min-width: 100%;
+  padding: 0;
+  border-radius: 0;
+  border: 1px solid #808080;
+}
+
+form,
+fieldset,
+.column-list {
+  box-shadow: none;
+}
+
+.tab > * {
+  max-width: 600px;
+}
+
+.tab > fieldset {
+  border: none;
+  height: 100%;
+  overflow: scroll;
+  padding-right: 15px;
+}
+
+.tab > fieldset > fieldset {
+  border: none;
+  padding: 0;
+}
+
+.tab > fieldset > legend,
+.tab > fieldset > fieldset > legend {
+  display: none;
+}
+
+.tab {
+  min-height: 0;
+  flex: 1;
+  max-width: 100%;
+  padding-left: 16px;
+}
+
+#tab-list {
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+  border-bottom: 1px solid #808080;
+}
+
+#tab-list > * {
+  display: flex;
+  flex-direction: row;
+  width: fit-content;
+  padding: 16px;
+  border-radius: 0;
+  font-size: 1rem;
+}
+
+#tab-list > .selected {
+  background-color: #333;
+  color: white;
+}
+
+#tab-list > *:hover {
+  cursor: pointer;
+  color: black;
+  background-color: #d3d3d3;
+}
+
+.delete-page-button {
+  margin-left: 5px;
+}
+
+.delete-page-button:hover {
+  background-color: #e7e5e5;
+}
+
+.add-page-plus {
+  margin-top: -1px;
+}
+
+#overview-fields {
+  display: flex;
+  flex-direction: column;
+}
+
 .custom-page-container {
   display: flex;
   flex-direction: row;
@@ -19,4 +123,26 @@
 
 textarea {
   width: 100%;
+}
+
+.preview-container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.preview-container iframe {
+  width: 100%;
+  height: 100%;
+}
+
+#preview-all-container {
+  padding: 16px;
+}
+
+.page-tab,
+#overview-tab {
+  display: flex;
+  flex-direction: row;
 }
