@@ -29,6 +29,12 @@
         <type>number</type>
         <default>10</default>
       </property>
+
+      <property>
+        <name>Custom CSS</name>
+        <variable>css</variable>
+        <type>html</type>
+      </property>
     </advanced>
   </properties>
 
@@ -44,6 +50,10 @@
           grid-template-columns: repeat(4, 1fr);
       }
     </style>
+
+    <!-- prettier-ignore -->
+    <style>{{ css }}</style>
+
     <department
       secs-per-page="{{ rotation_secs }}"
       page-size="{{ page_size }}"
