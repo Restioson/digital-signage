@@ -22,8 +22,9 @@ function destroyRoot () {
  * The global root element of the page. This can only be created once, through its {@link create} method.
  */
 export class Root {
-  constructor (departmentId) {
+  constructor (departmentId, displayContentStream) {
     this.departmentId = departmentId
+    this.displayContentStream = displayContentStream
     this.watchedElements = []
   }
 
@@ -32,13 +33,14 @@ export class Root {
    * will be left intact.
    * @param {Widget} child
    * @param {HTMLElement} targetElement
-   * @param {number} departmentId the departments ID of this display group
+   * @param {number} departmentId the departments ID of this display
+   * @param {number} displayContentStream the inherent content stream ID for this display
    */
-  static create ({ child, targetElement, departmentId }) {
+  static create ({ child, targetElement, departmentId, displayContentStream }) {
     if (root) {
       throw new RootAlreadyExistsError()
     } else {
-      root = new Root(departmentId)
+      root = new Root(departmentId, displayContentStream)
     }
 
     root.mutationObserver = new window.MutationObserver(
@@ -79,6 +81,10 @@ export class Root {
 
   getDepartment () {
     return this.departmentId
+  }
+
+  getDisplayContentStream () {
+    return this.displayContentStream
   }
 }
 

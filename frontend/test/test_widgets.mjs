@@ -244,7 +244,8 @@ describe('Widget', function () {
       Root.create({
         child: new Container({ children: [] }),
         targetElement: document.getElementById('root'),
-        departmentId: 1
+        departmentId: 1,
+        displayContentStream: 1
       })
     })
 

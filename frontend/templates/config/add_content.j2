@@ -62,6 +62,14 @@
               {%- endfor -%}
             </optgroup>
           {%- endfor -%}
+
+          {%- if content_streams.by_display -%}
+            <optgroup label="Displays">
+              {%- for stream in content_streams.by_display.values() -%}
+                <option value="{{ stream.id }}">{{ stream.name }}</option>
+              {%- endfor -%}
+            </optgroup>
+          {%- endif -%}
         </select>
       </label>
 

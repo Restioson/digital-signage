@@ -9,7 +9,6 @@ from markupsafe import Markup
 from werkzeug.datastructures import ImmutableMultiDict
 
 from server.department.file import File
-from server.free_form_content.content_stream import ContentStream
 
 
 class Display:
@@ -20,12 +19,12 @@ class Display:
         self,
         name: str,
         pages: list[(int, dict)],
-        content_streams: Optional[list[ContentStream]] = None,
+        content_stream: Optional[int] = None,
         display_id: Optional[int] = None,
     ):
         self.name = name
         self.pages = pages
-        self.content_streams = content_streams or []
+        self.content_stream = content_stream
         self.id = display_id
 
     # TODO refactor this if we have time. Weird that it also creates the files
@@ -147,7 +146,6 @@ class Display:
         return filenames
 
     def render(self, db):
-        print(json.dumps(self.pages))
         return render_template(
             "display_layout.j2.xml",
             pages=[

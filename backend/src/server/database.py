@@ -252,6 +252,7 @@ class DatabaseController:
         return dept
 
     def reserve_display_id(self, department_id: int) -> int:
+        print("reserved!", department_id)
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
@@ -261,8 +262,11 @@ class DatabaseController:
             )
         return cursor.lastrowid
 
-    def upsert_display(self, display: Display, department_id: int) -> int:
+    def upsert_display(
+        self, display: Display, department_id: int, is_create=False
+    ) -> int:
         """Create a display ground and return its row id."""
+        print("created!", display.id, display.name)
 
         with self.db:
             cursor = self.db.cursor()
@@ -271,6 +275,17 @@ class DatabaseController:
                 " VALUES (?, ?, ?, ?)",
                 (display.id, display.name, department_id, json.dumps(display.pages)),
             )
+
+            # This is a new display, so create its content stream
+            if is_create:
+                self.create_content_stream(
+                    ContentStream(
+                        display.name,
+                        department_id,
+                        cursor.lastrowid,
+                    )
+                )
+
         return cursor.lastrowid
 
     def delete_display(self, department_id: int, display_id: int) -> bool:
@@ -304,17 +319,31 @@ class DatabaseController:
             )
         )
 
-    def fetch_display_by_id(self, display_id: int) -> list[Display]:
+    def fetch_display_by_id(self, display_id: int) -> Optional[Display]:
         """Fetch the given display group from the database"""
         cursor = self.db.cursor()
         cursor.row_factory = Display.from_sql
-        return next(
+        display = next(
             cursor.execute(
-                "SELECT id, name, department, pages_json FROM displays" " WHERE id = ?",
+                "SELECT id, name, department, pages_json FROM displays WHERE id = ?",
                 (display_id,),
             ),
             None,
         )
+
+        cursor = self.db.cursor()
+        cursor.row_factory = lambda _cursor, row: row[0]
+        content_stream_id = next(
+            cursor.execute(
+                ("SELECT id, display FROM content_streams WHERE display = ?"),
+                (display_id,),
+            ),
+            None,
+        )
+
+        display.content_stream = content_stream_id
+
+        return display
 
     def upsert_person(self, person: Person, department_id: int) -> int:
         """Insert (or update) the given person into the database
@@ -444,8 +473,9 @@ class DatabaseController:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO content_streams (name, department) VALUES (?, ?)",
-                (stream.name, stream.department),
+                "INSERT INTO content_streams (name, department, display)"
+                " VALUES (?, ?, ?)",
+                (stream.name, stream.department, stream.display),
             )
         return cursor.lastrowid
 
@@ -455,7 +485,11 @@ class DatabaseController:
         cursor = self.db.cursor()
         cursor.row_factory = ContentStream.from_sql
         return GroupedContentStreams(
-            list(cursor.execute("SELECT id, name, department FROM content_streams"))
+            list(
+                cursor.execute(
+                    "SELECT id, name, department, display FROM content_streams"
+                )
+            )
         )
 
     def fetch_all_content_stream_ids(self) -> list:

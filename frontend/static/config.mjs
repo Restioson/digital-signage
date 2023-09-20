@@ -26,7 +26,8 @@ export function showContent (streams) {
   Root.create({
     child: new ContentStream({ streams }),
     targetElement: document.getElementById('root'),
-    departmentId: 0
+    departmentId: 0,
+    displayContentStream: 0
   })
 }
 
