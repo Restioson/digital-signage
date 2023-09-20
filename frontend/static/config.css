@@ -39,6 +39,7 @@
 
 .display-small-preview-container {
   aspect-ratio: 16 / 9;
+  overflow: hidden;
 }
 
 span.button-icon {
