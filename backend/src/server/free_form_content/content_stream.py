@@ -9,7 +9,7 @@ class ContentStream:
     """A content stream is a grouping of content. It can be
     - public (accessible by all display groups),
     - per-department (accessible by groups in a given department only)
-    - per-group (accessible only by a given display group)
+    - per-display (each display has one created by default)
 
     All content is part of one and only one content stream.
     """
@@ -18,10 +18,12 @@ class ContentStream:
         self,
         name: str,
         department: Optional[int] = None,
+        display_id: Optional[int] = None,
         stream_id: Optional[int] = None,
     ):
         self.name = name
         self.department = department
+        self.display = display_id
         self.id = stream_id
 
     def __repr__(self):
@@ -34,6 +36,9 @@ class ContentStream:
             grouping = {"department": self.department}
         else:
             grouping = {}
+
+        if self.display:
+            grouping["display"] = self.display
 
         props = {
             "id": self.id,
@@ -51,6 +56,7 @@ class ContentStream:
             name=row["name"],
             department=row["department"],
             stream_id=row["id"],
+            display_id=row["display"],
         )
 
     @staticmethod

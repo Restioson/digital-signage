@@ -4,6 +4,7 @@ import { Container } from '../containers/container.mjs'
 import { deserializeFreeFormContent } from './free_form_content_factory.mjs'
 import { PaginatedContainer } from '../containers/paginated_container.mjs'
 import { RSSItem } from './rss_item.mjs'
+import { Root } from '../root.mjs'
 
 const REFRESH_INTERVAL_MS = 5000
 const RSS_REFRESH_INTERVAL_MS = 1000 * 60 * 60 // 1 hour
@@ -23,7 +24,7 @@ export class ContentStream extends DeserializableWidget {
     super()
     this.children = []
     this.fetchAmount = fetchAmount || 5
-    this.streams = streams
+    this.streams = streams || []
     this.rssFeeds = rssFeeds || []
     this.pageSize = parseInt(pageSize)
     this.page = -1
@@ -128,6 +129,9 @@ export class ContentStream extends DeserializableWidget {
   }
 
   build () {
+    // Root is only available at build time so this is done here
+    this.streams.push(Root.getInstance().getDisplayContentStream())
+
     return new WithRefresh({
       refresh: () => this.refresh(),
       period: REFRESH_INTERVAL_MS,

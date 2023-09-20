@@ -10,9 +10,11 @@ blueprint = Blueprint("display_view", __name__, url_prefix="/display")
 def display(department_id: int, display_id: int):
     """Return the display view page for a given group"""
     db = DatabaseController.get()
-    display = db.fetch_display_by_id(display_id)
     if not db.fetch_department_by_id(department_id):
         flask.abort(404)
+
+    display = db.fetch_display_by_id(display_id)
+
     if not display:
         flask.abort(404)
     return render_template(
@@ -20,5 +22,6 @@ def display(department_id: int, display_id: int):
         display_config={
             "department": department_id,
             "layout": display.render(db),
+            "displayContentStream": display.content_stream,
         },
     )

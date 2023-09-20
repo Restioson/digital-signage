@@ -320,6 +320,7 @@ def displays(department_id: int):
     display_id = db.upsert_display(
         Display.from_form(department_id, flask.request.form, flask.request.files, db),
         department_id,
+        is_create="display_id" not in flask.request.form,
     )
     return {"id": display_id}
 
@@ -360,6 +361,7 @@ def preview_display(department_id: int):
         display_config={
             "department": department_id,
             "layout": display.render(db),
+            "displayContentStream": display.content_stream,
         },
     )
 
