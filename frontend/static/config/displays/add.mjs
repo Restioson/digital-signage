@@ -109,11 +109,12 @@ function addPage (templateId, duration, properties) {
     templateSelect.dispatchEvent(new Event('change'))
   }
 
-  const templateDuration = template.querySelector('.template-duration')
-  templateDuration.name = `duration-page-${pageNo}`
+  for (const templateDuration of template.querySelectorAll('.template-duration')) {
+    templateDuration.name = `duration-page-${pageNo}`
 
-  if (duration !== null) {
-    templateDuration.value = duration
+    if (duration !== null) {
+      templateDuration.value = duration
+    }
   }
 
   for (const elt of template.querySelectorAll('[data-variable-name]')) {

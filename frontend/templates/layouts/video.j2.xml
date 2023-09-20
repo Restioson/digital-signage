@@ -1,5 +1,6 @@
 <template>
   <name>Video</name>
+  <duration>intrinsic</duration>
   <properties>
     <property>
       <name>Video to display</name>
@@ -45,10 +46,6 @@ video {
         }
     </style>
 
-    <html>
-      <video autoplay="" loop="" muted="">
-        <source src="{{ video }}" />
-      </video>
-    </html>
+    <video src="{{ video }}" controls-page-time="true"/>
   </page>
 </template>

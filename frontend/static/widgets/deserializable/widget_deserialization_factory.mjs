@@ -10,10 +10,11 @@ import { WithHTMLAttrs } from './with_html_attrs.mjs'
 import { XMLTag } from './xml_tag.mjs'
 import { HtmlWidget } from '../html.mjs'
 import { StyleWidget } from '../style.mjs'
-import { RotatingContainer } from '../containers/rotating_container.mjs'
+import { RotatingContainer } from '../containers/rotating/rotating_container.mjs'
 import { StaticRefresh } from '../dynamic/static_refresh.mjs'
 import { Page } from '../containers/page.mjs'
 import { Dummy } from '../containers/dummy.mjs'
+import { Video } from '../video.mjs'
 const { XMLParser } = await importFromNpm('fast-xml-parser')
 
 /**
@@ -109,6 +110,8 @@ function deserializeWidgetRaw (tag) {
       return StaticRefresh.fromXML(tag)
     case 'dummy':
       return Dummy.fromXML(tag)
+    case 'video':
+      return Video.fromXML(tag)
     case 'template':
       return Page.fromXML(tag.typedChild('page'))
     default:

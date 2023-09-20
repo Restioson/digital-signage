@@ -76,7 +76,7 @@ class Display:
                 page["properties"][variable_name] = val
             elif prop.startswith("duration-page-"):
                 page_no = int(prop[14:])
-                pages[page_no]["duration"] = int(form[prop])
+                pages[page_no]["duration"] = form[prop]
 
         # Wipe files that are no longer in use
         if "display_id" in form and preview_pages is not None:
