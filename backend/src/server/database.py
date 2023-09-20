@@ -153,6 +153,13 @@ class DatabaseController:
             None,
         )
 
+    def delete_content_by_id(self, content_id: int, fetch_blob=False) -> bool:
+        """Delete a given piece of content from the database."""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute("DELETE FROM content WHERE id = ?", (content_id,))
+            return cursor.rowcount == 1
+
     def create_department(self, department: Department, insert_people=False) -> int:
         """Create a department and return its row id. If `insert_people` is `True`,
         the people in the `Department` object will also be inserted."""
