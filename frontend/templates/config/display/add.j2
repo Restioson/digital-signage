@@ -223,16 +223,20 @@
             <fieldset
               class="template-{{ template.id.replace('.', '-').replace('/', '-') }}"
             >
+              <legend>{{ template.name }}</legend>
+
               {%- if not template.intrinsic_duration -%}
                 <label>
                   Duration to show page (secs):
                   <input class="template-duration" type="number" value="10" />
                 </label>
               {%- else -%}
-                  <input class="template-duration" type="hidden" value="intrinsic">
+                <input
+                  class="template-duration"
+                  type="hidden"
+                  value="intrinsic"
+                />
               {%- endif -%}
-
-              <legend>{{ template.name }}</legend>
 
               {{ render_props_and_groups(template.properties.root) }}
 

@@ -46,6 +46,6 @@ video {
         }
     </style>
 
-    <video src="{{ video }}" controls-page-time="true"/>
+    <video src="{{ video }}" controls-page-time="true" />
   </page>
 </template>

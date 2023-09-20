@@ -28,6 +28,7 @@
   "dependencies": {
     "qrcode": "^1.5.3",
     "fast-xml-parser": "^4.2.7",
-    "moment": "^2.29.4"
+    "moment": "^2.29.4",
+    "youtube-player": "5.6.0"
   }
 }

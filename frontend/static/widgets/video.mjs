@@ -16,13 +16,14 @@ export class Video extends DeserializableWidget {
     source.src = this.src
     video.appendChild(source)
 
-    if (this.controlsPageTime) {
-      console.log(this.controlsPageTime)
-      video.addEventListener('ended', (evt) => {
+    console.log(this.controlsPageTime)
+    video.addEventListener('ended', evt => {
+      if (this.controlsPageTime) {
         evt.target.getRootNode().host.dataset.done = 'true'
-        video.play()
-      })
-    }
+      } else {
+        evt.target.play()
+      }
+    })
 
     return video
   }
@@ -31,10 +32,10 @@ export class Video extends DeserializableWidget {
     return 'video'
   }
 
-  static fromXML(tag) {
+  static fromXML (tag) {
     return new Video({
       src: tag.attribute('src'),
-      controlsPageTime: tag.attribute('controls-page-time') || false,
+      controlsPageTime: tag.attribute('controls-page-time') || false
     })
   }
 }

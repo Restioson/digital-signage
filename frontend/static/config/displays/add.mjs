@@ -76,7 +76,6 @@ function addTab (title, element, withDelete) {
   list.insertBefore(tabHeader, document.getElementById('add-page'))
 
   tabHeader.addEventListener('click', () => {
-    console.log('click!', title)
     for (const tab of document.getElementsByClassName('tab')) {
       tabHeader.classList.add('selected')
       tab.hidden = true
@@ -109,7 +108,9 @@ function addPage (templateId, duration, properties) {
     templateSelect.dispatchEvent(new Event('change'))
   }
 
-  for (const templateDuration of template.querySelectorAll('.template-duration')) {
+  for (const templateDuration of template.querySelectorAll(
+    '.template-duration'
+  )) {
     templateDuration.name = `duration-page-${pageNo}`
 
     if (duration !== null) {

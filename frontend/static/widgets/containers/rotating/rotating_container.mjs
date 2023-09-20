@@ -34,9 +34,11 @@ export class RotatingContainer extends DeserializableWidget {
 
         let childDone
         if (this.children[this.childIndex].intrinsicTiming) {
-          childDone = this.renderedChildren[this.childIndex].dataset.done === 'true'
+          childDone =
+            this.renderedChildren[this.childIndex].dataset.done === 'true'
         } else {
-          childDone = this.timeSpentAtChild >= this.children[this.childIndex].duration
+          childDone =
+            this.timeSpentAtChild >= this.children[this.childIndex].duration
         }
 
         if (childDone) {
@@ -95,7 +97,7 @@ export class RotatingContainer extends DeserializableWidget {
           child: deserializeWidgetFromTag(child),
           refreshOnSwitch: onShowAttrChild.attribute('on-show') === 'refresh',
           duration: parseInt(child.attribute('duration')) || defaultPeriod,
-          intrinsicTiming: child.attribute('duration') === 'intrinsic',
+          intrinsicTiming: child.attribute('duration') === 'intrinsic'
         })
       })
     })
