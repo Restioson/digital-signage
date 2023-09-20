@@ -33,11 +33,17 @@ def loadshedding():
     Returns the stored loadshedding schedule
     Right now it is locked to the region of UCT
     """
-    schedule_data = DatabaseController.get().fetch_loadshedding_schedule(1)
-    schedule_json = json.dumps(schedule_data, indent=4)
-    response = Response(schedule_json, content_type="application/json")
-
-    return response
+    try:
+        schedule_data = DatabaseController.get().fetch_loadshedding_schedule(1)
+        schedule_json = json.dumps(schedule_data, indent=4)
+        response = Response(schedule_json, content_type="application/json")
+        if response:
+            return response
+        else:
+            return flask.abort(401)
+    except Exception as e:
+        return flask.abort(400)
+    
 
 
 @blueprint.route("/health", methods=["GET"])
@@ -265,7 +271,6 @@ def upload_table(department_id: int):
             "response": "Excel file is a valid file. Upload successful",
         }
     except Exception as e:
-        print(e)
         return flask.abort(400)
 
 
@@ -413,7 +418,7 @@ def preview_display(department_id: int):
         display_config={
             "department": department_id,
             "layout": group.render(db),
-            "displayContentStream": display.content_stream,
+            #"displayContentStream": display.content_stream,
         },
     )
 

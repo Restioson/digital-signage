@@ -597,12 +597,12 @@ class DatabaseController:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "UPDATE loadshedding_schedules SET schedule_json = ? WHERE id= ?",
-                (
-                    schedule,
-                    region,
-                ),
-            )
+            "REPLACE INTO loadshedding_schedules (id, schedule_json) VALUES (?, ?)",
+            (
+                region,
+                schedule,
+            ),
+        )
 
     def fetch_loadshedding_schedule(self, region):
         """fetches the loadshedding schedule for the given region"""

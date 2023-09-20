@@ -14,7 +14,3 @@ INSERT INTO
   content_streams (id, name, department, permissions)
 VALUES
   (2, 'UCT Urgent Announcements', 1, 'writeable');
-INSERT INTO
-  loadshedding_schedules (id, schedule_json)
-VALUES
-  (1, 'default text');
