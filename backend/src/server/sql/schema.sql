@@ -18,7 +18,6 @@ CREATE TABLE IF NOT EXISTS content_streams (
 );
 CREATE TABLE IF NOT EXISTS content (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  stream INTEGER NOT NULL REFERENCES content_streams(id),
   posted INTEGER NOT NULL,
   content_type TEXT NOT NULL CHECK (
     content_type IN (
@@ -46,7 +45,11 @@ CREATE TABLE IF NOT EXISTS content (
     )
   )
 );
-CREATE INDEX IF NOT EXISTS content_by_stream ON content(stream);
+CREATE TABLE IF NOT EXISTS content_stream_membership (
+  stream INTEGER NOT NULL REFERENCES content_streams(id) ON DELETE CASCADE,
+  content INTEGER NOT NULL REFERENCES content(id) ON DELETE CASCADE,
+  PRIMARY KEY (stream, content)
+);
 CREATE TABLE IF NOT EXISTS people (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   department INTEGER NOT NULL REFERENCES departments(id) ON DELETE CASCADE,

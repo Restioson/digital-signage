@@ -91,13 +91,13 @@ class DatabaseController:
 
         with self.db:
             cursor = self.db.cursor()
+
             cursor.execute(
                 "INSERT INTO content "
-                "(stream, posted, content_type, content_json,"
+                "(posted, content_type, content_json,"
                 " blob_mime_type, content_blob)"
-                " VALUES (?, ?, ?, ?, ?, ?)",
+                " VALUES (?, ?, ?, ?, ?)",
                 (
-                    content.stream,
                     post_timestamp,
                     content.type(),
                     json.dumps(content.to_db_json()),
@@ -105,6 +105,16 @@ class DatabaseController:
                     blob,
                 ),
             )
+
+            content_id = cursor.lastrowid
+
+            for stream in content.streams:
+                cursor.execute(
+                    "INSERT INTO content_stream_membership (stream, content)"
+                    " VALUES (?, ?)",
+                    (stream, content_id),
+                )
+
         return cursor.lastrowid, post_timestamp
 
     def fetch_content_in_streams(
@@ -117,14 +127,18 @@ class DatabaseController:
         with_blob = ", content_blob" if fetch_blob else ""
         with_limit = f"LIMIT {limit}" if limit else ""
 
-        # SAFETY: this string substitution is okay since we don't use user data here
+        # SAFETY: this string substitution is okay since we don't use user data here\
         return list(
             cursor.execute(
                 "SELECT "
                 f"id, stream, posted, content_type, content_json,"
                 f" blob_mime_type {with_blob} "
                 "FROM content "
-                f"WHERE stream IN ({ ','.join(['?'] * len(streams)) }) "
+                "INNER JOIN content_stream_membership"
+                " ON content_stream_membership.content = content.id "
+                f"WHERE content_stream_membership.stream "
+                f"IN ({ ','.join(['?'] * len(streams)) }) "
+                "GROUP BY id "
                 "ORDER BY posted DESC "
                 f"{with_limit}",
                 streams,
@@ -144,7 +158,7 @@ class DatabaseController:
         return next(
             cursor.execute(
                 "SELECT "
-                f"id, stream, posted, content_type, content_json,"
+                f"id, posted, content_type, content_json,"
                 f" blob_mime_type {with_blob} "
                 "FROM content"
                 " WHERE id = ?",

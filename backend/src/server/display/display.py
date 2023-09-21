@@ -2,6 +2,7 @@ import base64
 import json
 import os
 import sqlite3
+from json import JSONDecodeError
 from typing import Optional
 
 from flask import render_template
@@ -96,7 +97,7 @@ class Display:
             pages=pages,
             display_id=display_id,
             content_stream=db.fetch_content_stream_for_display(display_id).id
-            if display_id
+            if "display_id" in form
             else None,
         )
 
@@ -173,8 +174,14 @@ class Display:
         """Parse the given SQL row into a Display object"""
 
         row = sqlite3.Row(cursor, row)
+        try:
+            pages = json.loads(row["pages_json"])
+        except JSONDecodeError as e:
+            print("Error deserializing pages_json:", e)
+            pages = []
+
         return Display(
             display_id=row["id"],
             name=row["name"],
-            pages=json.loads(row["pages_json"]),
+            pages=pages,
         )

@@ -11,6 +11,7 @@
     import {
       choiceOfFieldset,
       setupPostForms,
+      setupSelectMultiple,
     } from "{{ url_for('static', filename='config.mjs') }}";
     setupPostForms();
     choiceOfFieldset(
@@ -19,6 +20,7 @@
       "fields-for",
       {}
     );
+    setupSelectMultiple(document.getElementById("content-stream-select"));
   </script>
 
   <a href="/config/content_stream/add">Add public content stream</a>
@@ -48,7 +50,7 @@
 
       <label
         >Content feed:
-        <select name="content_stream">
+        <select id="content-stream-select" name="content_stream" multiple>
           <optgroup label="Public">
             {%- for stream in content_streams.public -%}
               <option value="{{ stream.id }}">{{ stream.name }}</option>

@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS content_stream_membership;
 DROP TABLE IF EXISTS content;
 DROP TABLE IF EXISTS people;
 DROP TABLE IF EXISTS displays;

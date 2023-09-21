@@ -13,11 +13,11 @@ class Link(CaptionedContent):
         self,
         url: str,
         caption: Optional[Caption],
-        stream_id: int,
+        streams: list[int],
         content_id: Optional[int] = None,
         posted: Optional[datetime] = None,
     ):
-        super().__init__(caption, stream_id, content_id, posted)
+        super().__init__(caption, streams, content_id, posted)
         self.url = url
         self.caption = caption
 
