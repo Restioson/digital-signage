@@ -66,7 +66,7 @@ def list_content_streams():
     return {"id": stream_id}
 
 
-@blueprint.route("/content", methods=["POST", "GET"])
+@blueprint.route("/content", methods=["POST", "GET", "DELETE"])
 def content():
     """The /api/content endpoint.
 
@@ -91,7 +91,7 @@ def content():
                 )
             ]
         }
-    else:
+    elif flask.request.method == "POST":
         if not current_user.is_authenticated:
             return current_app.login_manager.unauthorized()
 
@@ -293,6 +293,14 @@ def login_route():
 def logout_route():
     logout_user()
     return redirect(url_for("login.login"))
+
+
+@blueprint.route("/content/<int:content_id>", methods=["DELETE"])
+def delete_content(content_id: int):
+    if DatabaseController.get().delete_content_by_id(content_id):
+        return {"deleted": True}
+    else:
+        flask.abort(404)
 
 
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])

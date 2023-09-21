@@ -24,7 +24,7 @@ export function setupBackButton () {
 
 export function showContent (streams) {
   Root.create({
-    child: new ContentStream({ streams }),
+    child: new ContentStream({ streams, editable: true }),
     targetElement: document.getElementById('root'),
     departmentId: 0,
     displayContentStream: 0
@@ -58,7 +58,7 @@ export function choiceOfFieldset (
   change()
 }
 
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor (response) {
     super(`Response from API: ${response}`)
     this.name = 'ApiError'

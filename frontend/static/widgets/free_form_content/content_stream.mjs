@@ -5,6 +5,7 @@ import { deserializeFreeFormContent } from './free_form_content_factory.mjs'
 import { PaginatedContainer } from '../containers/paginated_container.mjs'
 import { RSSItem } from './rss_item.mjs'
 import { Root } from '../root.mjs'
+import { ApiError } from '../../config.mjs'
 
 const REFRESH_INTERVAL_MS = 5000
 const RSS_REFRESH_INTERVAL_MS = 1000 * 60 * 60 // 1 hour
@@ -20,7 +21,14 @@ export class ContentStream extends DeserializableWidget {
    * @param {string[]} rssFeeds which RSS feeds to subscribe to
    * @param {?number} the amount of posts to fetch
    */
-  constructor ({ fetchAmount, streams, rssFeeds, pageSize, rotateEveryNSec }) {
+  constructor ({
+    fetchAmount,
+    streams,
+    rssFeeds,
+    pageSize,
+    rotateEveryNSec,
+    editable
+  }) {
     super()
     this.children = []
     this.fetchAmount = fetchAmount || 5
@@ -30,6 +38,7 @@ export class ContentStream extends DeserializableWidget {
     this.page = -1
     this.rotationPeriod = (rotateEveryNSec || 10) * 1000
     this.refreshedTimes = 0
+    this.editable = editable || false
   }
 
   /**
@@ -136,6 +145,23 @@ export class ContentStream extends DeserializableWidget {
       refresh: () => this.refresh(),
       period: REFRESH_INTERVAL_MS,
       builder: () => {
+        let editableChildren
+        if (this.editable) {
+          editableChildren = this.children.map(child => {
+            const renderedChild = child.render()
+            const childDiv = document.createElement('div')
+            childDiv.appendChild(renderedChild)
+            childDiv.className = 'deletable-content'
+            const deleteButton = document.createElement('button')
+            deleteButton.className = 'delete-content'
+            deleteButton.addEventListener('click', event =>
+              deleteContent(child.id, event)
+            )
+            deleteButton.textContent = 'Delete'
+            childDiv.appendChild(deleteButton)
+            return childDiv
+          })
+        }
         if (this.pageSize) {
           this.page = -1
           return new WithRefresh({
@@ -153,7 +179,9 @@ export class ContentStream extends DeserializableWidget {
             }
           })
         } else {
-          return new Container({ children: this.children })
+          return new Container({
+            children: this.editable ? editableChildren : this.children
+          })
         }
       }
     })
@@ -161,5 +189,27 @@ export class ContentStream extends DeserializableWidget {
 
   className () {
     return 'content-stream'
+  }
+}
+
+/**
+ * Delete a post. This can't be a form since HTML doesn't allow
+ * `DELETE` as the method of a form.
+ *
+ * @param event the HTML button click event
+ * @returns {Promise<void>}
+ */
+async function deleteContent (postId, event) {
+  try {
+    const res = await fetch(`/api/content/${postId}`, {
+      method: 'delete'
+    })
+
+    if (res.status !== 200) {
+      throw new ApiError(await res.text())
+    }
+    event.target.closest('.deletable-content').remove()
+  } catch (err) {
+    console.alert(err instanceof ApiError ? err.response : err.message)
   }
 }
