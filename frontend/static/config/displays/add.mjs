@@ -18,10 +18,13 @@ export function main (departmentId, existingPages) {
   setupAddPage()
   addTab('Overview', document.getElementById('overview-tab'), false)
 
-  if (existingPages) {
+  if (existingPages && existingPages.length !== 0) {
     for (const [templateId, duration, properties] of existingPages) {
       addPage(templateId, duration, properties)
     }
+    document.querySelector('#no-pages').hidden = true
+  } else {
+    document.querySelector('button[type=submit]').disabled = true
   }
 
   setupPreview(null, document.getElementById('preview-all'))
@@ -144,6 +147,9 @@ function addPage (templateId, duration, properties) {
   setupPreview(pageNo, template.querySelector('iframe'))
   const appended = form.appendChild(template.firstElementChild)
   addTab(`Page ${pageNo + 1}`, appended, true)
+
+  form.querySelector('button[type=submit]').disabled = false
+  form.querySelector('#no-pages').hidden = true
 
   form.dispatchEvent(new Event('change'))
 }

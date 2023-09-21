@@ -177,6 +177,7 @@
     enctype="multipart/form-data"
     method="post"
     class="post-form"
+    data-redirect-to="/config/departments/"
     data-department-id="{{ department_id }}"
   >
     <div id="tab-list"></div>
@@ -190,11 +191,21 @@
           <input type="hidden" name="display_id" value="{{ existing.id }}" />
         {%- endif -%}
 
+        <p>
+          Once you are done setting up the display, click the button below to
+          save it and return to the displays page.
+        </p>
+
+        <p id="no-pages">
+          You must add at least one page before creating the display. Click the
+          "add page" button in the tab bar above.
+        </p>
+
         <button type="submit">
           {%- if existing is not none -%}
             Save and edit display
           {%- else -%}
-            Create display
+            Save and create display
           {%- endif -%}
         </button>
         <p hidden id="status-message"></p>

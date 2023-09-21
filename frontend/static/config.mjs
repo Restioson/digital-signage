@@ -107,14 +107,18 @@ async function submitPost (event, form, createText) {
     postStatusMessage.append(errorBox)
   }
 
-  postStatusMessage.hidden = false
-  window.location.replace('#status-message')
+  if (form.dataset.redirectTo) {
+    window.location.replace(form.dataset.redirectTo)
+  } else {
+    postStatusMessage.hidden = false
+    window.location.replace('#status-message')
 
-  const effect = new window.KeyframeEffect(
-    postStatusMessage,
-    [{ background: 'yellow' }, { background: 'transparent' }],
-    { duration: 2000, direction: 'normal', easing: 'linear' }
-  )
-  const animation = new window.Animation(effect, document.timeline)
-  animation.play()
+    const effect = new window.KeyframeEffect(
+      postStatusMessage,
+      [{ background: 'yellow' }, { background: 'transparent' }],
+      { duration: 2000, direction: 'normal', easing: 'linear' }
+    )
+    const animation = new window.Animation(effect, document.timeline)
+    animation.play()
+  }
 }
