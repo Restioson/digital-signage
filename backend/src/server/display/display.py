@@ -95,6 +95,9 @@ class Display:
             name=form["name"],
             pages=pages,
             display_id=display_id,
+            content_stream=db.fetch_content_stream_for_display(display_id).id
+            if display_id
+            else None,
         )
 
     @staticmethod

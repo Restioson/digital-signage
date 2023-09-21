@@ -331,19 +331,25 @@ class DatabaseController:
             None,
         )
 
+        display.content_stream = self.fetch_content_stream_for_display(display_id).id
+
+        return display
+
+    def fetch_content_stream_for_display(
+        self, display_id: int
+    ) -> Optional[ContentStream]:
+        """Get the intrinsic content stream for this display"""
         cursor = self.db.cursor()
         cursor.row_factory = lambda _cursor, row: row[0]
-        content_stream_id = next(
+        cursor.row_factory = ContentStream.from_sql
+        return next(
             cursor.execute(
-                ("SELECT id, display FROM content_streams WHERE display = ?"),
+                "SELECT id, name, department, display"
+                " FROM content_streams WHERE display = ?",
                 (display_id,),
             ),
             None,
         )
-
-        display.content_stream = content_stream_id
-
-        return display
 
     def upsert_person(self, person: Person, department_id: int) -> int:
         """Insert (or update) the given person into the database
