@@ -1,4 +1,8 @@
-import { choiceOfFieldset, setupPostForms } from '../../config.mjs'
+import {
+  choiceOfFieldset,
+  setupPostForms,
+  setupSelectMultiple
+} from '../../config.mjs'
 
 let pageNoCounter = 0
 
@@ -30,13 +34,16 @@ export function main (departmentId, existingPages) {
   setupPreview(null, document.getElementById('preview-all'))
 }
 
-function setNameAndVal (elt, pageNo, properties) {
+function setupFormElement (elt, pageNo, properties) {
   let variable = elt.dataset.variableName
   elt.name = `page-${pageNo}-template-${variable}`
 
   if (variable.endsWith('[]')) {
     variable = variable.substring(0, variable.length - 2)
   }
+
+  console.log('setup')
+  setupSelectMultiple(elt)
 
   const val = properties[variable]
   if (val !== undefined) {
@@ -122,7 +129,7 @@ function addPage (templateId, duration, properties) {
   }
 
   for (const elt of template.querySelectorAll('[data-variable-name]')) {
-    setNameAndVal(elt, pageNo, properties)
+    setupFormElement(elt, pageNo, properties)
   }
 
   for (const elt of template.querySelectorAll('.select-file-or-url')) {
@@ -168,7 +175,7 @@ function addRssFeed (form, addBtn, pageNo, properties) {
     })
 
   for (const elt of template.querySelectorAll('[data-variable-name]')) {
-    setNameAndVal(elt, pageNo, properties)
+    setupFormElement(elt, pageNo, properties)
   }
 
   container.insertBefore(template, addBtn)

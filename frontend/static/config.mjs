@@ -16,6 +16,32 @@ export function setupPostForms (createSuccessText) {
   }
 }
 
+// Do not require shift/ctrl click to select multiple
+export function setupSelectMultiple (select) {
+  for (const option of select.querySelectorAll('option')) {
+    console.log(option)
+    option.addEventListener('mousedown', evt => {
+      const scroll = option.parentElement.scrollTop
+
+      evt.preventDefault()
+      option.selected = !option.selected
+      select.focus()
+
+      setTimeout(function () {
+        option.parentElement.scrollTop = scroll
+      }, 0)
+
+      select.closest('form').dispatchEvent(new Event('change'))
+
+      return false
+    })
+  }
+
+  select.addEventListener('click', evt => {
+    evt.preventDefault()
+  })
+}
+
 export function setupBackButton () {
   document.getElementById('backButton').addEventListener('click', function () {
     window.history.back()
@@ -99,6 +125,11 @@ async function submitPost (event, form, createText) {
     postStatusMessage.classList.add('success')
     postStatusMessage.innerHTML = ''
     postStatusMessage.append(createSuccessText(responseMessage))
+
+    if (form.dataset.redirectTo) {
+      window.location.replace(form.dataset.redirectTo)
+      return
+    }
   } catch (err) {
     postStatusMessage.classList.add('error')
     const errorBox = document.createElement('pre')
@@ -107,18 +138,14 @@ async function submitPost (event, form, createText) {
     postStatusMessage.append(errorBox)
   }
 
-  if (form.dataset.redirectTo) {
-    window.location.replace(form.dataset.redirectTo)
-  } else {
-    postStatusMessage.hidden = false
-    window.location.replace('#status-message')
+  postStatusMessage.hidden = false
+  window.location.replace('#status-message')
 
-    const effect = new window.KeyframeEffect(
-      postStatusMessage,
-      [{ background: 'yellow' }, { background: 'transparent' }],
-      { duration: 2000, direction: 'normal', easing: 'linear' }
-    )
-    const animation = new window.Animation(effect, document.timeline)
-    animation.play()
-  }
+  const effect = new window.KeyframeEffect(
+    postStatusMessage,
+    [{ background: 'yellow' }, { background: 'transparent' }],
+    { duration: 2000, direction: 'normal', easing: 'linear' }
+  )
+  const animation = new window.Animation(effect, document.timeline)
+  animation.play()
 }
