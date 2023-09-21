@@ -221,11 +221,6 @@ class DatabaseController:
             for department in departments:
                 department.displays = self.fetch_all_displays_in_dept(department.id)
 
-        # if fetch_content_streams:
-        #     streams = self.fetch_all_content_streams()
-        #     for department in departments:
-        #         department.content_streams = streams.by_department.get(department.id)
-
         if fetch_people:
             for department in departments:
                 cursor = self.db.cursor()

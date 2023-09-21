@@ -330,8 +330,7 @@ def delete_content(content_id: int):
     else:
         flask.abort(404)
 
-@blueprint.route("/department/create", methods=["POST"])
-@blueprint.route("/department", methods=["POST"])
+@blueprint.route("/departments", methods=["POST"])
 def create_department():
     # check if department already exists
     name = flask.request.form["name"]
@@ -361,7 +360,7 @@ def delete_department(department_id: int):
 
 @blueprint.route("/user/<string:user_id>", methods=["DELETE"])
 def delete_user(user_id: str):
-    """DELETEing this endpoitn deletes the given user"""
+    """DELETEing this endpoint deletes the given user"""
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
@@ -369,7 +368,7 @@ def delete_user(user_id: str):
     if DatabaseController.get().delete_user(user_id):
         return {"deleted": True}
     else:
-        return flask.abort(500)
+        return flask.abort(404)
 
 
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])
@@ -394,11 +393,11 @@ def displays(department_id: int):
         return current_app.login_manager.unauthorized()
 
     db = DatabaseController.get()
-    group_id = db.upsert_display(
+    display_id = db.upsert_display(
         Display.from_form(department_id, flask.request.form, flask.request.files, db),
         department_id,
     )
-    return {"id": group_id}
+    return {"id": display_id}
 
 
 @blueprint.route(
@@ -436,7 +435,7 @@ def preview_display(department_id: int):
         display_config={
             "department": department_id,
             "layout": display.render(db),
-            # "displayContentStream": display.content_stream,
+            "displayContentStream": display.content_stream,
         },
     )
 
@@ -460,7 +459,7 @@ def upload_department_files(department_id: int):
 
 
 @blueprint.route(
-    "/department/<int:department_id>/<int:dislay>/<string:filename>",
+    "/department/<int:department_id>/<int:display>/<string:filename>",
     methods=["GET"],
 )
 def get_department_files(filename: str, department_id: int):
