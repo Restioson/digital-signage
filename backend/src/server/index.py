@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, current_app
 from flask_login import current_user
+from server.config_view import list_departments
 
 blueprint = Blueprint("index", __name__, url_prefix="/")
 
@@ -13,4 +14,4 @@ def check_logged_in():
 @blueprint.route("/")
 def index():
     """Return the index of the CampuSign web app, which links to other pages"""
-    return render_template("index.j2")
+    return list_departments()

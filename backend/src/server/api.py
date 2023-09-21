@@ -146,7 +146,7 @@ def people_route(department_id: int):
     )
 
     if not dept:
-        flask.abort(404)
+        return flask.abort(404)
 
     if flask.request.method == "GET":
         return {"people": [person.to_http_json() for person in dept.people]}
@@ -171,7 +171,8 @@ def person(department_id: int, person_id: int):
     """
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     if not DatabaseController.get().fetch_department_by_id(
         department_id, fetch_people=True
     ):
@@ -180,7 +181,7 @@ def person(department_id: int, person_id: int):
     if DatabaseController.get().delete_person(person_id):
         return {"deleted": True}
     else:
-        flask.abort(404)
+        return flask.abort(404)
 
 
 @blueprint.route(
@@ -195,7 +196,7 @@ def person_image(department_id: int, person_id: int):
         blob = image_data[1]
         return Response(response=blob, mimetype=mime_type, status=HTTPStatus.OK)
     else:
-        flask.abort(404)
+        return flask.abort(404)
 
 
 @blueprint.route("/departments/<int:department_id>/uploadtable", methods=["POST"])
@@ -306,7 +307,7 @@ def login_route():
         user = DatabaseController.get().try_login(form["email"], form["password"])
         if user:
             login_user(user)
-            return flask.redirect(flask.url_for("config_view.index"))
+            return flask.redirect(flask.url_for("config_view.list_departments"))
         else:
             return flask.abort(401)
             # custom error
@@ -407,6 +408,8 @@ def delete_display(department_id: int, display_id: int):
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
+    if current_user.permissions == "posting_user":
+        return flask.abort(401)
 
     if DatabaseController.get().delete_display(department_id, display_id):
         return {"deleted": True}

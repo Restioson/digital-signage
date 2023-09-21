@@ -13,7 +13,7 @@ def register():
     users = DatabaseController.get().fetch_all_users()
     user_list = [User.to_http_json(user) for user in users]
     user_data = json.dumps({"departments": user_list})
-    departments = DatabaseController.get().fetch_all_departments(fetch_list=True)
+    departments = DatabaseController.get().fetch_all_departments().values()
     department_list = [
         Department.to_http_json(department) for department in departments
     ]

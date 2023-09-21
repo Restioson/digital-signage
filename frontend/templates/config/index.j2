@@ -12,9 +12,20 @@
     import {
       showContent
     } from "{{ url_for('static', filename='config.mjs') }}";
-    showContent({{content_stream_ids}});  
+    showContent({{content_stream_ids}});
+    function checkAndHideElements() {
+            if ({{permissions}}=== true) {
+                var deleteButtons = document.querySelectorAll(".delete-content");
+                for (var i = 0; i < deleteButtons.length; i++) {
+                    deleteButtons[i].classList.add("hidden");
+                    deleteButtons[i].style.display = "none";
+                }
+            }
+        }
+    checkAndHideElements({{permissions}}) 
+    setInterval(checkAndHideElements, 10);  
   </script>
-
+  <a href="/config/content_stream/add">Add content feed</a>
   <a href="/config/add_posts">Add a piece of content</a>
   <div class="column-list" id="root"></div>
 {% endblock %}

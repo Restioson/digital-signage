@@ -73,20 +73,6 @@
             >Add display</a
           >
         {% endif %}
-
-        <h4>Content feeds:</h4>
-        {%- if department.content_streams -%}
-          <ul>
-            {%- for stream in department.content_streams -%}
-              <li>{{ stream.name }} (ID: {{ stream.id }})</li>
-            {%- endfor -%}
-          </ul>
-        {%- else -%}
-          <p>This department owns no content feeds.</p>
-        {%- endif -%}
-        <a href="/config/content_stream/add?department={{ department.id }}"
-          >Add content feed</a
-        >
       </div>
     {%- endfor -%}
   </div>

@@ -15,6 +15,7 @@ export function setupPostForms (createSuccessText) {
       })
   }
 }
+
 async function deleteDepartment (event) {
   event.preventDefault()
   const button = event.target.closest('button')

@@ -31,10 +31,12 @@ def add_posts():
 def index():
     """Return the config index page"""
     content_stream_ids = DatabaseController.get().fetch_all_content_stream_ids()
-
+    if current_user.permissions == "posting_user":
+        permission = "true"
+    else:
+        permission = "false"
     return render_template(
-        "config/index.j2",
-        content_stream_ids=content_stream_ids,
+        "config/index.j2", content_stream_ids=content_stream_ids, permissions=permission
     )
 
 
@@ -85,7 +87,8 @@ def list_people(department_id: int):
 @blueprint.route("/departments/<int:department_id>/people/add")
 def upload_person(department_id: int):
     """Return the 'add people' page"""
-
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     if not DatabaseController.get().fetch_department_by_id(department_id):
         flask.abort(404)
 
@@ -99,7 +102,8 @@ def upload_person(department_id: int):
 @blueprint.route("/departments/<int:department_id>/people/add_table")
 def upload_table(department_id: int):
     """Return the 'add table' page"""
-
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     if not DatabaseController.get().fetch_department_by_id(department_id):
         flask.abort(404)
 
@@ -119,6 +123,9 @@ def edit_person(department_id: int, person_id: int):
 
     if not DatabaseController.get().fetch_department_by_id(department_id):
         flask.abort(404)
+
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
 
     return render_template(
         "config/departments/people/add.j2",
@@ -153,7 +160,8 @@ def edit_display(department_id: int, display_id: int):
     db = DatabaseController.get()
     if not db.fetch_department_by_id(department_id):
         flask.abort(404)
-
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     streams = db.fetch_all_content_streams(order="Read")
     streams.filter_to_department(department_id)
 

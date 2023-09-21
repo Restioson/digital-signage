@@ -587,7 +587,8 @@ class DatabaseController:
             return GroupedContentStreams(
                 list(
                     cursor.execute(
-                        "SELECT id, name, department, display FROM content_streams"
+                        "SELECT id, name, department, display, "
+                        "permissions FROM content_streams"
                     )
                 )
             )
@@ -621,9 +622,9 @@ class DatabaseController:
             return list(
                 cursor.execute(
                     "SELECT * FROM content_streams WHERE department = ? "
-                    "OR permissions != 'private';"
-                ),
-                (dept,),
+                    "OR permissions != 'private';",
+                    (dept,),
+                )
             )
 
     def update_loadshedding_schedule(self, region, schedule):
