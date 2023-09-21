@@ -28,10 +28,7 @@ def client(app):
         "/api/login",
         data={
             "email": "A@ADMIN",
-            "screen_name": "ADMIN",
             "password": "PASSWORD",
-            "department": 1,
-            "permissions": "superuser",
         },
     )
     return client

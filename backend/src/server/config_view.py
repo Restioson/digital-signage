@@ -16,6 +16,7 @@ def check_logged_in():
 
 @blueprint.route("/add_posts")
 def add_posts():
+    
     """Return the add posts page"""
 
     return render_template(

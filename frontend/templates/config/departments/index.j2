@@ -20,9 +20,6 @@
   <div class="column-list">
     {%- for department in departments -%}
       <div>
-        <h2>{{ department.name }}</h2>
-        <a href="/config/departments/{{ department.id }}/people">View people</a>
-
         <h3>Displays:</h3>
         {%- if department.displays -%}
           <div class="column-list">
