@@ -21,7 +21,7 @@ def add_posts():
     return render_template(
         "config/add_content.j2",
         content_streams=DatabaseController.get().fetch_all_content_streams(
-            order="Write"
+            permissions="Write"
         ),
         departments=DatabaseController.get().fetch_all_departments(),
     )

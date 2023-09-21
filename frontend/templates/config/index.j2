@@ -25,7 +25,7 @@
     checkAndHideElements({{permissions}}) 
     setInterval(checkAndHideElements, 10);  
   </script>
-  <a href="/config/content_stream/add">Add content feed</a>
-  <a href="/config/add_posts">Add a piece of content</a>
+  <button class="button-primary" onclick="window.location.href='/config/content_stream/add'">Add content feed</button>
+  <button class="button-primary" onclick="window.location.href='/config/add_posts'">Add a piece of content</button>
   <div class="column-list" id="root"></div>
 {% endblock %}
