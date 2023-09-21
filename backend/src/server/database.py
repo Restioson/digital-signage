@@ -32,7 +32,9 @@ class DatabaseController:
             db_path = (
                 DATABASE if not flask.current_app.config["TESTING"] else DATABASE_TEST
             )
-            db = flask.g._database = DatabaseController(sqlite3.connect(db_path))
+            conn = sqlite3.connect(db_path)
+            conn.execute("PRAGMA foreign_keys = ON")
+            db = flask.g._database = DatabaseController(conn)
         return db
 
     @staticmethod

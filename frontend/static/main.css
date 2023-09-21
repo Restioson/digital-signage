@@ -103,6 +103,15 @@ button:hover {
   background-color: #444;
 }
 
+button:disabled {
+  color: #808080;
+  background-color: #d3d3d3;
+}
+
+button:disabled:hover {
+  background-color: #d3d3d3;
+}
+
 select {
   font-size: 12pt;
 }
