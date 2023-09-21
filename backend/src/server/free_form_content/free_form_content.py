@@ -13,9 +13,9 @@ class FreeFormContent(ABC):
     """
 
     def __init__(
-        self, stream: int, content_id: Optional[int], posted: Optional[datetime]
+        self, streams: list[int], content_id: Optional[int], posted: Optional[datetime]
     ):
-        self.stream = stream
+        self.streams = streams
         self.id = content_id
         self.posted = posted
 

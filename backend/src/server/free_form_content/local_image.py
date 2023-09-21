@@ -13,11 +13,11 @@ class LocalImage(BinaryContent):
         mime_type: str,
         image_data: bytes,
         caption: Optional[Caption],
-        stream_id: int,
+        streams: list[int],
         content_id: Optional[int] = None,
         posted: Optional[datetime] = None,
     ):
-        super().__init__(mime_type, image_data, caption, stream_id, content_id, posted)
+        super().__init__(mime_type, image_data, caption, streams, content_id, posted)
         self.image_data = image_data
         self.mime_type = mime_type
         self.caption = caption

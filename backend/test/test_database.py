@@ -24,7 +24,7 @@ def test_post_and_fetch_image(
     ), "Database should start with no content"
 
     # Insert a JPG
-    jpg_to_insert = LocalImage("image/jpeg", test_jpg_data, None, 1)
+    jpg_to_insert = LocalImage("image/jpeg", test_jpg_data, None, [1])
     jpg_id, jpg_posted = database.post_content(jpg_to_insert)
     assert jpg_id is not None, "post_content should return a content ID"
 
@@ -32,7 +32,7 @@ def test_post_and_fetch_image(
     time.sleep(1)
 
     # Insert a PNG
-    png_to_insert = LocalImage("image/png", test_png_data, None, 1)
+    png_to_insert = LocalImage("image/png", test_png_data, None, [1])
     png_id, png_posted = database.post_content(png_to_insert)
     assert png_id != jpg_id, "IDs must be unique"
     assert png_posted > jpg_posted, "PNG should be posted after JPG"
@@ -74,9 +74,9 @@ def test_post_and_fetch_image(
 def test_post_captioned(database: DatabaseController, test_jpg_data: bytes):
     caption = Caption("Hello", "there")
     to_insert = [
-        Link("testurl", caption, 1),
-        LocalImage("image/jpeg", test_jpg_data, caption, 1),
-        RemoteImage("testurl", caption, 1),
+        Link("testurl", caption, [1]),
+        LocalImage("image/jpeg", test_jpg_data, caption, [1]),
+        RemoteImage("testurl", caption, [1]),
     ]
 
     for content in to_insert:
@@ -94,7 +94,7 @@ def test_cant_set_id_or_posted(database: DatabaseController):
         content1_to_insert = Text(
             "Test title 123",
             "test body",
-            1,
+            [1],
             posted=datetime.datetime.now(),
             content_id=1,
         )
@@ -107,7 +107,7 @@ def test_post_and_fetch_text(database: DatabaseController):
     ), "Database should start with no content"
 
     # Insert a piece of content
-    content1_to_insert = Text("Test title 123", "test body", 1)
+    content1_to_insert = Text("Test title 123", "test body", [1])
     content1_id, content1_posted = database.post_content(content1_to_insert)
     assert content1_id is not None, "post_content should return a content ID"
 
@@ -147,7 +147,7 @@ def test_post_and_fetch_text(database: DatabaseController):
     time.sleep(1)
 
     # Insert a second piece of content
-    content2_to_insert = Text("Test title 456", "test body 2", 1)
+    content2_to_insert = Text("Test title 456", "test body 2", [1])
     content2_id, content2_posted = database.post_content(content2_to_insert)
     assert content2_id is not None, "post_content should return a content ID"
     assert (
@@ -219,4 +219,4 @@ def test_create_display(database: DatabaseController):
 
 def test_display_has_valid_dept(database: DatabaseController):
     with pytest.raises(Exception):
-        database.upsert_display(Display("Test Group 2", 301, {}))
+        database.upsert_display(Display("Test Group 2", [], None), 30182)

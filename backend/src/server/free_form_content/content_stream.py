@@ -11,7 +11,7 @@ class ContentStream:
     - per-department (accessible by groups in a given department only)
     - per-display (each display has one created by default)
 
-    All content is part of one and only one content stream.
+    All content is part of at least one content stream.
     """
 
     def __init__(
