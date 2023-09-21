@@ -20,6 +20,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from server.user import User
 
+from enum import Enum
+
+
+class Permission(Enum):
+    READ = "readable"
+    WRITE = "writeable"
+
+
+ADMIN_DEPARTMENT = 1
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
 
@@ -200,7 +209,7 @@ class DatabaseController:
             return dept_id
 
     def fetch_all_departments(
-        self, fetch_displays=False, fetch_list=False, fetch_people=False
+        self, fetch_displays=False, fetch_people=False
     ) -> dict[int, Department]:
         """Fetch all departments (but does not fetch their people).
 
@@ -236,10 +245,7 @@ class DatabaseController:
                     )
                 )
 
-        if fetch_list:
-            return departments
-        else:
-            return {dept.id: dept for dept in departments}
+        return {dept.id: dept for dept in departments}
 
     def fetch_department_by_id(
         self,
@@ -458,7 +464,7 @@ class DatabaseController:
             cursor.row_factory = sqlite3.Row
             cursor.execute(
                 "SELECT email, screen_name, department, permissions "
-                " FROM users WHERE email = ?",
+                "FROM users WHERE email = ?",
                 (email,),
             )
             db_user_data = cursor.fetchone()  # Fetch the user data from the database
@@ -570,13 +576,13 @@ class DatabaseController:
             )
         return cursor.lastrowid
 
-    def fetch_all_content_streams(self, order: str) -> GroupedContentStreams:
+    def fetch_all_content_streams(self, permissions: str) -> GroupedContentStreams:
         """Fetch all content streams from the database, grouping them
         using GroupedContentStreams"""
         cursor = self.db.cursor()
         cursor.row_factory = ContentStream.from_sql
         dept = current_user.department
-        if dept == 1:
+        if dept == ADMIN_DEPARTMENT:
             return GroupedContentStreams(
                 list(
                     cursor.execute(
@@ -584,22 +590,17 @@ class DatabaseController:
                     )
                 )
             )
-        elif order == "Write":
-            return GroupedContentStreams(
-                list(
-                    cursor.execute(
-                        "SELECT * FROM content_streams WHERE department = ? "
-                        "OR permissions = 'writeable'",
-                        (dept,),
-                    )
-                )
-            )
         else:
+            if permissions == Permission.WRITE:
+                or_permissions = "OR permissions = 'writeable'"
+            else:
+                or_permissions = "OR permissions != 'private'"
+
             return GroupedContentStreams(
                 list(
                     cursor.execute(
                         "SELECT * FROM content_streams WHERE department = ? "
-                        "OR permissions != 'private'",
+                        + or_permissions,
                         (dept,),
                     )
                 )
@@ -609,7 +610,7 @@ class DatabaseController:
         """Fetch all content stream ids from the database"""
         # needs renaming. This fetches all non private displays to be
         dept = current_user.department
-        if dept == 1:
+        if dept == ADMIN_DEPARTMENT:
             cursor = self.db.cursor()
             cursor.row_factory = lambda _cursor, row: row[0]
             return list(cursor.execute("SELECT id FROM content_streams"))

@@ -78,7 +78,7 @@ def list_departments():
     """The /api/departments endpoint.
     GETting this endpoint returns the list of departments with their IDs in json form
     """
-    departments = DatabaseController.get().fetch_all_departments(fetch_list=True)
+    departments = DatabaseController.get().fetch_all_departments().values()
     department_list = [
         Department.to_http_json(department) for department in departments
     ]

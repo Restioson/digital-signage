@@ -31,6 +31,7 @@ def client(app):
             "screen_name": "ADMIN",
             "password": "PASSWORD",
             "department": 1,
+            "permissions": "superuser",
         },
     )
     return client
