@@ -19,6 +19,7 @@ class PageTemplate:
         name: str,
         layout_template: str,
         properties: TemplateProperties,
+        intrinsic_duration: bool,
     ):
         """
         :param layout_template: the Jinja2 XML template string
@@ -29,6 +30,7 @@ class PageTemplate:
         self.layout_template = layout_template
         self.properties = properties
         self.id = None
+        self.intrinsic_duration = intrinsic_duration
 
     @staticmethod
     def register_filters(app):
@@ -48,10 +50,12 @@ class PageTemplate:
     def from_xml_string(xml: str):
         """Deserialize the given XML string into a Template"""
         soup = BeautifulSoup(xml, "lxml-xml")
+        duration = soup.find("duration")
         return PageTemplate(
             soup.find("name").text,
             xml,
             TemplateProperties.from_xml(soup.find("properties")),
+            duration.text == "intrinsic" if duration else False,
         )
 
     def __repr__(self):

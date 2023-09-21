@@ -1,5 +1,6 @@
 <template on-show="refresh">
   <name>YouTube Video</name>
+  <duration>intrinsic</duration>
   <properties>
     <property>
       <name>Video to display</name>
@@ -19,15 +20,9 @@
       }
     </style>
 
-    <html>
-      {% set code = yt_link|youtube_code|urlencode %}
-      <iframe
-        src="https://www.youtube.com/embed/{{ code }}?&amp;playlist={{ code }}&amp;controls=0&amp;loop=1&amp;autoplay=1&amp;mute=1"
-        title="YouTube video player"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowfullscreen
-      />
-    </html>
+    <youtube
+      id="{{ yt_link|youtube_code|urlencode }}"
+      controls-page-time="true"
+    />
   </page>
 </template>

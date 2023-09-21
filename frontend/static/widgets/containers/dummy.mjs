@@ -16,7 +16,7 @@ export class Dummy extends DeserializableWidget {
   }
 
   className () {
-    return null
+    return 'dummy'
   }
 
   static fromXML (tag) {

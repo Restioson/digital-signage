@@ -1,8 +1,9 @@
-import { WithRefresh } from '../dynamic/with_refresh.mjs'
-import { deserializeWidgetFromTag } from '../deserializable/widget_deserialization_factory.mjs'
-import { DeserializableWidget } from '../deserializable/deserializable_widget.mjs'
-import { Container } from './container.mjs'
-import { Widget } from '../widget.mjs'
+import { WithRefresh } from '../../dynamic/with_refresh.mjs'
+import { deserializeWidgetFromTag } from '../../deserializable/widget_deserialization_factory.mjs'
+import { DeserializableWidget } from '../../deserializable/deserializable_widget.mjs'
+import { Container } from '../container.mjs'
+import { Widget } from '../../widget.mjs'
+import { RotatingChild } from './rotating_child.mjs'
 
 /**
  * A container which rotates between displaying all of its children, giving each a turn.
@@ -12,7 +13,7 @@ import { Widget } from '../widget.mjs'
 export class RotatingContainer extends DeserializableWidget {
   /**
    *
-   * @param {{child: HTMLElement|Widget, refreshOnSwitch: boolean, duration: number}[]} children the children and their settings
+   * @param children {RotatingChild[]} the children and their settings
    */
   constructor ({ children }) {
     super()
@@ -31,8 +32,18 @@ export class RotatingContainer extends DeserializableWidget {
 
         this.timeSpentAtChild += 1
 
-        if (this.timeSpentAtChild >= this.children[this.childIndex].duration) {
+        let childDone
+        if (this.children[this.childIndex].intrinsicTiming) {
+          childDone =
+            this.renderedChildren[this.childIndex].dataset.done === 'true'
+        } else {
+          childDone =
+            this.timeSpentAtChild >= this.children[this.childIndex].duration
+        }
+
+        if (childDone) {
           this.timeSpentAtChild = 0
+          delete this.renderedChildren[this.childIndex].dataset.done
           this.childIndex = (this.childIndex + 1) % this.children.length
 
           const child = this.children[this.childIndex]
@@ -82,11 +93,12 @@ export class RotatingContainer extends DeserializableWidget {
         const onShowAttrChild =
           child.type === 'dummy' ? child.firstChild() : child
 
-        return {
+        return new RotatingChild({
           child: deserializeWidgetFromTag(child),
           refreshOnSwitch: onShowAttrChild.attribute('on-show') === 'refresh',
-          duration: parseInt(child.attribute('duration')) || defaultPeriod
-        }
+          duration: parseInt(child.attribute('duration')) || defaultPeriod,
+          intrinsicTiming: child.attribute('duration') === 'intrinsic'
+        })
       })
     })
   }
