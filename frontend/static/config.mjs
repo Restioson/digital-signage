@@ -90,7 +90,7 @@ async function deleteUser (event) {
   const animation = new window.Animation(effect, document.timeline)
   animation.play()
 }
-export function populateUsersAndDepartments () {
+export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
   const userListTable = document
     .getElementById('user-list')
     .querySelector('tbody')
@@ -99,75 +99,69 @@ export function populateUsersAndDepartments () {
     .getElementById('department-list')
     .querySelector('tbody')
 
-  Promise.all([fetch('/api/users'), fetch('/api/departments')])
-    .then(([userResponse, departmentResponse]) =>
-      Promise.all([userResponse.json(), departmentResponse.json()])
+  const userData = JSON.parse(userDataJson) // Parse JSON string to object
+  const departmentData = JSON.parse(departmentDataJson) // Parse JSON string to object
+
+  if (
+    userData &&
+    Array.isArray(userData.departments) &&
+    departmentData &&
+    Array.isArray(departmentData.departments)
+  ) {
+    const departmentMap = new Map(
+      departmentData.departments.map(dep => [dep.id, dep.name])
     )
-    .then(([userData, departmentData]) => {
-      if (
-        userData &&
-        Array.isArray(userData.departments) &&
-        departmentData &&
-        Array.isArray(departmentData.departments)
-      ) {
-        const departmentMap = new Map(
-          departmentData.departments.map(dep => [dep.id, dep.name])
-        )
 
-        userData.departments.forEach(user => {
-          const row = document.createElement('tr')
-          row.innerHTML = `
-            <td>${user.email}</td>
-            <td>${user.username}</td>
-            <td>${departmentMap.get(user.department)}</td>
-            <td>${user.permissions}</td>
-            <td>
-            <button type="button" class="delete-user icon-button" 
-            data-user-email="${user.email}">
-            <span class="material-symbols-outlined button-icon">delete</span>
-            </button>
-            </td>
-          `
-          userListTable.appendChild(row)
-        })
-
-        departmentData.departments.forEach(department => {
-          const option = document.createElement('option')
-          option.value = department.id
-          option.text = department.name
-          departmentSelect.appendChild(option)
-        })
-
-        departmentData.departments.forEach(department => {
-          const row = document.createElement('tr')
-          row.innerHTML = `
-            <td>${department.name}
-            <button type="button" class="delete-department icon-button" 
-            data-department_id="${department.id}">
-            <span class="material-symbols-outlined button-icon">delete</span>
-            </button>
-            </td>
-          `
-          departmentTable.appendChild(row)
-        })
-
-        for (const button of document.getElementsByClassName(
-          'delete-user icon-button'
-        )) {
-          button.addEventListener('click', deleteUser)
-        }
-        for (const button of document.getElementsByClassName(
-          'delete-department icon-button'
-        )) {
-          button.addEventListener('click', deleteDepartment)
-        }
-      } else {
-        console.error('Invalid data format:', userData, departmentData)
-      }
+    userData.departments.forEach(user => {
+      const row = document.createElement('tr')
+      row.innerHTML = `
+        <td>${user.email}</td>
+        <td>${user.username}</td>
+        <td>${departmentMap.get(user.department)}</td>
+        <td>${user.permissions}</td>
+        <td>
+        <button type="button" class="delete-user icon-button" 
+        data-user-email="${user.email}">
+        <span class="material-symbols-outlined button-icon">delete</span>
+        </button>
+        </td>
+      `
+      userListTable.appendChild(row)
     })
-    .catch(error => {
-      console.error('Error fetching data:', error)
+
+    departmentData.departments.forEach(department => {
+      const option = document.createElement('option')
+      option.value = department.id
+      option.text = department.name
+      departmentSelect.appendChild(option)
     })
+
+    departmentData.departments.forEach(department => {
+      const row = document.createElement('tr')
+      row.innerHTML = `
+        <td>${department.name}
+        <button type="button" class="delete-department icon-button" 
+        data-department_id="${department.id}">
+        <span class="material-symbols-outlined button-icon">delete</span>
+        </button>
+        </td>
+      `
+      departmentTable.appendChild(row)
+    })
+
+    for (const button of document.getElementsByClassName(
+      'delete-user icon-button'
+    )) {
+      button.addEventListener('click', deleteUser)
+    }
+    for (const button of document.getElementsByClassName(
+      'delete-department icon-button'
+    )) {
+      button.addEventListener('click', deleteDepartment)
+    }
+  } else {
+    console.error('Invalid data format:', userData, departmentData)
+  }
 }
 
 export function setupBackButton () {
