@@ -271,7 +271,9 @@ class DatabaseController:
         return cursor.lastrowid
 
     def upsert_display(
-        self, display: Display, department_id: int, is_create=False
+        self,
+        display: Display,
+        department_id: int,
     ) -> int:
         """Create a display ground and return its row id."""
 
@@ -284,7 +286,7 @@ class DatabaseController:
             )
 
             # This is a new display, so create its content stream
-            if is_create:
+            if not self.fetch_content_stream_for_display(cursor.lastrowid):
                 self.create_content_stream(
                     ContentStream(
                         display.name,
