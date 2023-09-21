@@ -325,9 +325,10 @@ class DatabaseController:
             if not self.fetch_content_stream_for_display(cursor.lastrowid):
                 self.create_content_stream(
                     ContentStream(
-                        display.name,
-                        department_id,
-                        cursor.lastrowid,
+                        name=display.name,
+                        department=department_id,
+                        permissions="private",
+                        display_id=cursor.lastrowid,
                     )
                 )
 
@@ -389,7 +390,7 @@ class DatabaseController:
         cursor.row_factory = ContentStream.from_sql
         return next(
             cursor.execute(
-                "SELECT id, name, department, display"
+                "SELECT id, name, department, display, permissions"
                 " FROM content_streams WHERE display = ?",
                 (display_id,),
             ),

@@ -18,9 +18,46 @@ export function setupPostForms (createSuccessText) {
 async function deleteDepartment (event) {
   event.preventDefault()
   const button = event.target.closest('button')
-  select.addEventListener('click', evt => {
-    evt.preventDefault()
-  })
+
+  const statusMessage = document.getElementById('status-message')
+  statusMessage.className = '' // Clear success/error class
+
+  const row = button.parentElement.parentElement
+  const departmentName = row.children[0].innerText
+  const departmentid = button.dataset.department_id
+  console.log(button)
+
+  try {
+    const res = await fetch(`/api/departments/${departmentid}`, {
+      method: 'delete'
+    })
+
+    if (res.status !== 200) {
+      throw new ApiError(await res.text())
+    }
+
+    row.remove()
+
+    statusMessage.classList.add('success')
+    statusMessage.innerText = `Successfully deleted department (name: ${departmentName})`
+  } catch (err) {
+    statusMessage.classList.add('error')
+    const errorBox = document.createElement('pre')
+    errorBox.innerText = err instanceof ApiError ? err.response : err.message
+    statusMessage.innerText = 'Error deleting user:'
+    statusMessage.append(errorBox)
+  }
+
+  statusMessage.hidden = false
+  window.location.replace('#status-message')
+
+  const effect = new window.KeyframeEffect(
+    statusMessage,
+    [{ background: 'yellow' }, { background: 'transparent' }],
+    { duration: 2000, direction: 'normal', easing: 'linear' }
+  )
+  const animation = new window.Animation(effect, document.timeline)
+  animation.play()
 }
 
 // Do not require shift/ctrl click to select multiple
@@ -42,9 +79,12 @@ export function setupSelectMultiple (select) {
 
       return false
     })
-  }}
+  }
 
-
+  select.addEventListener('click', evt => {
+    evt.preventDefault()
+  })
+}
 
 async function deleteUser (event) {
   event.preventDefault()

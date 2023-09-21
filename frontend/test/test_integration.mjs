@@ -181,7 +181,7 @@ describe('API Integration', function () {
       method: 'post',
       body: new URLSearchParams({
         email: 'A@ADMIN',
-        password: 'PASSWORD',
+        password: 'PASSWORD'
       }),
       redirect: 'manual'
     })

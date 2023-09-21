@@ -12,8 +12,6 @@ from flask_login import (
     current_user,
 )
 from server import free_form_content
-from server import department
-from server import display
 from server.department.department import Department
 from server.user import User
 from server.database import DatabaseController
@@ -72,7 +70,6 @@ def list_content_streams():
     return {"id": stream_id}
 
 
-
 @blueprint.route("/departments", methods=["GET"])
 def list_departments():
     """The /api/departments endpoint.
@@ -96,6 +93,7 @@ def list_users():
     response_data = json.dumps({"departments": user_list})
 
     return Response(response_data, content_type="application/json")
+
 
 @blueprint.route("/content", methods=["POST", "GET", "DELETE"])
 def content():
@@ -329,6 +327,7 @@ def delete_content(content_id: int):
         return {"deleted": True}
     else:
         flask.abort(404)
+
 
 @blueprint.route("/departments", methods=["POST"])
 def create_department():
