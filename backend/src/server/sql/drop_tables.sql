@@ -1,9 +1,9 @@
 DROP TABLE IF EXISTS content;
 DROP TABLE IF EXISTS people;
-DROP TABLE IF EXISTS departments;
 DROP TABLE IF EXISTS displays;
 DROP TABLE IF EXISTS content_streams;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS loadshedding_schedules;
 DROP TABLE IF EXISTS files;
 DROP TABLE IF EXISTS templates;
+DROP TABLE IF EXISTS departments;
