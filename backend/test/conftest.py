@@ -25,11 +25,13 @@ def client(app):
     client = app.test_client()
 
     client.post(
-        "/api/register",
+        "/api/login",
         data={
-            "email": "example@example.com",
-            "screen_name": "User",
-            "password": "password123",
+            "email": "A@ADMIN",
+            "screen_name": "ADMIN",
+            "password": "PASSWORD",
+            "department": 1,
+            "permissions": "superuser",
         },
     )
     return client

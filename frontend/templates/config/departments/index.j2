@@ -18,7 +18,7 @@
 
 {% block content %}
   <div class="column-list">
-    {%- for department in departments.values() -%}
+    {%- for department in departments -%}
       <div>
         <h2>{{ department.name }}</h2>
         <a href="/config/departments/{{ department.id }}/people">View people</a>
@@ -31,25 +31,27 @@
                 {%- set link = "display/" + department.id|string + "/" + display.id|string -%}
                 <h4>
                   <a href="/{{ link }}">{{ display.name }}</a>
-                  <a
-                    href="/config/departments/{{ department.id }}/display/{{ display.id }}"
-                    class="button-link"
-                  >
-                    <span class="material-symbols-outlined button-icon">
-                      edit
-                    </span>
-                  </a>
+                  {% if current_user.permissions != "postinguser" %}
+                    <a
+                      href="/config/departments/{{ department.id }}/display/{{ display.id }}"
+                      class="button-link"
+                    >
+                      <span class="material-symbols-outlined button-icon"
+                        >edit</span
+                      >
+                    </a>
 
-                  <button
-                    type="button"
-                    class="delete-display icon-button"
-                    data-department-id="{{ department.id }}"
-                    data-display-id="{{ display.id }}"
-                  >
-                    <span class="material-symbols-outlined button-icon">
-                      delete
-                    </span>
-                  </button>
+                    <button
+                      type="button"
+                      class="delete-display icon-button"
+                      data-department-id="{{ department.id }}"
+                      data-display-id="{{ display.id }}"
+                    >
+                      <span class="material-symbols-outlined button-icon"
+                        >delete</span
+                      >
+                    </button>
+                  {% endif %}
                 </h4>
                 <p>
                   Permalink to display view -
@@ -69,10 +71,11 @@
         {%- else -%}
           <p>This department has no displays.</p>
         {%- endif -%}
-
-        <a href="/config/departments/{{ department.id }}/display/add"
-          >Add display</a
-        >
+        {% if current_user.permissions != "postinguser" %}
+          <a href="/config/departments/{{ department.id }}/display/add"
+            >Add display</a
+          >
+        {% endif %}
 
         <h4>Content feeds:</h4>
         {%- if department.content_streams -%}

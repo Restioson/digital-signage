@@ -20,8 +20,6 @@ from server.department.person import Person
 from server.display import Display
 from server.free_form_content import BinaryContent
 from server.free_form_content.content_stream import ContentStream
-from server.user import User
-from server.valid_redirect import url_has_allowed_host_and_scheme
 
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
@@ -41,9 +39,8 @@ def loadshedding():
             return response
         else:
             return flask.abort(401)
-    except Exception as e:
+    except Exception:
         return flask.abort(400)
-    
 
 
 @blueprint.route("/health", methods=["GET"])
@@ -63,7 +60,6 @@ def list_content_streams():
     POSTing to this endpoint with a form representing a new content stream
     will create the content stream and return its id.
     """
-    # TODO
     db = DatabaseController.get()
 
     if not current_user.is_authenticated:
@@ -88,14 +84,22 @@ def list_departments():
 
     return Response(response_data, content_type="application/json")
 
+
 @blueprint.route("/users/list", methods=["GET"])
 def list_users():
     """The /api/users/list endpoint.
-    GETting this endpoint returns the list of users with their emails and usernames in json form
+    GETting this endpoint returns the list of users
+    with their emails and usernames in json form
     """
     users = DatabaseController.get().fetch_all_users()
     user_list = [
-        {"email": user.get_id(), "username": user.screen_name, "department" : user.department,"permissions" : user.permissions} for user in users
+        {
+            "email": user.get_id(),
+            "username": user.screen_name,
+            "department": user.department,
+            "permissions": user.permissions,
+        }
+        for user in users
     ]
     response_data = json.dumps({"departments": user_list})
 
@@ -270,7 +274,7 @@ def upload_table(department_id: int):
             "id": "response needed",
             "response": "Excel file is a valid file. Upload successful",
         }
-    except Exception as e:
+    except Exception:
         return flask.abort(400)
 
 
@@ -295,13 +299,11 @@ def registration_route():
                 department,
                 permissions,
             )
-            user = User(form["email"], form["screen_name"], department, permissions)
-            login_user(user)
 
             return {
-            "id": "response needed",
-            "response": "User "+form["screen_name"]+" has been created",
-        }
+                "id": "response needed",
+                "response": "User " + form["screen_name"] + " has been created",
+            }
 
         else:
             flask.abort(401)
@@ -351,9 +353,35 @@ def create_department():
         }
 
 
+@blueprint.route("/departments/<int:department_id>", methods=["DELETE"])
+def delete_department(department_id: int):
+    """DELETEing this endpoint deletes the given department"""
+
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
+    if DatabaseController.get().delete_department(department_id):
+        return {"deleted": True}
+    else:
+        return flask.abort(500)
+
+
 @blueprint.route("/checkuser/", methods=["GET"])
 def checkuser():
     return current_user.permissions
+
+
+@blueprint.route("/user/<string:user_id>", methods=["DELETE"])
+def delete_user(user_id: str):
+    """DELETEing this endpoitn deletes the given user"""
+
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
+    if DatabaseController.get().delete_user(user_id):
+        return {"deleted": True}
+    else:
+        return flask.abort(500)
 
 
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])
@@ -384,6 +412,7 @@ def displays(department_id: int):
     )
     return {"id": group_id}
 
+
 @blueprint.route(
     "/departments/<int:department_id>/displays/<int:display_id>", methods=["DELETE"]
 )
@@ -397,6 +426,7 @@ def delete_display(department_id: int, display_id: int):
         return {"deleted": True}
     else:
         return flask.abort(500)
+
 
 @blueprint.route("/departments/<int:department_id>/preview_display", methods=["POST"])
 def preview_display(department_id: int):
@@ -418,7 +448,7 @@ def preview_display(department_id: int):
         display_config={
             "department": department_id,
             "layout": group.render(db),
-            #"displayContentStream": display.content_stream,
+            # "displayContentStream": display.content_stream,
         },
     )
 

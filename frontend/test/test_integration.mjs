@@ -177,12 +177,13 @@ describe('API Integration', function () {
 
     assert.ok(started, 'Server did not start')
 
-    const res = await fetch('/api/register', {
+    const res = await fetch('/api/login', {
       method: 'post',
       body: new URLSearchParams({
-        email: 'example@example.com',
-        screen_name: 'User',
-        password: 'password123'
+        email: 'A@ADMIN',
+        screen_name: 'ADMIN',
+        password: 'PASSWORD',
+        permissions: 'superuser'
       }),
       redirect: 'manual'
     })

@@ -4,6 +4,9 @@ import sqlite3
 import time
 from typing import Optional, Tuple
 import flask
+from flask_login import (
+    current_user,
+)
 from server import free_form_content
 from server.department.department import Department
 from server.department.file import File
@@ -197,7 +200,7 @@ class DatabaseController:
             return dept_id
 
     def fetch_all_departments(
-        self, fetch_displays=False, fetch_content_streams=False, fetch_list=False
+        self, fetch_displays=False, fetch_list=False, fetch_people=False
     ) -> dict[int, Department]:
         """Fetch all departments (but does not fetch their people).
 
@@ -218,10 +221,25 @@ class DatabaseController:
             for department in departments:
                 department.displays = self.fetch_all_displays_in_dept(department.id)
 
-        if fetch_content_streams:
-            streams = self.fetch_all_content_streams()
+        # if fetch_content_streams:
+        #     streams = self.fetch_all_content_streams()
+        #     for department in departments:
+        #         department.content_streams = streams.by_department.get(department.id)
+
+        if fetch_people:
             for department in departments:
-                department.content_streams = streams.by_department.get(department.id)
+                cursor = self.db.cursor()
+                cursor.row_factory = Person.from_sql
+                department.people = list(
+                    cursor.execute(
+                        "SELECT id, department, title, "
+                        "full_name, position, office_hours,"
+                        "office_location, email, phone FROM people "
+                        " WHERE department = ?"
+                        " ORDER BY id",
+                        (department.id,),
+                    )
+                )
 
         if fetch_list:
             return departments
@@ -238,69 +256,39 @@ class DatabaseController:
         """Fetch the given Department by its ID"""
         cursor = self.db.cursor()
         cursor.row_factory = Department.from_sql
-        if department_id == 1:
-            dept = next(
-                cursor.execute(
-                    "SELECT id, name, bio FROM departments",
-                ),
-                None,
-            )
-        else:
-            dept = next(
-                cursor.execute(
-                    "SELECT id, name, bio FROM departments WHERE id = ?",
-                    (department_id,),
-                ),
-                None,
-            )
+        dept = next(
+            cursor.execute(
+                "SELECT id, name, bio FROM departments WHERE id = ?", (department_id,)
+            ),
+            None,
+        )
 
         if dept and fetch_people:
             cursor = self.db.cursor()
             cursor.row_factory = Person.from_sql
-            if department_id == 1:
-                dept.people = list(
-                    cursor.execute(
-                        "SELECT id, department, title, "
-                        "full_name, position, office_hours,"
-                        "office_location, email, phone FROM people "
-                        " ORDER BY id",
-                    )
+            dept.people = list(
+                cursor.execute(
+                    "SELECT id, department, title, "
+                    "full_name, position, office_hours,"
+                    "office_location, email, phone FROM people "
+                    " WHERE department = ?"
+                    " ORDER BY id",
+                    (department_id,),
                 )
-            else:
-                dept.people = list(
-                    cursor.execute(
-                        "SELECT id, department, title, "
-                        "full_name, position, office_hours,"
-                        "office_location, email, phone FROM people "
-                        " WHERE department = ?"
-                        " ORDER BY id",
-                        (department_id,),
-                    )
-                )
+            )
 
         if dept and fetch_files:
             cursor = self.db.cursor()
             cursor.row_factory = File.from_sql
-            if department_id == 1:
-                dept.files = list(
-                    cursor.execute(
-                        "SELECT filename, department_id, file_content, "
-                        "mime_type FROM files "
-                        " WHERE department_id = ?"
-                        " ORDER BY filename",
-                        (department_id,),
-                    )
+            dept.files = list(
+                cursor.execute(
+                    "SELECT filename, department_id, file_content, "
+                    "mime_type FROM files "
+                    " WHERE department_id = ?"
+                    " ORDER BY filename",
+                    (department_id,),
                 )
-            else:
-                dept.files = list(
-                    cursor.execute(
-                        "SELECT filename, department_id, file_content, "
-                        "mime_type FROM files "
-                        " WHERE department_id = ?"
-                        " ORDER BY filename",
-                        (department_id,),
-                    )
-                )
+            )
 
         if dept and fetch_displays:
             dept.displays = self.fetch_all_displays_in_dept(dept.id)
@@ -368,19 +356,12 @@ class DatabaseController:
         """Fetch all display groups from the database"""
         cursor = self.db.cursor()
         cursor.row_factory = Display.from_sql
-        if department_id == 1:
-            return list(
-                cursor.execute(
-                    "SELECT id, name, pages_json FROM displays",
-                )
+        return list(
+            cursor.execute(
+                "SELECT id, name, pages_json FROM displays WHERE department = ?",
+                (department_id,),
             )
-        else:
-            return list(
-                cursor.execute(
-                    "SELECT id, name, pages_json FROM displays WHERE department = ?",
-                    (department_id,),
-                )
-            )
+        )
 
     def fetch_display_by_id(self, display_id: int) -> Optional[Display]:
         """Fetch the given display group from the database"""
@@ -481,7 +462,8 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.row_factory = sqlite3.Row
             cursor.execute(
-                "SELECT email, screen_name, department, permissions  FROM users WHERE email = ?",
+                "SELECT email, screen_name, department, permissions "
+                " FROM users WHERE email = ?",
                 (email,),
             )
             db_user_data = cursor.fetchone()  # Fetch the user data from the database
@@ -493,13 +475,15 @@ class DatabaseController:
 
         return user_fields
 
-    def fetch_all_users(self)-> dict[int, User]: 
+    def fetch_all_users(self) -> dict[int, User]:
         with self.db:
             cursor = self.db.cursor()
             cursor.row_factory = User.from_sql
-            return list(cursor.execute(
-                "SELECT email, screen_name, department, permissions  FROM users",
-                ))
+            return list(
+                cursor.execute(
+                    "SELECT email, screen_name, department, permissions  FROM users",
+                )
+            )
 
     # checks if the user is in the db
     def user_exists(self, email: str) -> bool:
@@ -520,7 +504,8 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.row_factory = sqlite3.Row
             cursor.execute(
-                "SELECT email, screen_name, password_hash, department, permissions FROM users WHERE email = ?",
+                "SELECT email, screen_name, password_hash, department,"
+                "permissions FROM users WHERE email = ?",
                 (email,),
             )
             db_user_data = cursor.fetchone()
@@ -561,48 +546,101 @@ class DatabaseController:
             )
         return cursor.lastrowid
 
+    def delete_user(self, id: str) -> bool:
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "DELETE FROM USERS WHERE email = ?",
+                (id,),
+            )
+            return cursor.rowcount == 1
+
+    def delete_department(self, id: int) -> bool:
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "DELETE FROM departments WHERE id = ?",
+                (id,),
+            )
+            return cursor.rowcount == 1
+
     def create_content_stream(self, stream: ContentStream) -> int:
         """Insert the given content stream into the database and return its ID"""
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO content_streams (name, department, display)"
-                " VALUES (?, ?, ?)",
-                (stream.name, stream.department, stream.display),
+                "INSERT INTO content_streams (name, department, display, permissions)"
+                " VALUES (?, ?, ?, ?)",
+                (stream.name, stream.department, stream.display, stream.permissions),
             )
         return cursor.lastrowid
 
-    def fetch_all_content_streams(self) -> GroupedContentStreams:
+    def fetch_all_content_streams(self, order: str) -> GroupedContentStreams:
         """Fetch all content streams from the database, grouping them
         using GroupedContentStreams"""
         cursor = self.db.cursor()
         cursor.row_factory = ContentStream.from_sql
-        return GroupedContentStreams(
-            list(
-                cursor.execute(
-                    "SELECT id, name, department, display FROM content_streams"
+        dept = current_user.department
+        if dept == 1:
+            return GroupedContentStreams(
+                list(
+                    cursor.execute(
+                        "SELECT id, name, department, display FROM content_streams"
+                    )
                 )
             )
-        )
+        elif order == "Write":
+            return GroupedContentStreams(
+                list(
+                    cursor.execute(
+                        "SELECT * FROM content_streams WHERE department = ? "
+                        "OR permissions = 'writeable'",
+                        (dept,),
+                    )
+                )
+            )
+        else:
+            return GroupedContentStreams(
+                list(
+                    cursor.execute(
+                        "SELECT * FROM content_streams WHERE department = ? "
+                        "OR permissions != 'private'",
+                        (dept,),
+                    )
+                )
+            )
 
     def fetch_all_content_stream_ids(self) -> list:
         """Fetch all content stream ids from the database"""
-        cursor = self.db.cursor()
-        cursor.row_factory = lambda _cursor, row: row[0]
-        return list(cursor.execute("SELECT id FROM content_streams"))
+        # needs renaming. This fetches all non private displays to be
+        dept = current_user.department
+        if dept == 1:
+            cursor = self.db.cursor()
+            cursor.row_factory = lambda _cursor, row: row[0]
+            return list(cursor.execute("SELECT id FROM content_streams"))
+        else:
+            cursor = self.db.cursor()
+            cursor.row_factory = lambda _cursor, row: row[0]
+            return list(
+                cursor.execute(
+                    "SELECT * FROM content_streams WHERE department = ? "
+                    "OR permissions != 'private';"
+                ),
+                (dept,),
+            )
 
     def update_loadshedding_schedule(self, region, schedule):
         """Updates the loadshedding schedule for the given region"""
-        
+
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-            "REPLACE INTO loadshedding_schedules (id, schedule_json) VALUES (?, ?)",
-            (
-                region,
-                schedule,
-            ),
-        )
+                "REPLACE INTO loadshedding_schedules (id, schedule_json) VALUES (?, ?)",
+                (
+                    region,
+                    schedule,
+                ),
+            )
 
     def fetch_loadshedding_schedule(self, region):
         """fetches the loadshedding schedule for the given region"""

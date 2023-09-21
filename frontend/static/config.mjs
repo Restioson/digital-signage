@@ -15,6 +15,13 @@ export function setupPostForms (createSuccessText) {
       })
   }
 }
+async function deleteDepartment (event) {
+  event.preventDefault()
+  const button = event.target.closest('button')
+  select.addEventListener('click', evt => {
+    evt.preventDefault()
+  })
+}
 
 // Do not require shift/ctrl click to select multiple
 export function setupSelectMultiple (select) {
@@ -35,53 +42,132 @@ export function setupSelectMultiple (select) {
 
       return false
     })
+  }}
+
+
+
+async function deleteUser (event) {
+  event.preventDefault()
+  const button = event.target.closest('button')
+
+  const statusMessage = document.getElementById('status-message')
+  statusMessage.className = '' // Clear success/error class
+
+  const row = button.parentElement.parentElement
+  const username = row.children[0].innerText
+  const userEmail = button.dataset.userEmail
+  console.log(button)
+
+  try {
+    const res = await fetch(`/api/user/${userEmail}`, {
+      method: 'delete'
+    })
+
+    if (res.status !== 200) {
+      throw new ApiError(await res.text())
+    }
+
+    row.remove()
+
+    statusMessage.classList.add('success')
+    statusMessage.innerText = `Successfully deleted user (name: ${username})`
+  } catch (err) {
+    statusMessage.classList.add('error')
+    const errorBox = document.createElement('pre')
+    errorBox.innerText = err instanceof ApiError ? err.response : err.message
+    statusMessage.innerText = 'Error deleting user:'
+    statusMessage.append(errorBox)
   }
 
-  select.addEventListener('click', evt => {
-    evt.preventDefault()
-  })
+  statusMessage.hidden = false
+  window.location.replace('#status-message')
+
+  const effect = new window.KeyframeEffect(
+    statusMessage,
+    [{ background: 'yellow' }, { background: 'transparent' }],
+    { duration: 2000, direction: 'normal', easing: 'linear' }
+  )
+  const animation = new window.Animation(effect, document.timeline)
+  animation.play()
 }
+export function populateUsersAndDepartments () {
+  const userListTable = document
+    .getElementById('user-list')
+    .querySelector('tbody')
+  const departmentSelect = document.getElementById('department')
+  const departmentTable = document
+    .getElementById('department-list')
+    .querySelector('tbody')
 
-export function populateUsersAndDepartments() {
-  const userListTable = document.getElementById('user-list').querySelector('tbody');
-  const departmentSelect = document.getElementById('department');
-
-  // Fetch both user and department data in parallel
   Promise.all([fetch('/api/users/list'), fetch('/api/department/list')])
     .then(([userResponse, departmentResponse]) =>
       Promise.all([userResponse.json(), departmentResponse.json()])
     )
     .then(([userData, departmentData]) => {
-      if (userData && Array.isArray(userData.departments) && departmentData && Array.isArray(departmentData.departments)) {
-        // Create a department map for easier lookup
-        const departmentMap = new Map(departmentData.departments.map(dep => [dep.id, dep.name]));
+      if (
+        userData &&
+        Array.isArray(userData.departments) &&
+        departmentData &&
+        Array.isArray(departmentData.departments)
+      ) {
+        const departmentMap = new Map(
+          departmentData.departments.map(dep => [dep.id, dep.name])
+        )
 
-        // Iterate through the list of users and add rows to the table
         userData.departments.forEach(user => {
-          const row = document.createElement('tr');
+          const row = document.createElement('tr')
           row.innerHTML = `
             <td>${user.email}</td>
             <td>${user.username}</td>
             <td>${departmentMap.get(user.department)}</td>
             <td>${user.permissions}</td>
-          `;
-          userListTable.appendChild(row);
-        });
+            <td>
+            <button type="button" class="delete-user icon-button" 
+            data-user-email="${user.email}">
+            <span class="material-symbols-outlined button-icon">delete</span>
+            </button>
+            </td>
+          `
+          userListTable.appendChild(row)
+        })
 
-        // Populate the department select dropdown
         departmentData.departments.forEach(department => {
-          const option = document.createElement('option');
-          option.value = department.id;
-          option.text = department.name;
-          departmentSelect.appendChild(option);
-        });
+          const option = document.createElement('option')
+          option.value = department.id
+          option.text = department.name
+          departmentSelect.appendChild(option)
+        })
+
+        departmentData.departments.forEach(department => {
+          const row = document.createElement('tr')
+          row.innerHTML = `
+            <td>${department.name}
+            <button type="button" class="delete-department icon-button" 
+            data-department_id="${department.id}">
+            <span class="material-symbols-outlined button-icon">delete</span>
+            </button>
+            </td>
+          `
+          departmentTable.appendChild(row)
+        })
+
+        for (const button of document.getElementsByClassName(
+          'delete-user icon-button'
+        )) {
+          button.addEventListener('click', deleteUser)
+        }
+        for (const button of document.getElementsByClassName(
+          'delete-department icon-button'
+        )) {
+          button.addEventListener('click', deleteDepartment)
+        }
       } else {
-        console.error('Invalid data format:', userData, departmentData);
+        console.error('Invalid data format:', userData, departmentData)
       }
     })
     .catch(error => {
-      console.error('Error fetching data:', error);
-    });
+      console.error('Error fetching data:', error)
+    })
 }
 
 export function setupBackButton () {

@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class User:
     def __init__(self, email: str, screen_name: str, department: int, permissions: str):
         self.user_id = email  # the login_manager required an id
@@ -32,5 +33,5 @@ class User:
             email=row["email"],
             screen_name=row["screen_name"],
             department=row["department"],
-            permissions=row["permissions"]
+            permissions=row["permissions"],
         )

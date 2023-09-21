@@ -20,7 +20,9 @@ def add_posts():
 
     return render_template(
         "config/add_content.j2",
-        content_streams=DatabaseController.get().fetch_all_content_streams(),
+        content_streams=DatabaseController.get().fetch_all_content_streams(
+            order="Write"
+        ),
         departments=DatabaseController.get().fetch_all_departments(),
     )
 
@@ -39,13 +41,20 @@ def index():
 @blueprint.route("/departments/")
 def list_departments():
     """Return the departments index page"""
+    if current_user.department == 1:
+        departments = DatabaseController.get().fetch_all_departments(
+            fetch_displays=True
+        )
+        departments = departments.values()
+    else:
+        user_department = DatabaseController.get().fetch_department_by_id(
+            department_id=current_user.department, fetch_displays=True
+        )
+        departments = [user_department]
 
     return render_template(
         "config/departments/index.j2",
-        departments=DatabaseController.get().fetch_all_departments(
-            fetch_displays=True,
-            fetch_content_streams=True,
-        ),
+        departments=departments,
         base=flask.request.root_url,
     )
 
@@ -53,18 +62,24 @@ def list_departments():
 @blueprint.route("/departments/<int:department_id>/people")
 def list_people(department_id: int):
     """Return the people page which lists all people in the given department"""
+    if current_user.department == department_id:
+        if current_user.department == 1:
+            departments = DatabaseController.get().fetch_all_departments(
+                fetch_people=True
+            )
+            departments = departments.values()
+        else:
+            user_department = DatabaseController.get().fetch_department_by_id(
+                department_id, fetch_people=True
+            )
+            departments = [user_department]
 
-    dept = DatabaseController.get().fetch_department_by_id(
-        department_id, fetch_people=True
-    )
-
-    if not dept:
+        return render_template(
+            "config/departments/people/index.j2",
+            departments=departments,
+        )
+    else:
         flask.abort(404)
-
-    return render_template(
-        "config/departments/people/index.j2",
-        department=dept,
-    )
 
 
 @blueprint.route("/departments/<int:department_id>/people/add")
@@ -119,7 +134,7 @@ def add_display(department_id: int):
     if not db.fetch_department_by_id(department_id):
         flask.abort(404)
 
-    streams = db.fetch_all_content_streams()
+    streams = db.fetch_all_content_streams(order="Read")
     streams.filter_to_department(department_id)
 
     return render_template(
@@ -139,7 +154,7 @@ def edit_display(department_id: int, display_id: int):
     if not db.fetch_department_by_id(department_id):
         flask.abort(404)
 
-    streams = db.fetch_all_content_streams()
+    streams = db.fetch_all_content_streams(order="Read")
     streams.filter_to_department(department_id)
 
     return render_template(

@@ -1,4 +1,3 @@
-import flask
 from flask import Blueprint, render_template
 
 blueprint = Blueprint("registration", __name__, url_prefix="/register")
