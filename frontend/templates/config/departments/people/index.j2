@@ -30,7 +30,7 @@
             <th scope="col">Email</th>
             <th scope="col">Telephone</th>
             <th scope="col">Office hours</th>
-            {% if current_user.permissions != 'postinguser' %}
+            {% if current_user.permissions != 'posting_user' %}
               <th scope="col"></th>
               <th scope="col"></th>
             {% endif %}
@@ -52,8 +52,8 @@
               <td>{{ person.email }}</td>
               <td>{{ person.phone }}</td>
               <td>{{ person.office_hours }}</td>
-              {# Check if current_user.permissions is 'postinguser' and disable the buttons accordingly #}
-              {% if current_user.permissions != 'postinguser' %}
+              {# Check if current_user.permissions is 'posting_user' and disable the buttons accordingly #}
+              {% if current_user.permissions != 'posting_user' %}
                 <td>
                   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
                   <form
@@ -79,8 +79,8 @@
           {%- endfor -%}
         </tbody>
       </table>
-      {% if current_user.permissions != 'postinguser' %}
-        {# Check if current_user.permissions is 'postinguser' and disable the buttons accordingly #}
+      {% if current_user.permissions != 'posting_user' %}
+        {# Check if current_user.permissions is 'posting_user' and disable the buttons accordingly #}
         {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
         <form
           action="/config/departments/{{ department.id }}/people/add"

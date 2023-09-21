@@ -18,12 +18,6 @@ class User:
     def get_id(self) -> str:
         return self.user_id
 
-    def get_permissions(self) -> str:
-        return self.permissions
-
-    def get_department(self) -> str:
-        return self.department
-
     @staticmethod
     def from_sql(cursor: sqlite3.Cursor, row: tuple):
         """Parse the given SQL row into a Department object"""
@@ -35,3 +29,12 @@ class User:
             department=row["department"],
             permissions=row["permissions"],
         )
+
+    def to_http_json(self) -> dict:
+        """Serialize the given Department into its HTTP API representation"""
+        return {
+            "email": self.user_id,
+            "username": self.screen_name,
+            "department": self.department,
+            "permissions": self.permissions,
+        }

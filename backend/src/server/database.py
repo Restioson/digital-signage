@@ -760,12 +760,3 @@ class DatabaseController:
                 (name,),
             )
         return cursor.lastrowid
-
-    def checkuserrank(self, user: User):
-        """Creates a new department"""
-        with self.db:
-            cursor = self.db.cursor()
-            cursor.execute(
-                "SELECT permissions FROM users WHERE id = ?",
-                (user.get_id,),
-            )

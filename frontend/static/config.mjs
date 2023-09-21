@@ -99,7 +99,7 @@ export function populateUsersAndDepartments () {
     .getElementById('department-list')
     .querySelector('tbody')
 
-  Promise.all([fetch('/api/users/list'), fetch('/api/department/list')])
+  Promise.all([fetch('/api/users'), fetch('/api/departments')])
     .then(([userResponse, departmentResponse]) =>
       Promise.all([userResponse.json(), departmentResponse.json()])
     )

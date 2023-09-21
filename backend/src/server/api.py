@@ -14,6 +14,8 @@ from flask_login import (
 from server import free_form_content
 from server import department
 from server import display
+from server.department.department import Department
+from server.user import User
 from server.database import DatabaseController
 from server.department.file import File
 from server.department.person import Person
@@ -35,12 +37,12 @@ def loadshedding():
         schedule_data = DatabaseController.get().fetch_loadshedding_schedule(1)
         schedule_json = json.dumps(schedule_data, indent=4)
         response = Response(schedule_json, content_type="application/json")
-        if response:
+        if schedule_json:
             return response
         else:
-            return flask.abort(401)
+            return flask.abort(500)
     except Exception:
-        return flask.abort(400)
+        return flask.abort(500)
 
 
 @blueprint.route("/health", methods=["GET"])
@@ -71,36 +73,26 @@ def list_content_streams():
 
 
 
-@blueprint.route("/department/list", methods=["GET"])
+@blueprint.route("/departments", methods=["GET"])
 def list_departments():
-    """The /api/department/list endpoint.
+    """The /api/departments endpoint.
     GETting this endpoint returns the list of departments with their IDs in json form
     """
     departments = DatabaseController.get().fetch_all_departments(fetch_list=True)
     department_list = [
-        {"id": department.id, "name": department.name} for department in departments
+        Department.to_http_json(department) for department in departments
     ]
-    response_data = json.dumps({"departments": department_list})
-
-    return Response(response_data, content_type="application/json")
+    return {"departments": department_list}
 
 
-@blueprint.route("/users/list", methods=["GET"])
+@blueprint.route("/users", methods=["GET"])
 def list_users():
-    """The /api/users/list endpoint.
+    """The /api/users endpoint.
     GETting this endpoint returns the list of users
     with their emails and usernames in json form
     """
     users = DatabaseController.get().fetch_all_users()
-    user_list = [
-        {
-            "email": user.get_id(),
-            "username": user.screen_name,
-            "department": user.department,
-            "permissions": user.permissions,
-        }
-        for user in users
-    ]
+    user_list = [User.to_http_json(user) for user in users]
     response_data = json.dumps({"departments": user_list})
 
     return Response(response_data, content_type="application/json")
@@ -339,6 +331,7 @@ def delete_content(content_id: int):
         flask.abort(404)
 
 @blueprint.route("/department/create", methods=["POST"])
+@blueprint.route("/department", methods=["POST"])
 def create_department():
     # check if department already exists
     name = flask.request.form["name"]
@@ -363,12 +356,7 @@ def delete_department(department_id: int):
     if DatabaseController.get().delete_department(department_id):
         return {"deleted": True}
     else:
-        return flask.abort(500)
-
-
-@blueprint.route("/checkuser/", methods=["GET"])
-def checkuser():
-    return current_user.permissions
+        return flask.abort(404)
 
 
 @blueprint.route("/user/<string:user_id>", methods=["DELETE"])
@@ -430,13 +418,13 @@ def delete_display(department_id: int, display_id: int):
 
 @blueprint.route("/departments/<int:department_id>/preview_display", methods=["POST"])
 def preview_display(department_id: int):
-    """Preview the given display group without actually creating it"""
+    """Preview the given display without actually creating it"""
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
     db = DatabaseController.get()
-    group = Display.from_form(
+    display = Display.from_form(
         department_id,
         flask.request.form,
         flask.request.files,
@@ -447,7 +435,7 @@ def preview_display(department_id: int):
         "display.j2",
         display_config={
             "department": department_id,
-            "layout": group.render(db),
+            "layout": display.render(db),
             # "displayContentStream": display.content_stream,
         },
     )
@@ -472,7 +460,7 @@ def upload_department_files(department_id: int):
 
 
 @blueprint.route(
-    "/department/<int:department_id>/<int:dislay_groups>/<string:filename>",
+    "/department/<int:department_id>/<int:dislay>/<string:filename>",
     methods=["GET"],
 )
 def get_department_files(filename: str, department_id: int):

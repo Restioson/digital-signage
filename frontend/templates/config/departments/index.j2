@@ -31,7 +31,7 @@
                 {%- set link = "display/" + department.id|string + "/" + display.id|string -%}
                 <h4>
                   <a href="/{{ link }}">{{ display.name }}</a>
-                  {% if current_user.permissions != "postinguser" %}
+                  {% if current_user.permissions != "posting_user" %}
                     <a
                       href="/config/departments/{{ department.id }}/display/{{ display.id }}"
                       class="button-link"
@@ -71,7 +71,7 @@
         {%- else -%}
           <p>This department has no displays.</p>
         {%- endif -%}
-        {% if current_user.permissions != "postinguser" %}
+        {% if current_user.permissions != "posting_user" %}
           <a href="/config/departments/{{ department.id }}/display/add"
             >Add display</a
           >

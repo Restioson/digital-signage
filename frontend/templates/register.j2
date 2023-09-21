@@ -91,14 +91,14 @@
           Select permission:
           <select id="permissions" name="permissions">
             <option value="superuser">Superuser</option>
-            <option value="edituser">Edituser</option>
-            <option value="postinguser">Postinguser</option>
+            <option value="edit_user">Editing user</option>
+            <option value="posting_user">Posting user</option>
           </select>
         </label>
         <button type="submit" name="register">Create account</button>
       </form>
       <form
-        action="/api/department/create"
+        action="/api/department"
         method="post"
         class="create_department post-form"
         enctype="multipart/form-data"
