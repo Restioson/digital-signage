@@ -75,6 +75,8 @@ def list_departments():
     """The /api/departments endpoint.
     GETting this endpoint returns the list of departments with their IDs in json form
     """
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
     departments = DatabaseController.get().fetch_all_departments().values()
     department_list = [
         Department.to_http_json(department) for department in departments
@@ -88,6 +90,10 @@ def list_users():
     GETting this endpoint returns the list of users
     with their emails and usernames in json form
     """
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+    if current_user.permissions != "superuser":
+        flask.abort(401)
     users = DatabaseController.get().fetch_all_users()
     user_list = [User.to_http_json(user) for user in users]
     response_data = json.dumps({"departments": user_list})
@@ -107,7 +113,8 @@ def content():
     POSTing to this endpoint with a form representing a new content post will create
     the post in the given stream and return the ID and post time upon success.
     """
-
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
     streams = flask.request.args.getlist("stream")
     limit = int(last if (last := flask.request.args.get("last")) else 0) or None
 
@@ -139,7 +146,8 @@ def people_route(department_id: int):
     POSTing to this end point inserts a new person into the database
     """
 
-    # TODO
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
 
     dept = DatabaseController.get().fetch_department_by_id(
         department_id, fetch_people=True
@@ -171,7 +179,7 @@ def person(department_id: int, person_id: int):
     """
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-    if current_user.permissions == "posting_user":
+    if current_user.permissions != "superuser":
         flask.abort(401)
     if not DatabaseController.get().fetch_department_by_id(
         department_id, fetch_people=True
@@ -189,6 +197,8 @@ def person(department_id: int, person_id: int):
 )
 def person_image(department_id: int, person_id: int):
     """Fetch the image of a person"""
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
     image_data = DatabaseController.get().fetch_person_image_by_id(person_id)
     if image_data:
         mime_type = image_data[0]
@@ -275,7 +285,7 @@ def upload_table(department_id: int):
 def registration_route():
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-    if current_user.permissions == "posting_user":
+    if current_user.permissions != "superuser":
         flask.abort(401)
     form = flask.request.form
 
@@ -340,7 +350,7 @@ def delete_content(content_id: int):
 def create_department():
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-    if current_user.permissions == "posting_user":
+    if current_user.permissions != "superuser":
         flask.abort(401)
     # check if department already exists
     name = flask.request.form["name"]
@@ -361,7 +371,7 @@ def delete_department(department_id: int):
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-    if current_user.permissions == "posting_user":
+    if current_user.permissions != "superuser":
         flask.abort(401)
 
     if DatabaseController.get().delete_department(department_id):
@@ -376,7 +386,7 @@ def delete_user(user_id: str):
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-    if current_user.permissions == "posting_user":
+    if current_user.permissions != "superuser":
         flask.abort(401)
 
     if DatabaseController.get().delete_user(user_id):
@@ -482,6 +492,8 @@ def upload_department_files(department_id: int):
 def get_department_files(filename: str, department_id: int):
     department_file = DatabaseController.get().fetch_file_by_id(filename, department_id)
 
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
     if department_file:
         return Response(
             response=department_file.file_data,
