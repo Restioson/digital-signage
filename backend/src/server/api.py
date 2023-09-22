@@ -12,14 +12,14 @@ from flask_login import (
     current_user,
 )
 from server import free_form_content
+from server.department.department import Department
+from server.user import User
 from server.database import DatabaseController
 from server.department.file import File
 from server.department.person import Person
 from server.display import Display
 from server.free_form_content import BinaryContent
 from server.free_form_content.content_stream import ContentStream
-from server.user import User
-from server.valid_redirect import url_has_allowed_host_and_scheme
 
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
@@ -31,11 +31,16 @@ def loadshedding():
     Returns the stored loadshedding schedule
     Right now it is locked to the region of UCT
     """
-    schedule_data = DatabaseController.get().fetch_loadshedding_schedule(1)
-    schedule_json = json.dumps(schedule_data, indent=4)
-    response = Response(schedule_json, content_type="application/json")
-
-    return response
+    try:
+        schedule_data = DatabaseController.get().fetch_loadshedding_schedule(1)
+        schedule_json = json.dumps(schedule_data, indent=4)
+        response = Response(schedule_json, content_type="application/json")
+        if schedule_json:
+            return response
+        else:
+            return flask.abort(500)
+    except Exception:
+        return flask.abort(500)
 
 
 @blueprint.route("/health", methods=["GET"])
@@ -55,7 +60,6 @@ def list_content_streams():
     POSTing to this endpoint with a form representing a new content stream
     will create the content stream and return its id.
     """
-
     db = DatabaseController.get()
 
     if not current_user.is_authenticated:
@@ -64,6 +68,37 @@ def list_content_streams():
     stream_id = db.create_content_stream(ContentStream.from_form(flask.request.form))
 
     return {"id": stream_id}
+
+
+@blueprint.route("/departments", methods=["GET"])
+def list_departments():
+    """The /api/departments endpoint.
+    GETting this endpoint returns the list of departments with their IDs in json form
+    """
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+    departments = DatabaseController.get().fetch_all_departments().values()
+    department_list = [
+        Department.to_http_json(department) for department in departments
+    ]
+    return {"departments": department_list}
+
+
+@blueprint.route("/users", methods=["GET"])
+def list_users():
+    """The /api/users endpoint.
+    GETting this endpoint returns the list of users
+    with their emails and usernames in json form
+    """
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+    if current_user.permissions != "superuser":
+        flask.abort(401)
+    users = DatabaseController.get().fetch_all_users()
+    user_list = [User.to_http_json(user) for user in users]
+    response_data = json.dumps({"departments": user_list})
+
+    return Response(response_data, content_type="application/json")
 
 
 @blueprint.route("/content", methods=["POST", "GET", "DELETE"])
@@ -78,7 +113,8 @@ def content():
     POSTing to this endpoint with a form representing a new content post will create
     the post in the given stream and return the ID and post time upon success.
     """
-
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
     streams = flask.request.args.getlist("stream")
     limit = int(last if (last := flask.request.args.get("last")) else 0) or None
 
@@ -109,12 +145,16 @@ def people_route(department_id: int):
 
     POSTing to this end point inserts a new person into the database
     """
+
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+
     dept = DatabaseController.get().fetch_department_by_id(
         department_id, fetch_people=True
     )
 
     if not dept:
-        flask.abort(404)
+        return flask.abort(404)
 
     if flask.request.method == "GET":
         return {"people": [person.to_http_json() for person in dept.people]}
@@ -139,7 +179,8 @@ def person(department_id: int, person_id: int):
     """
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-
+    if current_user.permissions != "superuser":
+        flask.abort(401)
     if not DatabaseController.get().fetch_department_by_id(
         department_id, fetch_people=True
     ):
@@ -148,7 +189,7 @@ def person(department_id: int, person_id: int):
     if DatabaseController.get().delete_person(person_id):
         return {"deleted": True}
     else:
-        flask.abort(404)
+        return flask.abort(404)
 
 
 @blueprint.route(
@@ -156,14 +197,54 @@ def person(department_id: int, person_id: int):
 )
 def person_image(department_id: int, person_id: int):
     """Fetch the image of a person"""
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
     image_data = DatabaseController.get().fetch_person_image_by_id(person_id)
-
     if image_data:
         mime_type = image_data[0]
         blob = image_data[1]
         return Response(response=blob, mimetype=mime_type, status=HTTPStatus.OK)
     else:
-        flask.abort(404)
+        return flask.abort(404)
+
+
+def open_empty_zip_file():
+    with open("backend/src/server/EmptyZip.zip", "rb") as zip_file:
+        zip_contents = zip_file.read()
+    return zipfile.ZipFile(io.BytesIO(zip_contents), "r")
+
+
+def create_person(row, zip_file):
+    title = row["title"] if not pd.isna(row["title"]) else ""
+    full_name = row["full_name"] if not pd.isna(row["full_name"]) else ""
+    position = row["position"] if not pd.isna(row["position"]) else ""
+    office_hours = row["office_hours"] if not pd.isna(row["office_hours"]) else ""
+    office_location = (
+        row["office_location"] if not pd.isna(row["office_location"]) else ""
+    )
+    email = row["email"] if not pd.isna(row["email"]) else ""
+    phone = row["phone"] if not pd.isna(row["phone"]) else ""
+    try:
+        with zip_file.open(row["image_name"]) as image_file:
+            image_data = image_file.read()
+            image = PIL.Image.open(io.BytesIO(image_data))
+            image.verify()
+            mime_type = image.get_format_mimetype()
+    except Exception:
+        image_data = ""
+        mime_type = ""
+    person = Person(
+        title,
+        full_name,
+        mime_type,
+        image_data,
+        position,
+        office_hours,
+        office_location,
+        email,
+        phone,
+    )
+    return person
 
 
 @blueprint.route("/departments/<int:department_id>/uploadtable", methods=["POST"])
@@ -171,57 +252,21 @@ def upload_table(department_id: int):
     """The /api/departments/<dept_id>/upload_table endpoint.
     POSTing this endpoint uploads the posted table to its database
     """
-
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     try:
         try:
             zip_file = zipfile.ZipFile(flask.request.files["images_folder"], "r")
         except Exception:
             # If it fails, load an empty zip file from the server
-            empty_zip_path = "backend/src/server/EmptyZip.zip"
-            with open(empty_zip_path, "rb") as empty_zip_file:
-                empty_zip_contents = empty_zip_file.read()
-            zip_file = zipfile.ZipFile(io.BytesIO(empty_zip_contents), "r")
+            zip_file = open_empty_zip_file()
 
         excel_file = flask.request.files["add_table"]
         df = pd.read_excel(excel_file, engine="openpyxl")
-        people = []
-        # Iterate through rows in the uploaded excel creating people
-        for index, row in df.iterrows():
-            title = row["title"] if not pd.isna(row["title"]) else ""
-            full_name = row["full_name"] if not pd.isna(row["full_name"]) else ""
-            position = row["position"] if not pd.isna(row["position"]) else ""
-            office_hours = (
-                row["office_hours"] if not pd.isna(row["office_hours"]) else ""
-            )
-            office_location = (
-                row["office_location"] if not pd.isna(row["office_location"]) else ""
-            )
-            email = row["email"] if not pd.isna(row["email"]) else ""
-            phone = row["phone"] if not pd.isna(row["phone"]) else ""
-            try:
-                with zip_file.open(row["image_name"]) as image_file:
-                    image_data = image_file.read()
-                    image = PIL.Image.open(io.BytesIO(image_data))
-                    image.verify()
-                    mime_type = image.get_format_mimetype()
-            except Exception:
-                image_data = ""
-                mime_type = ""
-            person = Person(
-                title,
-                full_name,
-                mime_type,
-                image_data,
-                position,
-                office_hours,
-                office_location,
-                email,
-                phone,
-            )
-            people.append(person)
+        people = [create_person(row, zip_file) for index, row in df.iterrows()]
+
         # Separate loops so that any error in the whole table
         # is caught before any entry is added
         # loop through people to add each to the table
@@ -232,33 +277,40 @@ def upload_table(department_id: int):
             "id": "response needed",
             "response": "Excel file is a valid file. Upload successful",
         }
-    except Exception as e:
-        print(e)
+    except Exception:
         return flask.abort(400)
 
 
 @blueprint.route("/register", methods=["POST"])
 def registration_route():
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+    if current_user.permissions != "superuser":
+        flask.abort(401)
     form = flask.request.form
 
     if flask.request.method == "POST":
+        department = form["department"]
+        permissions = form["permissions"]
+        # superuser/admin
+        if department == "1":
+            permissions = "superuser"
+        elif permissions == "superuser":
+            department = "1"
+
         if not (DatabaseController.get().user_exists(form["email"])):
             DatabaseController.get().insert_user(
                 form["email"],
                 form["screen_name"],
                 form["password"],
+                department,
+                permissions,
             )
-            user = User(form["email"], form["screen_name"])
-            login_user(user)
 
-            redirect_to = flask.request.args.get("next")
-            # url_has_allowed_host_and_scheme should check if the url is safe
-            if redirect_to and not url_has_allowed_host_and_scheme(
-                redirect_to, flask.request.host
-            ):
-                return flask.abort(400)
-
-            return flask.redirect(redirect_to or flask.url_for("config_view.index"))
+            return {
+                "id": "response needed",
+                "response": "User " + form["screen_name"] + " has been created",
+            }
 
         else:
             flask.abort(401)
@@ -267,20 +319,11 @@ def registration_route():
 @blueprint.route("/login", methods=["POST", "GET"])
 def login_route():
     form = flask.request.form
-
     if DatabaseController.get().user_exists(form["email"]):
         user = DatabaseController.get().try_login(form["email"], form["password"])
         if user:
             login_user(user)
-
-            redirect_to = flask.request.args.get("next")
-            # url_has_allowed_host_and_scheme should check if the url is safe
-            if redirect_to and not url_has_allowed_host_and_scheme(
-                redirect_to, flask.request.host
-            ):
-                return flask.abort(400)
-
-            return flask.redirect(redirect_to or flask.url_for("config_view.index"))
+            return flask.redirect(flask.url_for("config_view.list_departments"))
         else:
             return flask.abort(401)
             # custom error
@@ -303,6 +346,55 @@ def delete_content(content_id: int):
         flask.abort(404)
 
 
+@blueprint.route("/departments", methods=["POST"])
+def create_department():
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+    if current_user.permissions != "superuser":
+        flask.abort(401)
+    # check if department already exists
+    name = flask.request.form["name"]
+    if DatabaseController.get().check_department(name):
+        return flask.abort(400)
+    else:
+        # if not make department
+        DatabaseController.get().create_new_department(name)
+        return {
+            "id": "response needed",
+            "response": "Department created",
+        }
+
+
+@blueprint.route("/departments/<int:department_id>", methods=["DELETE"])
+def delete_department(department_id: int):
+    """DELETEing this endpoint deletes the given department"""
+
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+    if current_user.permissions != "superuser":
+        flask.abort(401)
+
+    if DatabaseController.get().delete_department(department_id):
+        return {"deleted": True}
+    else:
+        return flask.abort(404)
+
+
+@blueprint.route("/user/<string:user_id>", methods=["DELETE"])
+def delete_user(user_id: str):
+    """DELETEing this endpoint deletes the given user"""
+
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+    if current_user.permissions != "superuser":
+        flask.abort(401)
+
+    if DatabaseController.get().delete_user(user_id):
+        return {"deleted": True}
+    else:
+        return flask.abort(404)
+
+
 @blueprint.route("/content/<int:content_id>/blob", methods=["GET"])
 def content_blob(content_id: int):
     """Fetch the blob (Binary Large OBject) associated with the given content.
@@ -323,7 +415,8 @@ def content_blob(content_id: int):
 def displays(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     db = DatabaseController.get()
     display_id = db.upsert_display(
         Display.from_form(department_id, flask.request.form, flask.request.files, db),
@@ -340,6 +433,8 @@ def delete_display(department_id: int, display_id: int):
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
+    if current_user.permissions == "posting_user":
+        return flask.abort(401)
 
     if DatabaseController.get().delete_display(department_id, display_id):
         return {"deleted": True}
@@ -362,7 +457,6 @@ def preview_display(department_id: int):
         db,
         preview_pages=flask.request.args.getlist("preview_page", type=int) or [],
     )
-
     return render_template(
         "display.j2",
         display_config={
@@ -398,6 +492,8 @@ def upload_department_files(department_id: int):
 def get_department_files(filename: str, department_id: int):
     department_file = DatabaseController.get().fetch_file_by_id(filename, department_id)
 
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
     if department_file:
         return Response(
             response=department_file.file_data,

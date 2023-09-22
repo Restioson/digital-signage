@@ -17,3 +17,18 @@ td {
   border: 1px solid black;
   border-collapse: collapse;
 }
+
+button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
+form:disabled {
+  opacity: 0.6;
+}
+
+img {
+  max-width: 100%;
+  max-height: 200px;
+}

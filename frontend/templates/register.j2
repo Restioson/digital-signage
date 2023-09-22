@@ -1,42 +1,118 @@
 {% extends "base.j2" %}
 
-{% block title %}Register a new user{% endblock %}
+{% block title %}Manage Users{% endblock %}
 {% block head %}
   {{ super() }}
-  {{ css('main') }}
+  {{ css('config/users') }}
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+  />
 {% endblock %}
-
+<!-- prettier-ignore -->
 {% block content %}
   <script type="module">
-    import { setupPostForms } from "{{ url_for('static', filename='config.mjs') }}";
-    setupPostForms();
+    import {
+      setupPostForms,
+      populateUsersAndDepartments,
+    } from "{{ url_for('static', filename='config.mjs') }}";
+    setupPostForms(function (res) {
+      if (res.id === "response needed") {
+        return `Response: ${res.response}`;
+      } else {
+        return `Successfully submitted (id: ${res.id})`;
+      }
+    });
+    var userData = {{ userData | tojson | safe }};
+    var departmentData = {{ departmentData | tojson | safe }};
+    populateUsersAndDepartments(userData, departmentData);
   </script>
 
 
-  {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
-  <form action="/api/register?next={{ next }}" method="post" name="register">
-    <label
-      >Email Address:
-      <input type="email" id="email" name="email" required />
-    </label>
+  <div class="table-and-form-container">
+    <table id="user-list" class="data-table margin-right">
+      <thead>
+        <tr>
+          <th scope="col">Email</th>
+          <th scope="col">Username</th>
+          <th scope="col">Department ID</th>
+          <th scope="col">Permissions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- User data will be populated here -->
+      </tbody>
+    </table>
 
-    <label
-      >Screen Name:
-      <input type="text" id="screen_name" name="screen_name" required />
-    </label>
+    <table id="department-list" class="data-table">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Department data will be populated here -->
+      </tbody>
+    </table>
+    <div class="forms">
+      <form
+        action="/api/register"
+        method="post"
+        class="register post-form"
+        enctype="multipart/form-data"
+      >
+        <label>
+          Email Address:
+          <input type="email" id="email" name="email" required />
+        </label>
 
-    <label
-      >Password:
-      <input
-        type="password"
-        id="password"
-        name="password"
-        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{12,}"
-        title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-        required
-      />
-    </label>
+        <label>
+          Username:
+          <input type="text" id="screen_name" name="screen_name" required />
+        </label>
+        <!-- This form is buggy and needs fixing -->
+        <label>
+          Password:
+          <input
+            type="password"
+            id="password"
+            name="password"
+            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{12,}"
+            title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+            required
+          />
+        </label>
 
-    <button type="submit" name="register">Create Account</button>
-  </form>
+        <label>
+          Department:
+          <select id="department" name="department">
+            <!-- Options will be dynamically populated here -->
+          </select>
+        </label>
+
+        <label>
+          Select permission:
+          <select id="permissions" name="permissions">
+            <option value="superuser">Superuser</option>
+            <option value="edit_user">Editing user</option>
+            <option value="posting_user">Posting user</option>
+          </select>
+        </label>
+        <button type="submit" name="register">Create account</button>
+      </form>
+      <form
+        action="/api/departments"
+        method="post"
+        class="create_department post-form"
+        enctype="multipart/form-data"
+      >
+        <label>
+          Department name:
+          <input type="text" id="name" name="name" required />
+        </label>
+        <button type="submit">Create department</button>
+        <p hidden id="status-message"></p>
+      </form>
+    </div>
+  </div>
 {% endblock %}

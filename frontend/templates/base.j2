@@ -23,9 +23,22 @@
         <p>Welcome, {{ current_user.user_id }}</p>
         <a href="{{ url_for('api.logout_route') }}">Logout</a>
       {% endif %}
+      {% if current_user.permissions == "superuser" %}
+        <a href="/register?next={{ next }}">Manage users</a>
+      {% endif %}
     </header>
     <nav>
-      <a href="/config/departments">Departments</a>
+      <a href="/config/departments">Displays</a>
+      {% if current_user.permissions == "superuser" %}
+        <a href="/config/departments/{{ current_user.department }}/people"
+          >Departments</a
+        >
+      {% endif %}
+      {% if current_user.permissions != "superuser" %}
+        <a href="/config/departments/{{ current_user.department }}/people"
+          >Department</a
+        >
+      {% endif %}
       <a href="/config">Upload Content</a>
     </nav>
     <div id="main-wrap">

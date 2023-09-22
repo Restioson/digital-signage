@@ -35,7 +35,7 @@ def create_app(testing=False):
     @login_manager.user_loader
     def load_user(user_id):
         attr_list = DatabaseController.get().get_user(user_id)
-        loaded_user = User(attr_list[0], attr_list[1])
+        loaded_user = User(attr_list[0], attr_list[1], attr_list[2], attr_list[3])
         return loaded_user
 
     # Register blueprints for each logical part of the app
@@ -52,6 +52,14 @@ def create_app(testing=False):
     # Setup database
     with app.app_context():
         DatabaseController.get().create_db()
+        if not (DatabaseController.get().user_exists("A@ADMIN")):
+            DatabaseController.get().insert_user(
+                "A@ADMIN",
+                "ADMIN",
+                "PASSWORD",
+                1,
+                "superuser",
+            )
 
     @app.teardown_appcontext
     def teardown_db(exception):

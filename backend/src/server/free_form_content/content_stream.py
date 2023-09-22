@@ -17,6 +17,7 @@ class ContentStream:
     def __init__(
         self,
         name: str,
+        permissions: str,
         department: Optional[int] = None,
         display_id: Optional[int] = None,
         stream_id: Optional[int] = None,
@@ -25,9 +26,13 @@ class ContentStream:
         self.department = department
         self.display = display_id
         self.id = stream_id
+        self.permissions = permissions
 
     def __repr__(self):
         return json.dumps(self.to_http_json())
+
+    def get_permissions(self):
+        return self.permissions
 
     def to_http_json(self) -> dict:
         """Serialize the given ContentStream into its JSON HTTP API representation"""
@@ -44,6 +49,7 @@ class ContentStream:
             "id": self.id,
             "name": self.name,
         }
+        props = {"id": self.id, "name": self.name, "permissions": self.permissions}
 
         return combine(props, grouping)
 
@@ -57,6 +63,7 @@ class ContentStream:
             department=row["department"],
             stream_id=row["id"],
             display_id=row["display"],
+            permissions=row["permissions"],
         )
 
     @staticmethod
@@ -65,4 +72,5 @@ class ContentStream:
         return ContentStream(
             name=form["name"],
             department=int(dept) if (dept := form.get("department")) else None,
+            permissions=form["permissions"],
         )

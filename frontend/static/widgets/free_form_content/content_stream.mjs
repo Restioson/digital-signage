@@ -158,6 +158,7 @@ export class ContentStream extends DeserializableWidget {
               deleteContent(child.id, event)
             )
             deleteButton.textContent = 'Delete'
+
             childDiv.appendChild(deleteButton)
             return childDiv
           })

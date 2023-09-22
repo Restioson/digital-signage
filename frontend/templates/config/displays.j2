@@ -11,15 +11,18 @@
   />
 
   <script type="module">
-    import { main } from "{{ url_for('static', filename='config/departments/index.mjs') }}";
+    import { main } from "{{ url_for('static', filename='config/displays/index.mjs') }}";
     main();
   </script>
 {% endblock %}
 
 {% block content %}
   <div class="column-list">
-    {%- for department in departments -%}
+    {%- for department in departments.values() -%}
       <div>
+        <h2>{{ department.name }}</h2>
+        <a href="/config/departments/{{ department.id }}/people">View people</a>
+
         <h3>Displays:</h3>
         {%- if department.displays -%}
           <div class="column-list">
@@ -28,27 +31,25 @@
                 {%- set link = "display/" + department.id|string + "/" + display.id|string -%}
                 <h4>
                   <a href="/{{ link }}">{{ display.name }}</a>
-                  {% if current_user.permissions != "posting_user" %}
-                    <a
-                      href="/config/departments/{{ department.id }}/display/{{ display.id }}"
-                      class="button-link"
-                    >
-                      <span class="material-symbols-outlined button-icon"
-                        >edit</span
-                      >
-                    </a>
+                  <a
+                    href="/config/departments/{{ department.id }}/display/{{ display.id }}"
+                    class="button-link"
+                  >
+                    <span class="material-symbols-outlined button-icon">
+                      edit
+                    </span>
+                  </a>
 
-                    <button
-                      type="button"
-                      class="delete-display icon-button"
-                      data-department-id="{{ department.id }}"
-                      data-display-id="{{ display.id }}"
-                    >
-                      <span class="material-symbols-outlined button-icon"
-                        >delete</span
-                      >
-                    </button>
-                  {% endif %}
+                  <button
+                    type="button"
+                    class="delete-display icon-button"
+                    data-department-id="{{ department.id }}"
+                    data-display-id="{{ display.id }}"
+                  >
+                    <span class="material-symbols-outlined button-icon">
+                      delete
+                    </span>
+                  </button>
                 </h4>
                 <p>
                   Permalink to display view -
@@ -68,11 +69,10 @@
         {%- else -%}
           <p>This department has no displays.</p>
         {%- endif -%}
-        {% if current_user.permissions != "posting_user" %}
-          <a href="/config/departments/{{ department.id }}/display/add"
-            >Add display</a
-          >
-        {% endif %}
+
+        <a href="/config/departments/{{ department.id }}/display/add"
+          >Add display</a
+        >
       </div>
     {%- endfor -%}
   </div>

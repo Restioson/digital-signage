@@ -27,6 +27,15 @@
     <label for="name">Name:</label>
     <input type="text" id="name" name="name" />
 
+    <label
+      >Select permission:
+      <select id="permissions" name="permissions">
+        <option value="private">Private</option>
+        <option value="readable">Any department can subscribe</option>
+        <option value="writeable">Any department can post content</option>
+      </select>
+    </label>
+
     <button type="submit">Submit</button>
     <p hidden id="status-message"></p>
   </form>

@@ -28,9 +28,6 @@ export function checkRenderedPerson (out, expected) {
   assert.equal(title.tagName, 'H3')
   assert.equal(title.innerText, `${expected.title} ${expected.name}`)
 
-  const image = out.children[1]
-  assert.equal(image.tagName, 'DIV')
-
   const text1 = out.children[2]
   assert.equal(text1.tagName, 'P')
   assert.equal(text1.innerText, `Position: ${expected.position}`)

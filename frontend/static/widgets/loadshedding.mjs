@@ -92,14 +92,14 @@ export class Loadshedding extends DeserializableWidget {
 
       if (
         minTimeTill.diff(moment(), 'seconds') < 0 &&
-        minTimeTillEnd.diff(moment(), 'seconds') > 0
+        minTimeTillEnd.diff(moment(), 'seconds') < 0
       ) {
         return `Loadshedding started ${minTimeTill.fromNow()}\n${schedule.join(
           '\n'
         )}`
       } else if (
         minTimeTill.diff(moment(), 'seconds') > 0 &&
-        minTimeTillEnd.diff(moment(), 'seconds') > 0
+        minTimeTillEnd.diff(moment(), 'seconds') < 0
       ) {
         return `Loadshedding starts ${minTimeTill.fromNow()}\n${schedule.join(
           '\n'

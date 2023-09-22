@@ -215,7 +215,8 @@ def test_post_content_stream(client):
     stream_ids = []
     for target in [{"department": 1}, {"display": 1}, dict()]:
         res = client.post(
-            "/api/content_streams", data=combine(target, {"name": "stream"})
+            "/api/content_streams",
+            data=combine(target, {"name": "stream", "permissions": "writeable"}),
         )
         assert res.status == "200 OK"
         stream_ids.append(res.json["id"])

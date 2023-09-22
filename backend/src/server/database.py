@@ -4,6 +4,9 @@ import sqlite3
 import time
 from typing import Optional, Tuple
 import flask
+from flask_login import (
+    current_user,
+)
 from server import free_form_content
 from server.department.department import Department
 from server.department.file import File
@@ -17,6 +20,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from server.user import User
 
+from enum import Enum
+
+
+class Permission(Enum):
+    READ = "readable"
+    WRITE = "writeable"
+
+
+ADMIN_DEPARTMENT = 1
 DATABASE = "campusign.db"
 DATABASE_TEST = "campusign.test.db"
 
@@ -197,7 +209,7 @@ class DatabaseController:
             return dept_id
 
     def fetch_all_departments(
-        self, fetch_displays=False, fetch_content_streams=False
+        self, fetch_displays=False, fetch_people=False
     ) -> dict[int, Department]:
         """Fetch all departments (but does not fetch their people).
 
@@ -218,10 +230,20 @@ class DatabaseController:
             for department in departments:
                 department.displays = self.fetch_all_displays_in_dept(department.id)
 
-        if fetch_content_streams:
-            streams = self.fetch_all_content_streams()
+        if fetch_people:
             for department in departments:
-                department.content_streams = streams.by_department.get(department.id)
+                cursor = self.db.cursor()
+                cursor.row_factory = Person.from_sql
+                department.people = list(
+                    cursor.execute(
+                        "SELECT id, department, title, "
+                        "full_name, position, office_hours,"
+                        "office_location, email, phone, mime_type FROM people "
+                        " WHERE department = ?"
+                        " ORDER BY id",
+                        (department.id,),
+                    )
+                )
 
         return {dept.id: dept for dept in departments}
 
@@ -249,7 +271,7 @@ class DatabaseController:
                 cursor.execute(
                     "SELECT id, department, title, "
                     "full_name, position, office_hours,"
-                    "office_location, email, phone FROM people "
+                    "office_location, email, phone, mime_type FROM people "
                     " WHERE department = ?"
                     " ORDER BY id",
                     (department_id,),
@@ -303,9 +325,10 @@ class DatabaseController:
             if not self.fetch_content_stream_for_display(cursor.lastrowid):
                 self.create_content_stream(
                     ContentStream(
-                        display.name,
-                        department_id,
-                        cursor.lastrowid,
+                        name=display.name,
+                        department=department_id,
+                        permissions="private",
+                        display_id=cursor.lastrowid,
                     )
                 )
 
@@ -367,7 +390,7 @@ class DatabaseController:
         cursor.row_factory = ContentStream.from_sql
         return next(
             cursor.execute(
-                "SELECT id, name, department, display"
+                "SELECT id, name, department, display, permissions"
                 " FROM content_streams WHERE display = ?",
                 (display_id,),
             ),
@@ -417,7 +440,7 @@ class DatabaseController:
             cursor.execute(
                 "SELECT id, department, title,"
                 "full_name, position, office_hours,"
-                "office_location, email, phone FROM people"
+                "office_location, email, phone,mime_type FROM people"
                 " WHERE id = ?",
                 (person_id,),
             ),
@@ -441,15 +464,28 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.row_factory = sqlite3.Row
             cursor.execute(
-                "SELECT email, screen_name FROM users WHERE email = ?",
+                "SELECT email, screen_name, department, permissions "
+                "FROM users WHERE email = ?",
                 (email,),
             )
             db_user_data = cursor.fetchone()  # Fetch the user data from the database
 
             user_fields.append(db_user_data[0])
             user_fields.append(db_user_data[1])
+            user_fields.append(db_user_data[2])
+            user_fields.append(db_user_data[3])
 
         return user_fields
+
+    def fetch_all_users(self) -> dict[int, User]:
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.row_factory = User.from_sql
+            return list(
+                cursor.execute(
+                    "SELECT email, screen_name, department, permissions  FROM users",
+                )
+            )
 
     # checks if the user is in the db
     def user_exists(self, email: str) -> bool:
@@ -470,16 +506,29 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.row_factory = sqlite3.Row
             cursor.execute(
-                "SELECT email, screen_name, password_hash FROM users WHERE email = ?",
+                "SELECT email, screen_name, password_hash, department,"
+                "permissions FROM users WHERE email = ?",
                 (email,),
             )
             db_user_data = cursor.fetchone()
             if check_password_hash(db_user_data["password_hash"], password):
-                return User(email, db_user_data["screen_name"])
+                return User(
+                    email,
+                    db_user_data["screen_name"],
+                    db_user_data["department"],
+                    db_user_data["permissions"],
+                )
             else:
                 return None
 
-    def insert_user(self, email: str, screen_name: str, password: str) -> int:
+    def insert_user(
+        self,
+        email: str,
+        screen_name: str,
+        password: str,
+        department: int,
+        permissions: str,
+    ) -> int:
         """Insert the given user into the user table
         and returns the inserted row id"""
 
@@ -487,45 +536,96 @@ class DatabaseController:
             cursor = self.db.cursor()
             cursor.execute(
                 "INSERT INTO users "
-                "(email, screen_name, password_hash)"
-                " VALUES (?, ?, ?)",
+                "(email, screen_name, password_hash, department, permissions)"
+                " VALUES (?, ?, ?, ?, ?)",
                 (
                     email,
                     screen_name,
                     generate_password_hash(password),
+                    department,
+                    permissions,
                 ),
             )
         return cursor.lastrowid
+
+    def delete_user(self, id: str) -> bool:
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "DELETE FROM USERS WHERE email = ?",
+                (id,),
+            )
+            return cursor.rowcount == 1
+
+    def delete_department(self, id: int) -> bool:
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "DELETE FROM departments WHERE id = ?",
+                (id,),
+            )
+            return cursor.rowcount == 1
 
     def create_content_stream(self, stream: ContentStream) -> int:
         """Insert the given content stream into the database and return its ID"""
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "INSERT INTO content_streams (name, department, display)"
-                " VALUES (?, ?, ?)",
-                (stream.name, stream.department, stream.display),
+                "INSERT INTO content_streams (name, department, display, permissions)"
+                " VALUES (?, ?, ?, ?)",
+                (stream.name, stream.department, stream.display, stream.permissions),
             )
         return cursor.lastrowid
 
-    def fetch_all_content_streams(self) -> GroupedContentStreams:
+    def fetch_all_content_streams(self, permissions: str) -> GroupedContentStreams:
         """Fetch all content streams from the database, grouping them
         using GroupedContentStreams"""
         cursor = self.db.cursor()
         cursor.row_factory = ContentStream.from_sql
-        return GroupedContentStreams(
-            list(
-                cursor.execute(
-                    "SELECT id, name, department, display FROM content_streams"
+        dept = current_user.department
+        if dept == ADMIN_DEPARTMENT:
+            return GroupedContentStreams(
+                list(
+                    cursor.execute(
+                        "SELECT id, name, department, display, "
+                        "permissions FROM content_streams"
+                    )
                 )
             )
-        )
+        else:
+            if permissions == Permission.WRITE:
+                or_permissions = "OR permissions = 'writeable'"
+            else:
+                or_permissions = "OR permissions != 'private'"
+
+            return GroupedContentStreams(
+                list(
+                    cursor.execute(
+                        "SELECT * FROM content_streams WHERE department = ? "
+                        + or_permissions,
+                        (dept,),
+                    )
+                )
+            )
 
     def fetch_all_content_stream_ids(self) -> list:
         """Fetch all content stream ids from the database"""
-        cursor = self.db.cursor()
-        cursor.row_factory = lambda _cursor, row: row[0]
-        return list(cursor.execute("SELECT id FROM content_streams"))
+        # needs renaming. This fetches all non private displays to be
+        dept = current_user.department
+        if dept == ADMIN_DEPARTMENT:
+            cursor = self.db.cursor()
+            cursor.row_factory = lambda _cursor, row: row[0]
+            return list(cursor.execute("SELECT id FROM content_streams"))
+        else:
+            cursor = self.db.cursor()
+            cursor.row_factory = lambda _cursor, row: row[0]
+            return list(
+                cursor.execute(
+                    "SELECT * FROM content_streams WHERE department = ? "
+                    "OR permissions != 'private';",
+                    (dept,),
+                )
+            )
 
     def update_loadshedding_schedule(self, region, schedule):
         """Updates the loadshedding schedule for the given region"""
@@ -533,10 +633,10 @@ class DatabaseController:
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
-                "UPDATE loadshedding_schedules SET schedule_json = ? WHERE id= ?",
+                "REPLACE INTO loadshedding_schedules (id, schedule_json) VALUES (?, ?)",
                 (
-                    schedule,
                     region,
+                    schedule,
                 ),
             )
 
@@ -634,5 +734,27 @@ class DatabaseController:
                     template_id,
                     template_xml,
                 ),
+            )
+        return cursor.lastrowid
+
+    def check_department(self, name: str):
+        """Checks whether department exists"""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.row_factory = sqlite3.Row
+            cursor.execute(
+                "SELECT COUNT(*) FROM departments WHERE name = ?",
+                (name,),
+            )
+            count = cursor.fetchone()[0]
+        return count > 0
+
+    def create_new_department(self, name: str):
+        """Creates a new department"""
+        with self.db:
+            cursor = self.db.cursor()
+            cursor.execute(
+                "INSERT INTO departments (name) VALUES (?)",
+                (name,),
             )
         return cursor.lastrowid

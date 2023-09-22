@@ -14,7 +14,14 @@ CREATE TABLE IF NOT EXISTS content_streams (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
   department INTEGER REFERENCES departments(id) ON DELETE CASCADE,
-  display INTEGER REFERENCES displays(id) ON DELETE CASCADE
+  display INTEGER REFERENCES displays(id) ON DELETE CASCADE,
+  permissions TEXT NOT NULL CHECK (
+    permissions IN (
+      'private',
+      'readable',
+      'writeable'
+    )
+  )
 );
 CREATE TABLE IF NOT EXISTS content (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,7 +76,15 @@ CREATE TABLE IF NOT EXISTS users (
   --make email primary key
   email TEXT PRIMARY KEY,
   screen_name TEXT NOT NULL,
-  password_hash TEXT NOT NULL
+  password_hash TEXT NOT NULL,
+  department INTEGER NOT NULL REFERENCES departments(id) ON DELETE CASCADE,
+  permissions TEXT NOT NULL CHECK (
+    permissions IN (
+      'superuser',
+      'edit_user',
+      'posting_user'
+    )
+  )
 );
 CREATE TABLE IF NOT EXISTS loadshedding_schedules (
   id INTEGER PRIMARY KEY,

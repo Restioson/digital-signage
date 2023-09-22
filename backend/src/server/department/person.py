@@ -32,6 +32,10 @@ class Person:
 
     def to_http_json(self) -> dict:
         """Sends data in json format to be posted through http"""
+        if self.mime_type == "":
+            image = "false"
+        else:
+            image = "true"
         return {
             "title": self.title,
             "name": self.name,
@@ -41,6 +45,7 @@ class Person:
             "email": self.email,
             "phone": self.phone,
             "id": self.id,
+            "image": image,
         }
 
     @staticmethod
@@ -108,5 +113,5 @@ class Person:
             email=row["email"],
             phone=row["phone"],
             image_data="",
-            mime_type="",
+            mime_type=row["mime_type"],
         )
