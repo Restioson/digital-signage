@@ -13,19 +13,22 @@
       showContent
     } from "{{ url_for('static', filename='config.mjs') }}";
     showContent({{content_stream_ids}});
-    function checkAndHideElements() {
-            if ({{permissions}}=== true) {
-                var deleteButtons = document.querySelectorAll(".delete-content");
-                for (var i = 0; i < deleteButtons.length; i++) {
-                    deleteButtons[i].classList.add("hidden");
-                    deleteButtons[i].style.display = "none";
-                }
-            }
-        }
-    checkAndHideElements({{permissions}}) 
-    setInterval(checkAndHideElements, 10);  
   </script>
-  <button class="button-primary" onclick="window.location.href='/config/content_stream/add'">Add content feed</button>
-  <button class="button-primary" onclick="window.location.href='/config/add_posts'">Add a piece of content</button>
+  {% if current_user.permissions != "posting_user" %}
+    <button
+      type="button"
+      class="button-primary"
+      onclick="window.location.href='/config/content_stream/add'"
+    >
+      Add content feed
+    </button>
+  {% endif %}
+  <button
+    type="button"
+    class="button-primary"
+    onclick="window.location.href='/config/add_posts'"
+  >
+    Add a piece of content
+  </button>
   <div class="column-list" id="root"></div>
 {% endblock %}

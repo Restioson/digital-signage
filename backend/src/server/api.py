@@ -199,62 +199,65 @@ def person_image(department_id: int, person_id: int):
         return flask.abort(404)
 
 
+def open_empty_zip_file():
+    with open("backend/src/server/EmptyZip.zip", "rb") as zip_file:
+        zip_contents = zip_file.read()
+    return zipfile.ZipFile(io.BytesIO(zip_contents), "r")
+
+
+def create_person(row, zip_file):
+    title = row["title"] if not pd.isna(row["title"]) else ""
+    full_name = row["full_name"] if not pd.isna(row["full_name"]) else ""
+    position = row["position"] if not pd.isna(row["position"]) else ""
+    office_hours = row["office_hours"] if not pd.isna(row["office_hours"]) else ""
+    office_location = (
+        row["office_location"] if not pd.isna(row["office_location"]) else ""
+    )
+    email = row["email"] if not pd.isna(row["email"]) else ""
+    phone = row["phone"] if not pd.isna(row["phone"]) else ""
+    try:
+        with zip_file.open(row["image_name"]) as image_file:
+            image_data = image_file.read()
+            image = PIL.Image.open(io.BytesIO(image_data))
+            image.verify()
+            mime_type = image.get_format_mimetype()
+    except Exception:
+        image_data = ""
+        mime_type = ""
+    person = Person(
+        title,
+        full_name,
+        mime_type,
+        image_data,
+        position,
+        office_hours,
+        office_location,
+        email,
+        phone,
+    )
+    return person
+
+
 @blueprint.route("/departments/<int:department_id>/uploadtable", methods=["POST"])
 def upload_table(department_id: int):
     """The /api/departments/<dept_id>/upload_table endpoint.
     POSTing this endpoint uploads the posted table to its database
     """
-
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     try:
         try:
             zip_file = zipfile.ZipFile(flask.request.files["images_folder"], "r")
         except Exception:
             # If it fails, load an empty zip file from the server
-            empty_zip_path = "backend/src/server/EmptyZip.zip"
-            with open(empty_zip_path, "rb") as empty_zip_file:
-                empty_zip_contents = empty_zip_file.read()
-            zip_file = zipfile.ZipFile(io.BytesIO(empty_zip_contents), "r")
+            zip_file = open_empty_zip_file()
 
         excel_file = flask.request.files["add_table"]
         df = pd.read_excel(excel_file, engine="openpyxl")
-        people = []
-        # Iterate through rows in the uploaded excel creating people
-        for index, row in df.iterrows():
-            title = row["title"] if not pd.isna(row["title"]) else ""
-            full_name = row["full_name"] if not pd.isna(row["full_name"]) else ""
-            position = row["position"] if not pd.isna(row["position"]) else ""
-            office_hours = (
-                row["office_hours"] if not pd.isna(row["office_hours"]) else ""
-            )
-            office_location = (
-                row["office_location"] if not pd.isna(row["office_location"]) else ""
-            )
-            email = row["email"] if not pd.isna(row["email"]) else ""
-            phone = row["phone"] if not pd.isna(row["phone"]) else ""
-            try:
-                with zip_file.open(row["image_name"]) as image_file:
-                    image_data = image_file.read()
-                    image = PIL.Image.open(io.BytesIO(image_data))
-                    image.verify()
-                    mime_type = image.get_format_mimetype()
-            except Exception:
-                image_data = ""
-                mime_type = ""
-            person = Person(
-                title,
-                full_name,
-                mime_type,
-                image_data,
-                position,
-                office_hours,
-                office_location,
-                email,
-                phone,
-            )
-            people.append(person)
+        people = [create_person(row, zip_file) for index, row in df.iterrows()]
+
         # Separate loops so that any error in the whole table
         # is caught before any entry is added
         # loop through people to add each to the table
@@ -271,6 +274,10 @@ def upload_table(department_id: int):
 
 @blueprint.route("/register", methods=["POST"])
 def registration_route():
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     form = flask.request.form
 
     if flask.request.method == "POST":
@@ -332,6 +339,10 @@ def delete_content(content_id: int):
 
 @blueprint.route("/departments", methods=["POST"])
 def create_department():
+    if not current_user.is_authenticated:
+        return current_app.login_manager.unauthorized()
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     # check if department already exists
     name = flask.request.form["name"]
     if DatabaseController.get().check_department(name):
@@ -351,6 +362,8 @@ def delete_department(department_id: int):
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
 
     if DatabaseController.get().delete_department(department_id):
         return {"deleted": True}
@@ -364,6 +377,8 @@ def delete_user(user_id: str):
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
 
     if DatabaseController.get().delete_user(user_id):
         return {"deleted": True}
@@ -391,7 +406,8 @@ def content_blob(content_id: int):
 def displays(department_id: int):
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     db = DatabaseController.get()
     display_id = db.upsert_display(
         Display.from_form(department_id, flask.request.form, flask.request.files, db),

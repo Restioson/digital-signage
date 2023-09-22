@@ -137,6 +137,8 @@ def edit_person(department_id: int, person_id: int):
 @blueprint.route("/departments/<int:department_id>/display/add")
 def add_display(department_id: int):
     """Return the page to add a display group"""
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     db = DatabaseController.get()
     if not db.fetch_department_by_id(department_id):
         flask.abort(404)
@@ -178,7 +180,8 @@ def edit_display(department_id: int, display_id: int):
 @blueprint.route("/content_stream/add")
 def add_content_stream():
     """Return the page to add a content stream"""
-
+    if current_user.permissions == "posting_user":
+        flask.abort(401)
     db = DatabaseController.get()
     display = flask.request.args.get("group")
     department = flask.request.args.get("department")
