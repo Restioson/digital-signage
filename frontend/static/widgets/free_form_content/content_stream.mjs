@@ -27,7 +27,8 @@ export class ContentStream extends DeserializableWidget {
     rssFeeds,
     pageSize,
     rotateEveryNSec,
-    editable
+    editable,
+    skipIntrinsicStream,
   }) {
     super()
     this.children = []
@@ -39,6 +40,7 @@ export class ContentStream extends DeserializableWidget {
     this.rotationPeriod = (rotateEveryNSec || 10) * 1000
     this.refreshedTimes = 0
     this.editable = editable || false
+    this.skipIntrinsicStream = skipIntrinsicStream || false
   }
 
   /**
@@ -133,13 +135,16 @@ export class ContentStream extends DeserializableWidget {
         .map(stream => stream.attribute('rss-url'))
         .filter(stream => stream), // Ignore streams without rss-url
       pageSize: tag.attribute('page-size'),
-      rotateEveryNSec: tag.attribute('secs-per-page')
+      rotateEveryNSec: tag.attribute('secs-per-page'),
+      skipIntrinsicStream: tag.attribute('skip-intrinsic-stream') === 'true',
     })
   }
 
   build () {
     // Root is only available at build time so this is done here
-    this.streams.push(Root.getInstance().getDisplayContentStream())
+    if (!this.skipIntrinsicStream) {
+      this.streams.push(Root.getInstance().getDisplayContentStream())
+    }
 
     return new WithRefresh({
       refresh: () => this.refresh(),
