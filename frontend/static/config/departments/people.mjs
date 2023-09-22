@@ -1,14 +1,8 @@
+import { ApiError } from '../../config.mjs'
+
 export function main () {
   for (const button of document.getElementsByClassName('delete-button')) {
     button.addEventListener('click', deletePerson)
-  }
-}
-
-class ApiError extends Error {
-  constructor (response) {
-    super(`Response from API: ${response}`)
-    this.name = 'ApiError'
-    this.response = response
   }
 }
 
