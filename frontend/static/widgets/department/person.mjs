@@ -19,6 +19,7 @@ export class Person extends Widget {
    * @param {string} officeLocation the person's office location
    * @param {string} email the person's email address
    * @param {string} phone the person's phone number
+   * @param {boolean} hasimage the person's phone number
    */
   constructor ({
     id,
@@ -29,7 +30,8 @@ export class Person extends Widget {
     officeHours,
     officeLocation,
     email,
-    phone
+    phone,
+    hasimage
   }) {
     super()
     this.id = id
@@ -41,6 +43,7 @@ export class Person extends Widget {
     this.officeLocation = officeLocation
     this.email = email
     this.phone = phone
+    this.hasimage = hasimage
   }
 
   /**
@@ -59,7 +62,8 @@ export class Person extends Widget {
       officeLocation: obj.office_location,
       email: obj.email,
       phone: obj.phone,
-      department: Root.getInstance().getDepartment()
+      department: Root.getInstance().getDepartment(),
+      hasimage: obj.image
     })
   }
 
@@ -84,6 +88,11 @@ export class Person extends Widget {
   }
 
   static makeImage (department, id, value) {
+    if (value === 'false') {
+      value = false
+    } else {
+      value = true
+    }
     const imageElement = document.createElement('img')
     imageElement.src = `/api/departments/${department}/people/${id}/image`
     imageElement.className = 'person_image'
@@ -97,7 +106,7 @@ export class Person extends Widget {
     return new Container({
       children: [
         Person.makeHeader(`${this.title} ${this.name}`),
-        Person.makeImage(this.department, this.id, this.imageData),
+        Person.makeImage(this.department, this.id, this.hasimage),
         Person.makeText(
           `Position: ${this.position}`,
           'person_position',

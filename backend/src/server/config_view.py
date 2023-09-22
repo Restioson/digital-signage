@@ -143,7 +143,7 @@ def add_display(department_id: int):
     if not db.fetch_department_by_id(department_id):
         flask.abort(404)
 
-    streams = db.fetch_all_content_streams(order="Read")
+    streams = db.fetch_all_content_streams(permissions="Read")
     streams.filter_to_department(department_id)
 
     return render_template(
@@ -164,7 +164,7 @@ def edit_display(department_id: int, display_id: int):
         flask.abort(404)
     if current_user.permissions == "posting_user":
         flask.abort(401)
-    streams = db.fetch_all_content_streams(order="Read")
+    streams = db.fetch_all_content_streams(permissions="Read")
     streams.filter_to_department(department_id)
 
     return render_template(

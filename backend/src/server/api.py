@@ -190,7 +190,6 @@ def person(department_id: int, person_id: int):
 def person_image(department_id: int, person_id: int):
     """Fetch the image of a person"""
     image_data = DatabaseController.get().fetch_person_image_by_id(person_id)
-
     if image_data:
         mime_type = image_data[0]
         blob = image_data[1]

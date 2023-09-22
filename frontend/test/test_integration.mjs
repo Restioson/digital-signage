@@ -336,6 +336,7 @@ describe('API Integration', function () {
         const formData = {
           email: 'myemail@example.com',
           name: 'John Doe',
+          image:'false',
           office_hours: '10am-9pm on Wednesdays',
           office_location: 'CS302',
           phone: '021 111 1111',
@@ -350,6 +351,7 @@ describe('API Integration', function () {
         const formData = {
           email: 'myemail@example.com',
           name: 'John Doe',
+          image:'false',
           office_hours: '10am-9pm on Wednesdays',
           office_location: 'CS302',
           phone: '021 111 1111',
@@ -383,6 +385,7 @@ describe('API Integration', function () {
             {
               email: 'myemail@example.com',
               name: 'John Doe',
+              image:'false',
               office_hours: '10am-9pm on Wednesdays',
               office_location: 'CS302',
               phone: '021 111 1111',
@@ -392,6 +395,7 @@ describe('API Integration', function () {
             {
               email: 'notmyemail@example.org',
               name: 'Jamie Doe',
+              image:'false',
               office_hours: '11am-10pm on Thursdays',
               office_location: 'Maths 301',
               phone: '021 222 22222',

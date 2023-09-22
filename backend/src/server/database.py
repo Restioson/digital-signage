@@ -238,7 +238,7 @@ class DatabaseController:
                     cursor.execute(
                         "SELECT id, department, title, "
                         "full_name, position, office_hours,"
-                        "office_location, email, phone FROM people "
+                        "office_location, email, phone, mime_type FROM people "
                         " WHERE department = ?"
                         " ORDER BY id",
                         (department.id,),
@@ -271,7 +271,7 @@ class DatabaseController:
                 cursor.execute(
                     "SELECT id, department, title, "
                     "full_name, position, office_hours,"
-                    "office_location, email, phone FROM people "
+                    "office_location, email, phone, mime_type FROM people "
                     " WHERE department = ?"
                     " ORDER BY id",
                     (department_id,),
@@ -440,7 +440,7 @@ class DatabaseController:
             cursor.execute(
                 "SELECT id, department, title,"
                 "full_name, position, office_hours,"
-                "office_location, email, phone FROM people"
+                "office_location, email, phone,mime_type FROM people"
                 " WHERE id = ?",
                 (person_id,),
             ),
