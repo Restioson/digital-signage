@@ -28,7 +28,7 @@ export class ContentStream extends DeserializableWidget {
     pageSize,
     rotateEveryNSec,
     editable,
-    skipIntrinsicStream,
+    skipIntrinsicStream
   }) {
     super()
     this.children = []
@@ -136,7 +136,7 @@ export class ContentStream extends DeserializableWidget {
         .filter(stream => stream), // Ignore streams without rss-url
       pageSize: tag.attribute('page-size'),
       rotateEveryNSec: tag.attribute('secs-per-page'),
-      skipIntrinsicStream: tag.attribute('skip-intrinsic-stream') === 'true',
+      skipIntrinsicStream: tag.attribute('skip-intrinsic-stream') === 'true'
     })
   }
 

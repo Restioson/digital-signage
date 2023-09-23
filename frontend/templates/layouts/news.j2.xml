@@ -113,7 +113,10 @@
         </property>
 
         <property>
-          <name>Skip display's intrinsic content stream (e.g if this is only for RSS news)</name>
+          <name
+            >Skip display's intrinsic content stream (e.g if this is only for
+            RSS news)</name
+          >
           <variable>skip_intrinsic_stream</variable>
           <type>string</type>
           <default>false</default>
