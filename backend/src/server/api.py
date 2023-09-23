@@ -323,26 +323,19 @@ def login_route():
         user = DatabaseController.get().try_login(form["email"], form["password"])
         if user:
             login_user(user)
-            # flask.redirect(flask.url_for("config_view.list_departments"))
             return flask.redirect(flask.url_for("config_view.list_departments"))
         else:
-            # redirect(url_for("login.login"))
             attemp = "password"
             return render_template(
                 "login.j2",
                 attempt=attemp,
             )
-            # return flask.abort(401)
-            # custom error
     else:
-        # redirect(url_for("login.login"))
         attemp = "email"
         return render_template(
             "login.j2",
             attempt=attemp,
         )
-        # return flask.abort(401)
-        # custom error
 
 
 @blueprint.route("/logout", methods=["GET"])

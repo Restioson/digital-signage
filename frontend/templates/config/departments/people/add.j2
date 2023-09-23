@@ -68,7 +68,13 @@
       >Upload an image of the person:
       <input type="file" id="image_data" name="image_data" accept="image/*" />
     </label>
-
+    <label>The current image:</label>
+    {%- if person.mime_type -%}
+      <img
+        src="/api/departments/{{ department_id }}/people/{{ person.id }}/image"
+        alt="Failed to load current image"
+      />
+    {%- endif -%}
     <label
       >Position:
       <input
