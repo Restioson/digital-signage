@@ -24,5 +24,14 @@
     </label>
 
     <button type="submit" name="login">Login</button>
+    {%- if attempt == "password" -%}
+      <p id="status-message-password" class="login-messages">
+        Failed login. Incorrect password
+      </p>
+    {%- elif attempt == "email" -%}
+      <p id="status-message-email" class="login-messages">
+        Failed login. Incorrect email
+      </p>
+    {%- endif -%}
   </form>
 {% endblock %}
