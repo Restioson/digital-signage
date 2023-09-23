@@ -166,3 +166,14 @@ a:hover {
 li a:hover {
   color: #c76210;
 }
+
+.forms-div {
+  display: flex;
+  gap: 10px; /* Adjust the gap as needed */
+}
+
+/* Apply inline-block to form elements inside .forms */
+.forms-div form {
+  display: inline-block;
+  margin-right: 10px; /* Adjust the margin as needed for spacing */
+}

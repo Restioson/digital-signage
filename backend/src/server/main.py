@@ -1,5 +1,5 @@
 import time
-
+import os
 from flask import Flask
 from server import (
     config_view,
@@ -56,7 +56,7 @@ def create_app(testing=False):
             DatabaseController.get().insert_user(
                 "A@ADMIN",
                 "ADMIN",
-                "PASSWORD",
+                os.environ.get("ADMIN_PASSWORD"),
                 1,
                 "superuser",
             )

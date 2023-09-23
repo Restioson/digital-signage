@@ -154,8 +154,9 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
     )
 
     userData.departments.forEach(user => {
-      const row = document.createElement('tr')
-      row.innerHTML = `
+      if (user.email !== 'A@ADMIN') {
+        const row = document.createElement('tr')
+        row.innerHTML = `
         <td>${user.email}</td>
         <td>${user.username}</td>
         <td>${departmentMap.get(user.department)}</td>
@@ -167,7 +168,16 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
         </button>
         </td>
       `
-      userListTable.appendChild(row)
+        userListTable.appendChild(row)
+      } else {
+        const row = document.createElement('tr')
+        row.innerHTML = `
+        <td>${user.email}</td>
+        <td>${user.username}</td>
+        <td>${departmentMap.get(user.department)}</td>
+        <td>${user.permissions}</td>`
+        userListTable.appendChild(row)
+      }
     })
 
     departmentData.departments.forEach(department => {
@@ -178,8 +188,9 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
     })
 
     departmentData.departments.forEach(department => {
-      const row = document.createElement('tr')
-      row.innerHTML = `
+      if (department.id !== 1) {
+        const row = document.createElement('tr')
+        row.innerHTML = `
         <td>${department.name}
         <button type="button" class="delete-department icon-button" 
         data-department_id="${department.id}">
@@ -187,7 +198,15 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
         </button>
         </td>
       `
-      departmentTable.appendChild(row)
+        departmentTable.appendChild(row)
+      } else {
+        const row = document.createElement('tr')
+        row.innerHTML = `
+        <td>${department.name}
+        </td>
+      `
+        departmentTable.appendChild(row)
+      }
     })
 
     for (const button of document.getElementsByClassName(

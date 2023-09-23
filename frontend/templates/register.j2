@@ -35,7 +35,7 @@
         <tr>
           <th scope="col">Email</th>
           <th scope="col">Username</th>
-          <th scope="col">Department ID</th>
+          <th scope="col">Department</th>
           <th scope="col">Permissions</th>
         </tr>
       </thead>
@@ -47,14 +47,14 @@
     <table id="department-list" class="data-table">
       <thead>
         <tr>
-          <th scope="col">Name</th>
+          <th scope="col">Departments</th>
         </tr>
       </thead>
       <tbody>
         <!-- Department data will be populated here -->
       </tbody>
     </table>
-    <div class="forms">
+    <div class="forms-div">
       <form
         action="/api/register"
         method="post"
@@ -85,14 +85,14 @@
 
         <label>
           Department:
-          <select id="department" name="department">
+          <select id="department" name="department" required>
             <!-- Options will be dynamically populated here -->
           </select>
         </label>
 
         <label>
           Select permission:
-          <select id="permissions" name="permissions">
+          <select id="permissions" name="permissions" required>
             <option value="superuser">Superuser</option>
             <option value="edit_user">Editing user</option>
             <option value="posting_user">Posting user</option>
