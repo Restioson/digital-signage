@@ -237,6 +237,7 @@ export function showContent () {
   const idsSelect = document.getElementById('filter-select')
   let streams = []
   let oldStreams = []
+  setupSelectMultiple(idsSelect)
 
   Root.create({
     child: new WithRefresh({
