@@ -146,6 +146,8 @@ export class ContentStream extends DeserializableWidget {
       period: REFRESH_INTERVAL_MS,
       builder: () => {
         let editableChildren
+        // trying to incorporate the ID and streams that a post is a part of.
+        // and ensure that each piece of the div is displayed on a new line/ and centrally aligned
         if (this.editable) {
           editableChildren = this.children.map(child => {
             const renderedChild = child.render()
@@ -158,8 +160,12 @@ export class ContentStream extends DeserializableWidget {
               deleteContent(child.id, event)
             )
             deleteButton.textContent = 'Delete'
-
             childDiv.appendChild(deleteButton)
+
+            const itemName = document.createElement('p')
+            itemName.className = 'item-name'
+            itemName.textContent = 'Post ID: ' + child.id
+            childDiv.append(itemName)
             return childDiv
           })
         }
