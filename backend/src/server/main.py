@@ -52,11 +52,15 @@ def create_app(testing=False):
     # Setup database
     with app.app_context():
         DatabaseController.get().create_db()
+        try:
+            password = os.environ.get("ADMIN_PASSWORD")
+        except Exception:
+            password = "PASSWORD"
         if not (DatabaseController.get().user_exists("A@ADMIN")):
             DatabaseController.get().insert_user(
                 "A@ADMIN",
                 "ADMIN",
-                os.environ.get("ADMIN_PASSWORD"),
+                password,
                 1,
                 "superuser",
             )

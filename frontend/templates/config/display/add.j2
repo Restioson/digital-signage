@@ -12,6 +12,9 @@
   {{ css('config/displays/add') }}
 {% endblock %}
 
+<a href="/config/departments">
+  <button type="button">Back</button>
+</a>
 {%- macro render_property(property) -%}
   {%- if property.type == "string" -%}
     <label

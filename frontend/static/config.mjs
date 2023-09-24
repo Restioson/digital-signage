@@ -140,8 +140,8 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
     .getElementById('department-list')
     .querySelector('tbody')
 
-  const userData = JSON.parse(userDataJson) // Parse JSON string to object
-  const departmentData = JSON.parse(departmentDataJson) // Parse JSON string to object
+  const userData = JSON.parse(userDataJson)
+  const departmentData = JSON.parse(departmentDataJson)
 
   if (
     userData &&
@@ -222,12 +222,6 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
   } else {
     console.error('Invalid data format:', userData, departmentData)
   }
-}
-
-export function setupBackButton () {
-  document.getElementById('backButton').addEventListener('click', function () {
-    window.history.back()
-  })
 }
 
 export function showContent (streams) {
