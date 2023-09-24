@@ -1,6 +1,6 @@
 {% extends "base.j2" %}
 
-{% block title %}Manage Users{% endblock %}
+{% block title %}Manage users{% endblock %}
 {% block head %}
   {{ super() }}
   {{ css('config/users') }}
@@ -46,6 +46,10 @@
       </tbody>
     </table>
 
+    <form action="/register/add_user" method="get" class="redirect-form">
+    <button type="submit">Add User</button>
+    </form>
+
     <table id="department-list" class="data-table">
       <thead>
         <tr>
@@ -58,9 +62,7 @@
     </table>
     </div>
     <div>
-    <form action="/register/add_user" method="get" class="redirect-form">
-    <button type="submit">Add User</button>
-    </form>
+
     <form action="/register/add_department" method="get" class="redirect-form">
     <button type="submit">Add Department</button>
     </form>
