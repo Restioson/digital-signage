@@ -582,7 +582,9 @@ class DatabaseController:
             )
         return cursor.lastrowid
 
-    def fetch_all_content_streams(self, permissions: str) -> GroupedContentStreams:
+    def fetch_all_content_streams(
+        self, permissions: Optional[Permission] = Permission.READ
+    ) -> GroupedContentStreams:
         """Fetch all content streams from the database, grouping them
         using GroupedContentStreams"""
         cursor = self.db.cursor()
@@ -600,8 +602,10 @@ class DatabaseController:
         else:
             if permissions == Permission.WRITE:
                 or_permissions = "OR permissions = 'writeable'"
-            else:
+            elif permissions == Permission.READ:
                 or_permissions = "OR permissions != 'private'"
+            else:
+                or_permissions = ""
 
             return GroupedContentStreams(
                 list(
@@ -610,27 +614,6 @@ class DatabaseController:
                         + or_permissions,
                         (dept,),
                     )
-                )
-            )
-
-    def fetch_all_content_stream_ids(self) -> list:
-        """Fetch all available content stream ids from the database.
-        avaiable content streams are streams owned by the department
-        and other none private content streams
-        """
-        dept = current_user.department
-        if dept == ADMIN_DEPARTMENT:
-            cursor = self.db.cursor()
-            cursor.row_factory = lambda _cursor, row: row[0]
-            return list(cursor.execute("SELECT id FROM content_streams"))
-        else:
-            cursor = self.db.cursor()
-            cursor.row_factory = lambda _cursor, row: row[0]
-            return list(
-                cursor.execute(
-                    "SELECT * FROM content_streams WHERE department = ? "
-                    "OR permissions != 'private';",
-                    (dept,),
                 )
             )
 

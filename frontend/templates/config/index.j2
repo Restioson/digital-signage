@@ -35,7 +35,7 @@
     import {
       showContent
     } from "{{ url_for('static', filename='config.mjs') }}";
-    showContent({{content_stream_ids}});
+    showContent();
   </script>
   {% if current_user.permissions != "posting_user" %}
     <button
@@ -54,5 +54,33 @@
     Add a piece of content
   </button>
   <h2>All content</h2>
+
+  <label>
+    Filter by content feed:
+    <select id="filter-select" multiple>
+      <optgroup label="Public">
+        {%- for stream in content_streams.public -%}
+          <option value="{{ stream.id }}" selected>{{ stream.name }}</option>
+        {%- endfor -%}
+      </optgroup>
+
+      {%- for dept, streams in content_streams.by_department.items() -%}
+        <optgroup label="Department: {{ departments[dept].name }}">
+          {%- for stream in streams -%}
+            <option value="{{ stream.id }}" selected>{{ stream.name }}</option>
+          {%- endfor -%}
+        </optgroup>
+      {%- endfor -%}
+
+      {%- if content_streams.by_display -%}
+        <optgroup label="Displays">
+          {%- for stream in content_streams.by_display.values() -%}
+            <option value="{{ stream.id }}" selected>{{ stream.name }}</option>
+          {%- endfor -%}
+        </optgroup>
+      {%- endif -%}
+    </select>
+  </label>
+
   <div class="column-list" id="root"></div>
 {% endblock %}

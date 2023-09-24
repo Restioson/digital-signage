@@ -1,5 +1,6 @@
 import { Root } from './widgets/root.mjs'
 import { ContentStream } from './widgets/free_form_content/content_stream.mjs'
+import { WithRefresh } from './widgets/dynamic/with_refresh.mjs'
 
 export function setupPostForms (createSuccessText) {
   for (const form of document.getElementsByClassName('post-form')) {
@@ -232,9 +233,30 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
   }
 }
 
-export function showContent (streams) {
+export function showContent () {
+  const idsSelect = document.getElementById('filter-select')
+  let streams = []
+  let oldStreams = []
+
   Root.create({
-    child: new ContentStream({ streams, editable: true }),
+    child: new WithRefresh({
+      refresh: () => {
+        streams = []
+        for (const option of idsSelect.options) {
+          if (option.selected) {
+            streams.push(option.value)
+          }
+        }
+
+        const dirty =
+          oldStreams.length !== streams.length ||
+          !oldStreams.every((val, idx) => val === streams[idx])
+        oldStreams = [...streams]
+        return dirty
+      },
+      period: 250,
+      builder: () => new ContentStream({ streams, editable: true })
+    }),
     targetElement: document.getElementById('root'),
     departmentId: 0,
     displayContentStream: 0
