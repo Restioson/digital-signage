@@ -12,34 +12,34 @@
     setupPostForms();
   </script>
 
-  <a href="/config">
-    <button type="button">Back</button>
-    <form action="/api/content_streams" method="post" class="post-form">
-      {% if department %}
-        {% set dest = "to " + department.name + " department" %}
-      {% else %}
-        {% set dest = "(public)" %}
-      {% endif %}
+  <form action="/config" method="get" class="redirect-form">
+    <button type="submit">Back</button>
+  </form>
+  <form action="/api/content_streams" method="post" class="post-form">
+    {% if department %}
+      {% set dest = "to " + department.name + " department" %}
+    {% else %}
+      {% set dest = "(public)" %}
+    {% endif %}
 
-      <h3>Add a content feed {{ dest }}</h3>
-      <input type="hidden" name="display" value="{{ display.id }}" />
+    <h3>Add a content feed {{ dest }}</h3>
+    <input type="hidden" name="display" value="{{ display.id }}" />
 
-      <input type="hidden" name="department" value="{{ department.id }}" />
+    <input type="hidden" name="department" value="{{ department.id }}" />
 
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" />
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" />
 
-      <label
-        >Select permission:
-        <select id="permissions" name="permissions">
-          <option value="private">Private</option>
-          <option value="readable">Any department can subscribe</option>
-          <option value="writeable">Any department can post content</option>
-        </select>
-      </label>
+    <label
+      >Select permission:
+      <select id="permissions" name="permissions">
+        <option value="private">Private</option>
+        <option value="readable">Any department can subscribe</option>
+        <option value="writeable">Any department can post content</option>
+      </select>
+    </label>
 
-      <button type="submit">Submit</button>
-      <p hidden id="status-message"></p>
-    </form>
-  </a>
+    <button type="submit">Submit</button>
+    <p hidden id="status-message"></p>
+  </form>
 {% endblock %}

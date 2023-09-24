@@ -14,10 +14,14 @@
     import { setupPostForms } from "{{ url_for('static', filename='config.mjs') }}";
     setupPostForms();
   </script>
-
-  <a href="/config/departments/{{ current_user.department }}/people">
-    <button type="button">Back</button>
-  </a>
+  {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
+  <form
+    action="/config/departments/{{ current_user.department }}/people"
+    method="get"
+    class="redirect-form"
+  >
+    <button type="submit">Back</button>
+  </form>
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
   <form
     action="/api/departments/{{ department_id }}/people"

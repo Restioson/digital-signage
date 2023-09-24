@@ -19,9 +19,14 @@
       }
     });
   </script>
-  <a href="/config/departments/{{ current_user.department }}/people">
-    <button type="button">Back</button>
-  </a>
+  {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
+  <form
+    action="/config/departments/{{ current_user.department }}/people"
+    method="get"
+    class="redirect-form"
+  >
+    <button type="submit">Back</button>
+  </form>
   <img
     src="{{ url_for('static', filename='/excel_table_format.png') }}"
     alt="Image Description"
