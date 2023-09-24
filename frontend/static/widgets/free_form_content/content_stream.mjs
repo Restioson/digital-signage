@@ -82,7 +82,7 @@ export class ContentStream extends DeserializableWidget {
       }
 
       // Didn't have all the free form content children - must be refreshed
-      dirty |= freeFormContentIdx !== update.content.length - 1
+      dirty |= freeFormContentIdx !== update.content.length
     }
 
     if (dirty) {
@@ -145,31 +145,35 @@ export class ContentStream extends DeserializableWidget {
       refresh: () => this.refresh(),
       period: REFRESH_INTERVAL_MS,
       builder: () => {
+        // If this is an editable content stream widget (used in content) then add delete buttons to each
+        // post in the feed
         let editableChildren
-        // trying to incorporate the ID and streams that a post is a part of.
-        // and ensure that each piece of the div is displayed on a new line/ and centrally aligned
         if (this.editable) {
           editableChildren = this.children.map(child => {
             const renderedChild = child.render()
             const childDiv = document.createElement('div')
             childDiv.appendChild(renderedChild)
             childDiv.className = 'deletable-content'
+
             const deleteButton = document.createElement('button')
-            deleteButton.className = 'delete-content'
+            deleteButton.className = 'delete-content icon-button'
             deleteButton.addEventListener('click', event =>
               deleteContent(child.id, event)
             )
-            deleteButton.textContent = 'Delete'
+
+            const icon = document.createElement('span')
+            icon.className = 'material-symbols-outlined button-icon'
+            icon.innerText = 'delete'
+            deleteButton.append(icon)
+
             childDiv.appendChild(deleteButton)
 
-            const itemName = document.createElement('p')
-            itemName.className = 'item-name'
-            itemName.textContent = 'Post ID: ' + child.id
-            childDiv.append(itemName)
             return childDiv
           })
         }
+
         if (this.pageSize) {
+          // Create a paginated container of content and go forward one page each rotation period
           this.page = -1
           return new WithRefresh({
             refresh: () => {
@@ -186,6 +190,7 @@ export class ContentStream extends DeserializableWidget {
             }
           })
         } else {
+          // Since there's only one page of content we don't need a paginated container
           return new Container({
             children: this.editable ? editableChildren : this.children
           })

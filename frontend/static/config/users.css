@@ -121,10 +121,9 @@ form button[type="submit"]:hover {
 
 /* Button icon styles */
 span.button-icon {
-  margin-left: 5;
+  margin-left: 5px;
   vertical-align: middle;
   color: black;
-  outline: 1px solid black;
   border-radius: 3px;
   background: white;
   padding: 0;
