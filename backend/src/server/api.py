@@ -298,7 +298,7 @@ def registration_route():
         elif permissions == "superuser":
             department = "1"
 
-        if not (DatabaseController.get().user_exists(form["email"])):
+        if form["email"] and not DatabaseController.get().user_exists(form["email"]):
             DatabaseController.get().insert_user(
                 form["email"],
                 form["screen_name"],

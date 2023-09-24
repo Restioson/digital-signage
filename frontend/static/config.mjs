@@ -131,11 +131,26 @@ async function deleteUser (event) {
   const animation = new window.Animation(effect, document.timeline)
   animation.play()
 }
+
+export function populateDepartments (departmentDataJson) {
+  const departmentSelect = document.getElementById('department')
+  const departmentData = JSON.parse(departmentDataJson)
+  if (departmentData && Array.isArray(departmentData.departments)) {
+    departmentData.departments.forEach(department => {
+      const option = document.createElement('option')
+      option.value = department.id
+      option.text = department.name
+      departmentSelect.appendChild(option)
+    })
+  } else {
+    console.error('Invalid data format:', departmentData)
+  }
+}
+
 export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
   const userListTable = document
     .getElementById('user-list')
     .querySelector('tbody')
-  const departmentSelect = document.getElementById('department')
   const departmentTable = document
     .getElementById('department-list')
     .querySelector('tbody')
@@ -175,16 +190,10 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
         <td>${user.email}</td>
         <td>${user.username}</td>
         <td>${departmentMap.get(user.department)}</td>
-        <td>${user.permissions}</td>`
+        <td>${user.permissions}</td>
+        <td></td>`
         userListTable.appendChild(row)
       }
-    })
-
-    departmentData.departments.forEach(department => {
-      const option = document.createElement('option')
-      option.value = department.id
-      option.text = department.name
-      departmentSelect.appendChild(option)
     })
 
     departmentData.departments.forEach(department => {
@@ -203,8 +212,7 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
         const row = document.createElement('tr')
         row.innerHTML = `
         <td>${department.name}
-        </td>
-      `
+        </td> <td></td>`
         departmentTable.appendChild(row)
       }
     })

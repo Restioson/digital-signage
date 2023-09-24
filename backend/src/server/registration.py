@@ -21,3 +21,20 @@ def register():
     return render_template(
         "register.j2", userData=user_data, departmentData=department_data
     )
+
+
+@blueprint.route("/add_user")
+def add_user():
+    """Return the add user page page"""
+    departments = DatabaseController.get().fetch_all_departments().values()
+    department_list = [
+        Department.to_http_json(department) for department in departments
+    ]
+    department_data = json.dumps({"departments": department_list})
+    return render_template("add_user.j2", departmentData=department_data)
+
+
+@blueprint.route("/add_department")
+def add_department():
+    """Return the add department page"""
+    return render_template("add_department.j2")
