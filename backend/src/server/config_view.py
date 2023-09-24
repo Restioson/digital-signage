@@ -10,6 +10,7 @@ blueprint = Blueprint("config_view", __name__, url_prefix="/config")
 
 @blueprint.before_request
 def check_logged_in():
+    """Checks if the user is logged in"""
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
@@ -17,7 +18,9 @@ def check_logged_in():
 @blueprint.route("/add_posts")
 def add_posts():
     """Return the add posts page"""
-
+    # render_template loads the specified page and
+    # allows values to be passed to the page
+    # majority of the functions in this file use it.
     return render_template(
         "config/add_content.j2",
         content_streams=DatabaseController.get().fetch_all_content_streams(

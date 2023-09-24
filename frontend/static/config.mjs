@@ -212,7 +212,7 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
         const row = document.createElement('tr')
         row.innerHTML = `
         <td>${department.name}
-        </td> <td></td>`
+        </td>`
         departmentTable.appendChild(row)
       }
     })

@@ -67,7 +67,7 @@ def create_app(testing=False):
         DatabaseController.teardown()
 
     PageTemplate.register_filters(app)
-
+    # this threading is used to have the repeating daily fetches of the ESP API
     Thread(
         target=repeat_update_loadshedding,
         args=(Loadshedding.interval, app.app_context()),

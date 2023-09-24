@@ -26,10 +26,6 @@
     var departmentData = {{ departmentData | tojson | safe }};
     populateDepartments(departmentData);
   </script>
-    {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
-    <form action="/register?next={{ next }}" method="get" class="redirect-form">
-    <button type="submit">Back</button>
-  </form>
       <form
         action="/api/register"
         method="post"

@@ -16,14 +16,6 @@
   </script>
   {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
   <form
-    action="/config/departments/{{ current_user.department }}/people"
-    method="get"
-    class="redirect-form"
-  >
-    <button type="submit">Back</button>
-  </form>
-  {# <!-- [html-validate-disable-next attribute-allowed-values] --> doesn't understand J2 syntax #}
-  <form
     action="/api/departments/{{ department_id }}/people"
     method="post"
     class="post-form"

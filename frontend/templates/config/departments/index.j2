@@ -1,6 +1,6 @@
 {% extends "base.j2" %}
 
-{% block title %}Displays{% endblock %}
+{% block title %}Manage Your Displays{% endblock %}
 {% block head %}
   {{ super() }}
   {{ css('config') }}
@@ -17,6 +17,18 @@
 {% endblock %}
 
 {% block content %}
+  <div class="display-description">
+    <p>
+      The 'Displays' section is your command center for managing displays. Here,
+      you have the capability to:
+    </p>
+    <ul>
+      <li>Create new displays</li>
+      <li>Edit existing displays</li>
+      <li>Access links for displays to showcase on monitors</li>
+    </ul>
+    <p>Take full control of your display setup with ease.</p>
+  </div>
   <div class="column-list">
     {%- for department in departments -%}
       <div>

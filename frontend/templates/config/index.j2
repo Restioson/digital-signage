@@ -1,6 +1,6 @@
 {% extends "base.j2" %}
 
-{% block title %}Upload Content{% endblock %}
+{% block title %}Manage Your Content{% endblock %}
 {% block head %}
   {{ super() }}
   {{ css('display') }}
@@ -12,6 +12,24 @@
 {% endblock %}
 
 {% block content %}
+  <div class="content-description">
+    <p>
+      Content refers to the diverse range of items such as images, messages,
+      links, and more that you can post on your notice boards. In the 'Displays'
+      section, you have the power to showcase these posts and handpick which
+      content streams should appear on a particular display.
+    </p>
+    <p>
+      A content stream acts as a channel for your content, enabling you to
+      meticulously control where specific content appears. You can create new
+      content streams or access those shared by other departments, fostering
+      collaboration to share content across displays.
+    </p>
+    <p>
+      Collaborate seamlessly with other departments to enhance the visibility of
+      your content and make your displays truly engaging.
+    </p>
+  </div>
   <!-- prettier-ignore -->
   <script type="module">
     import {

@@ -64,7 +64,8 @@ def list_content_streams():
 
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
-
+    # the check above is to check the user is logged in and such
+    # this check is apart of the majority of the API checks for security
     stream_id = db.create_content_stream(ContentStream.from_form(flask.request.form))
 
     return {"id": stream_id}
@@ -101,7 +102,7 @@ def list_users():
     return Response(response_data, content_type="application/json")
 
 
-@blueprint.route("/content", methods=["POST", "GET", "DELETE"])
+@blueprint.route("/content", methods=["POST", "GET"])
 def content():
     """The /api/content endpoint.
 
@@ -209,12 +210,22 @@ def person_image(department_id: int, person_id: int):
 
 
 def open_empty_zip_file():
+    """
+    This is not an API call but a function which returns an empty zipfile
+    """
     with open("backend/src/server/EmptyZip.zip", "rb") as zip_file:
         zip_contents = zip_file.read()
     return zipfile.ZipFile(io.BytesIO(zip_contents), "r")
 
 
 def create_person(row, zip_file):
+    """
+    This is not an API call but a function which takes the row of a form
+    and a zipfile and returns a person object
+    """
+    # makes the attributes of the person from the row.
+    # As the user may be able to not enter certain attributes
+    # of the person this accounts for that
     title = row["title"] if not pd.isna(row["title"]) else ""
     full_name = row["full_name"] if not pd.isna(row["full_name"]) else ""
     position = row["position"] if not pd.isna(row["position"]) else ""
@@ -225,6 +236,8 @@ def create_person(row, zip_file):
     email = row["email"] if not pd.isna(row["email"]) else ""
     phone = row["phone"] if not pd.isna(row["phone"]) else ""
     try:
+        # this tries to find the image of the person
+        # from the uploaded ZIP file if there is one
         with zip_file.open(row["image_name"]) as image_file:
             image_data = image_file.read()
             image = PIL.Image.open(io.BytesIO(image_data))
@@ -249,7 +262,8 @@ def create_person(row, zip_file):
 
 @blueprint.route("/departments/<int:department_id>/uploadtable", methods=["POST"])
 def upload_table(department_id: int):
-    """The /api/departments/<dept_id>/upload_table endpoint.
+    """
+    The /api/departments/<dept_id>/upload_table endpoint.
     POSTing this endpoint uploads the posted table to its database
     """
     if not current_user.is_authenticated:
@@ -283,6 +297,10 @@ def upload_table(department_id: int):
 
 @blueprint.route("/register", methods=["POST"])
 def registration_route():
+    """
+    The /api/register endpoint.
+    POSTing this endpoint registers a new user
+    """
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
     if current_user.permissions != "superuser":
@@ -292,7 +310,8 @@ def registration_route():
     if flask.request.method == "POST":
         department = form["department"]
         permissions = form["permissions"]
-        # superuser/admin
+        # The department 1 is the admin department and
+        # every member of the admin department is made automatically a super user
         if department == "1":
             permissions = "superuser"
         elif permissions == "superuser":
@@ -316,8 +335,12 @@ def registration_route():
             flask.abort(401)
 
 
-@blueprint.route("/login", methods=["POST", "GET"])
+@blueprint.route("/login", methods=["POST"])
 def login_route():
+    """
+    The /api/login endpoint.
+    POSTing this endpoint logs in the user
+    """
     form = flask.request.form
     if DatabaseController.get().user_exists(form["email"]):
         user = DatabaseController.get().try_login(form["email"], form["password"])
@@ -340,12 +363,20 @@ def login_route():
 
 @blueprint.route("/logout", methods=["GET"])
 def logout_route():
+    """
+    The /api/logout endpoint.
+    GETting this endpoint logs out the user
+    """
     logout_user()
     return redirect(url_for("login.login"))
 
 
 @blueprint.route("/content/<int:content_id>", methods=["DELETE"])
 def delete_content(content_id: int):
+    """
+    The /api/content/<int:content_id> endpoint.
+    DELETEing this endpoint delete the given piece of content
+    """
     if DatabaseController.get().delete_content_by_id(content_id):
         return {"deleted": True}
     else:
@@ -354,6 +385,10 @@ def delete_content(content_id: int):
 
 @blueprint.route("/departments", methods=["POST"])
 def create_department():
+    """
+    The /api/departments endpoint.
+    POSTing this endpoint creates a new department
+    """
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
     if current_user.permissions != "superuser":
@@ -419,6 +454,10 @@ def content_blob(content_id: int):
 
 @blueprint.route("/departments/<int:department_id>/displays", methods=["POST"])
 def displays(department_id: int):
+    """
+    The /api/departments/<int:department_id>/displays endpoint.
+    POSTing this endpoint creates a new display for that department
+    """
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
     if current_user.permissions == "posting_user":
@@ -496,6 +535,11 @@ def upload_department_files(department_id: int):
     methods=["GET"],
 )
 def get_department_files(filename: str, department_id: int):
+    """The /api/department/<int:department_id>/<int:display>/<string:filename> endpoint.
+
+    POSTing to this endpoint well fetch files from the server
+    dependant on the file name and department
+    """
     department_file = DatabaseController.get().fetch_file_by_id(filename, department_id)
 
     if not current_user.is_authenticated:
@@ -515,6 +559,13 @@ def get_department_files(filename: str, department_id: int):
     methods=["DELETE", "GET"],
 )
 def file(department_id: int, file_name: str):
+    """The /api/departments/<int:department_id>/files/<string:file_name> endpoint.
+
+    GETting from this endpoint well fetch a file from the server
+    dependant on the file name and department
+    DELETEing this endpoint will delete a file from the server
+    dependant on the file name and department
+    """
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 

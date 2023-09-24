@@ -23,11 +23,11 @@
         <p>Welcome, {{ current_user.user_id }}</p>
         <a href="{{ url_for('api.logout_route') }}">Logout</a>
       {% endif %}
+    </header>
+    <nav>
       {% if current_user.permissions == "superuser" %}
         <a href="/register?next={{ next }}">Manage users</a>
       {% endif %}
-    </header>
-    <nav>
       <a href="/config/departments">Displays</a>
       {% if current_user.permissions == "superuser" %}
         <a href="/config/departments/{{ current_user.department }}/people"

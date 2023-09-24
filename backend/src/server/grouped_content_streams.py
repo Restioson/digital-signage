@@ -4,6 +4,7 @@ from server.free_form_content.content_stream import ContentStream
 class GroupedContentStreams:
     """A grouping of content streams into three buckets:
     - Public streams
+    (these are other departments displays that they are sharing)
     - Streams by their department
     - 1 stream for each display
 
