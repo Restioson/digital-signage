@@ -1,6 +1,6 @@
 {% extends "base.j2" %}
 
-{% block title %}Upload Content{% endblock %}
+{% block title %}Manage your content{% endblock %}
 {% block head %}
   {{ super() }}
   {{ css('display') }}
@@ -12,12 +12,30 @@
 {% endblock %}
 
 {% block content %}
+  <div class="content-description">
+    <p>
+      Content refers to the diverse range of items such as images, messages,
+      links, and more that you can post on your notice boards. In the 'Displays'
+      section, you have the power to showcase these posts and handpick which
+      content feeds should appear on a particular display.
+    </p>
+    <p>
+      A content feed acts as a channel for your content, enabling you to
+      meticulously control where specific content appears. You can create new
+      content feeds or access those shared by other departments, fostering
+      collaboration to share content across displays.
+    </p>
+    <p>
+      Collaborate seamlessly with other departments to enhance the visibility of
+      your content and make your displays truly engaging.
+    </p>
+  </div>
   <!-- prettier-ignore -->
   <script type="module">
     import {
       showContent
     } from "{{ url_for('static', filename='config.mjs') }}";
-    showContent({{content_stream_ids}});
+    showContent();
   </script>
   {% if current_user.permissions != "posting_user" %}
     <button
@@ -35,5 +53,34 @@
   >
     Add a piece of content
   </button>
+  <h2>All content</h2>
+
+  <label>
+    Filter by content feed:
+    <select id="filter-select" multiple>
+      <optgroup label="Public">
+        {%- for stream in content_streams.public -%}
+          <option value="{{ stream.id }}" selected>{{ stream.name }}</option>
+        {%- endfor -%}
+      </optgroup>
+
+      {%- for dept, streams in content_streams.by_department.items() -%}
+        <optgroup label="Department: {{ departments[dept].name }}">
+          {%- for stream in streams -%}
+            <option value="{{ stream.id }}" selected>{{ stream.name }}</option>
+          {%- endfor -%}
+        </optgroup>
+      {%- endfor -%}
+
+      {%- if content_streams.by_display -%}
+        <optgroup label="Displays">
+          {%- for stream in content_streams.by_display.values() -%}
+            <option value="{{ stream.id }}" selected>{{ stream.name }}</option>
+          {%- endfor -%}
+        </optgroup>
+      {%- endif -%}
+    </select>
+  </label>
+
   <div class="column-list" id="root"></div>
 {% endblock %}

@@ -15,7 +15,19 @@
     import { main } from "{{ url_for('static', filename='config/departments/people.mjs') }}";
     main();
   </script>
-
+  <div class="department-description">
+    <p>
+      This section serves as your hub for managing departmental information.
+      Here, you can:
+    </p>
+    <ul>
+      <li>Upload, update and delete member profiles</li>
+      <li>Upload whole tables of member profiles</li>
+    </ul>
+    <p>
+      Streamline the process of sharing department details on your noticeboards.
+    </p>
+  </div>
   <div class="column-list">
     {%- for department in departments -%}
       <h2>{{ department.name }}</h2>
@@ -44,7 +56,7 @@
               <td>
                 <img
                   src="/api/departments/{{ department.id }}/people/{{ person.id }}/image"
-                  alt="{{ person.name }}"
+                  alt="No image"
                 />
               </td>
               <td>{{ person.position }}</td>

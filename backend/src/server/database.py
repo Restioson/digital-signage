@@ -39,6 +39,7 @@ class DatabaseController:
 
     @staticmethod
     def get():
+        """Gets the database instance the server uses"""
         db = flask.g.get("_database", None)
         if db is None:
             db_path = (
@@ -103,7 +104,6 @@ class DatabaseController:
 
         with self.db:
             cursor = self.db.cursor()
-
             cursor.execute(
                 "INSERT INTO content "
                 "(posted, content_type, content_json,"
@@ -139,7 +139,8 @@ class DatabaseController:
         with_blob = ", content_blob" if fetch_blob else ""
         with_limit = f"LIMIT {limit}" if limit else ""
 
-        # SAFETY: this string substitution is okay since we don't use user data here\
+        # SAFETY: this string substitution is okay since we don't use user data here
+        # thus preventin SQL injections
         return list(
             cursor.execute(
                 "SELECT "
@@ -167,6 +168,7 @@ class DatabaseController:
         with_blob = ", content_blob" if fetch_blob else ""
 
         # SAFETY: this string substitution is okay since we don't use user data here
+        # thus preventin SQL injections
         return next(
             cursor.execute(
                 "SELECT "
@@ -347,6 +349,7 @@ class DatabaseController:
             cursor = self.db.cursor()
 
             # SAFETY: this string substitution is ok since display_id is an int
+            # thus preventin SQL injections
             assert isinstance(display_id, int)
             cursor.execute(
                 f"DELETE FROM files WHERE department_id = ?"
@@ -549,6 +552,7 @@ class DatabaseController:
         return cursor.lastrowid
 
     def delete_user(self, id: str) -> bool:
+        """Deletes the given user from the database"""
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
@@ -558,6 +562,7 @@ class DatabaseController:
             return cursor.rowcount == 1
 
     def delete_department(self, id: int) -> bool:
+        """Deletes the given department from the database"""
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
@@ -577,7 +582,9 @@ class DatabaseController:
             )
         return cursor.lastrowid
 
-    def fetch_all_content_streams(self, permissions: str) -> GroupedContentStreams:
+    def fetch_all_content_streams(
+        self, permissions: Optional[Permission] = Permission.READ
+    ) -> GroupedContentStreams:
         """Fetch all content streams from the database, grouping them
         using GroupedContentStreams"""
         cursor = self.db.cursor()
@@ -595,8 +602,10 @@ class DatabaseController:
         else:
             if permissions == Permission.WRITE:
                 or_permissions = "OR permissions = 'writeable'"
-            else:
+            elif permissions == Permission.READ:
                 or_permissions = "OR permissions != 'private'"
+            else:
+                or_permissions = ""
 
             return GroupedContentStreams(
                 list(
@@ -608,28 +617,8 @@ class DatabaseController:
                 )
             )
 
-    def fetch_all_content_stream_ids(self) -> list:
-        """Fetch all content stream ids from the database"""
-        # needs renaming. This fetches all non private displays to be
-        dept = current_user.department
-        if dept == ADMIN_DEPARTMENT:
-            cursor = self.db.cursor()
-            cursor.row_factory = lambda _cursor, row: row[0]
-            return list(cursor.execute("SELECT id FROM content_streams"))
-        else:
-            cursor = self.db.cursor()
-            cursor.row_factory = lambda _cursor, row: row[0]
-            return list(
-                cursor.execute(
-                    "SELECT * FROM content_streams WHERE department = ? "
-                    "OR permissions != 'private';",
-                    (dept,),
-                )
-            )
-
     def update_loadshedding_schedule(self, region, schedule):
         """Updates the loadshedding schedule for the given region"""
-
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
@@ -697,6 +686,7 @@ class DatabaseController:
     def delete_file_by_name_and_department(
         self, filename: str, department_id: int
     ) -> bool:
+        """Deletes the given file from the database"""
         with self.db:
             cursor = self.db.cursor()
             cursor.execute(
@@ -715,6 +705,7 @@ class DatabaseController:
         return list(cursor.execute("SELECT id, xml FROM templates"))
 
     def fetch_page_template_by_id(self, template_id: str) -> Optional[PageTemplate]:
+        """Fethces the given page templete from the database"""
         cursor = self.db.cursor()
         cursor.row_factory = PageTemplate.from_sql
         return next(

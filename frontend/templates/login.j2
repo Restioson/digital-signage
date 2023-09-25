@@ -1,6 +1,6 @@
 {% extends "base.j2" %}
 
-{% block title %}Login to Campusign{% endblock %}
+{% block title %}Welcome to CampuSign{% endblock %}
 {% block head %}
   {{ super() }}
   {{ css('main') }}
@@ -12,6 +12,25 @@
     setupPostForms();
   </script>
 
+  <div class="welcome-message">
+    <p>
+      CampuSign provides you with the tools to set up, control, and manage
+      digital noticeboards effortlessly. Our platform offers powerful
+      functionality while maintaining a user-friendly experience.
+    </p>
+    <p>Explore the three main sections of our app:</p>
+    <ul>
+      <li><strong>Displays:</strong> Configure your displays with ease.</li>
+      <li>
+        <strong>Departments:</strong> Manage and update department information.
+      </li>
+      <li>
+        <strong>Content:</strong> Create and upload content and content feeds.
+      </li>
+    </ul>
+    <p>Ready to get started? Log in now to access your dashboard.</p>
+  </div>
+  <label>Login in:</label>
   <form action="/api/login" method="post" name="login">
     <label
       >Email Address:
@@ -24,5 +43,14 @@
     </label>
 
     <button type="submit" name="login">Login</button>
+    {%- if attempt == "password" -%}
+      <p id="status-message-password" class="login-messages">
+        Failed login. Incorrect password
+      </p>
+    {%- elif attempt == "email" -%}
+      <p id="status-message-email" class="login-messages">
+        Failed login. Incorrect email
+      </p>
+    {%- endif -%}
   </form>
 {% endblock %}

@@ -10,10 +10,7 @@
 
 {% block content %}
   <script type="module">
-    import {
-      setupPostForms,
-      setupBackButton,
-    } from "{{ url_for('static', filename='config.mjs') }}";
+    import { setupPostForms } from "{{ url_for('static', filename='config.mjs') }}";
     setupPostForms(function (res) {
       if (res.id === "response needed") {
         return `Response: ${res.response}`;
@@ -21,9 +18,7 @@
         return `Successfully submitted (id: ${res.id})`;
       }
     });
-    setupBackButton();
   </script>
-  <button type="button" id="backButton">Back</button>
   <img
     src="{{ url_for('static', filename='/excel_table_format.png') }}"
     alt="Image Description"

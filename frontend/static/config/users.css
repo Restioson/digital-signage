@@ -1,37 +1,36 @@
-@import url("../main.css");
+@import url("../config.css");
 
-/* Reset default styles for some elements */
 form.redirect-form {
   width: fit-content;
-  padding: 0;
+  padding: 15px 0 0;
   border: none;
   box-shadow: none;
+  margin: 0;
 }
 
 main {
   width: unset;
 }
 
-/* Style for tables */
 .data-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  box-shadow: 0;
+  box-shadow: none;
 }
 
 .data-table th,
 .data-table td {
   padding: 12px 15px;
   text-align: left;
-  border-bottom: 1px solid #000;
+  border: 1px solid #000;
 }
 
 .data-table thead th {
   background-color: #f2f2f2;
   font-weight: bold;
   text-transform: uppercase;
-  border-right: 1px solid #000;
+  border: 1px solid #000;
 }
 
 .data-table tbody tr:nth-child(even) {
@@ -42,7 +41,6 @@ main {
   background-color: #ddd;
 }
 
-/* General styles */
 body {
   font-family: Arial, sans-serif;
   background-color: #f5f5f5;
@@ -50,40 +48,15 @@ body {
   padding: 0;
 }
 
-h2 {
-  background-color: #333;
-  color: #fff;
-  padding: 10px;
-  margin-top: 0;
-  text-align: center;
-}
-
 form {
   background-color: #fff;
   padding: 20px;
   border-radius: 5px;
-  box-shadow: 0;
+  box-shadow: none;
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;
   max-width: 400px;
-}
-
-form label {
-  display: block;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-form input[type="text"],
-form input[type="email"],
-form input[type="password"],
-form select {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
 }
 
 form button[type="submit"] {
@@ -95,31 +68,6 @@ form button[type="submit"] {
   cursor: pointer;
 }
 
-form button[type="submit"]:hover {
-  background-color: #000;
-}
-
-/* Style for container */
-.table-and-form-container {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-/* Adjust table margins */
-.data-table.margin-right {
-  flex: 1;
-  margin-right: 20px;
-}
-
-/* Adjust form layout */
-.forms {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* Button icon styles */
 span.button-icon {
   margin-left: 5px;
   vertical-align: middle;
@@ -140,29 +88,4 @@ span.button-icon:hover {
 
 button.icon-button {
   display: contents;
-}
-
-a.button-link {
-  text-decoration: none;
-  display: inline-block;
-}
-
-a {
-  text-decoration: none;
-  color: #226ea0;
-  font-weight: bold;
-}
-
-li a {
-  text-decoration: none;
-  color: #226ea0;
-  font-weight: bold;
-}
-
-a:hover {
-  color: #c76210;
-}
-
-li a:hover {
-  color: #c76210;
 }
