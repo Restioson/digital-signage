@@ -1,6 +1,6 @@
 {% extends "base.j2" %}
 
-{% block title %}Manage Users{% endblock %}
+{% block title %}Manage users{% endblock %}
 {% block head %}
   {{ super() }}
   {{ css('config/users') }}
@@ -30,13 +30,15 @@
 
 
   <div class="table-and-form-container">
+  <div class="table-container">
     <table id="user-list" class="data-table margin-right">
       <thead>
         <tr>
           <th scope="col">Email</th>
           <th scope="col">Username</th>
-          <th scope="col">Department ID</th>
+          <th scope="col">Department</th>
           <th scope="col">Permissions</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       <tbody>
@@ -44,75 +46,27 @@
       </tbody>
     </table>
 
+    <form action="/register/add_user" method="get" class="redirect-form">
+    <button type="submit">Add User</button>
+    </form>
+
     <table id="department-list" class="data-table">
       <thead>
         <tr>
-          <th scope="col">Name</th>
+          <th scope="col">Departments</th>
         </tr>
       </thead>
       <tbody>
         <!-- Department data will be populated here -->
       </tbody>
     </table>
-    <div class="forms">
-      <form
-        action="/api/register"
-        method="post"
-        class="register post-form"
-        enctype="multipart/form-data"
-      >
-        <label>
-          Email Address:
-          <input type="email" id="email" name="email" required />
-        </label>
+    </div>
+    <div>
 
-        <label>
-          Username:
-          <input type="text" id="screen_name" name="screen_name" required />
-        </label>
-        <!-- This form is buggy and needs fixing -->
-        <label>
-          Password:
-          <input
-            type="password"
-            id="password"
-            name="password"
-            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{12,}"
-            title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-            required
-          />
-        </label>
-
-        <label>
-          Department:
-          <select id="department" name="department">
-            <!-- Options will be dynamically populated here -->
-          </select>
-        </label>
-
-        <label>
-          Select permission:
-          <select id="permissions" name="permissions">
-            <option value="superuser">Superuser</option>
-            <option value="edit_user">Editing user</option>
-            <option value="posting_user">Posting user</option>
-          </select>
-        </label>
-        <button type="submit" name="register">Create account</button>
-      </form>
-      <form
-        action="/api/departments"
-        method="post"
-        class="create_department post-form"
-        enctype="multipart/form-data"
-      >
-        <label>
-          Department name:
-          <input type="text" id="name" name="name" required />
-        </label>
-        <button type="submit">Create department</button>
-        <p hidden id="status-message"></p>
-      </form>
+    <form action="/register/add_department" method="get" class="redirect-form">
+    <button type="submit">Add Department</button>
+    </form>
+    <p hidden id="status-message"></p>
     </div>
   </div>
 {% endblock %}

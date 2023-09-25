@@ -5,6 +5,11 @@ import flask
 
 
 class Loadshedding:
+    """This class handles the backend Loadshedding process which is calling the ESP API
+    and getting the information an storing it in the database.
+    Right now the system is configured to only fetch information for the UCT area
+    but this has been built for later alteration of multiple areas"""
+
     interval = 1800
     endpoints = [
         "/business/2.0/area?id={area_id}&test=current",  # this is the testing command
@@ -16,9 +21,7 @@ class Loadshedding:
         # Add more regions as needed
     ]
     key = os.environ.get("ESP_LICENSE_KEY")
-
-    # Make sure to do
-    # if flask.current_app.config["TESTING"]: use ESP sample endpoint!
+    # this is the license key that is stored in the .env file
 
     @staticmethod
     def update_loadshedding_schedule(region, app_current):

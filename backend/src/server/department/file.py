@@ -3,6 +3,8 @@ import sqlite3
 
 
 class File:
+    """This is a file within a department"""
+
     def __init__(
         self,
         name: str,

@@ -1,0 +1,40 @@
+{% extends "base.j2" %}
+
+{% block title %}Add departments{% endblock %}
+{% block head %}
+  {{ super() }}
+  {{ css('config/users') }}
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+  />
+{% endblock %}
+<!-- prettier-ignore -->
+{% block content %}
+  <script type="module">
+    import {
+      setupPostForms,
+    } from "{{ url_for('static', filename='config.mjs') }}";
+    setupPostForms(function (res) {
+      if (res.id === "response needed") {
+        return `Response: ${res.response}`;
+      } else {
+        return `Successfully submitted (id: ${res.id})`;
+      }
+    });
+  </script>
+        <form
+        action="/api/departments"
+        method="post"
+        class="create_department post-form"
+        enctype="multipart/form-data"
+      >
+        <label>
+          Department name:
+          <input type="text" id="name" name="name" required />
+        </label>
+        <button type="submit">Create department</button>
+        <p hidden id="status-message"></p>
+      </form>
+
+{% endblock %}

@@ -154,6 +154,7 @@ class Display:
         return filenames
 
     def render(self, db):
+        """renders the display template"""
         return render_template(
             "display_layout.j2.xml",
             pages=[

@@ -2,7 +2,7 @@ import flask
 from flask import Blueprint, render_template, current_app
 from flask_login import current_user
 
-from server.database import DatabaseController
+from server.database import DatabaseController, Permission
 from server.department.person import Person
 
 blueprint = Blueprint("config_view", __name__, url_prefix="/config")
@@ -10,6 +10,7 @@ blueprint = Blueprint("config_view", __name__, url_prefix="/config")
 
 @blueprint.before_request
 def check_logged_in():
+    """Checks if the user is logged in"""
     if not current_user.is_authenticated:
         return current_app.login_manager.unauthorized()
 
@@ -17,7 +18,9 @@ def check_logged_in():
 @blueprint.route("/add_posts")
 def add_posts():
     """Return the add posts page"""
-
+    # render_template loads the specified page and
+    # allows values to be passed to the page
+    # majority of the functions in this file use it.
     return render_template(
         "config/add_content.j2",
         content_streams=DatabaseController.get().fetch_all_content_streams(
@@ -30,13 +33,19 @@ def add_posts():
 @blueprint.route("/")
 def index():
     """Return the config index page"""
-    content_stream_ids = DatabaseController.get().fetch_all_content_stream_ids()
-    if current_user.permissions == "posting_user":
-        permission = "true"
-    else:
-        permission = "false"
+    content_streams = DatabaseController.get().fetch_all_content_streams(
+        # Show all streams if superuser, else only non-private ones
+        permissions=None
+        if current_user.permissions == "superuser"
+        else Permission.READ
+    )
+
+    depts = DatabaseController.get().fetch_all_departments()
+
     return render_template(
-        "config/index.j2", content_stream_ids=content_stream_ids, permissions=permission
+        "config/index.j2",
+        content_streams=content_streams,
+        departments=depts,
     )
 
 

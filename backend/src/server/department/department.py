@@ -7,10 +7,10 @@ from server.free_form_content.content_stream import ContentStream
 from server.department.file import File
 
 
-# TODO: add more functionality and use in display group development
 class Department:
-    """A university department that has people and are to be the users of this app.
-    Currently unused but need for later functionality."""
+    """Department represents a department at the university
+    or other institution this could be for
+    Users, people, displays and content streams are all linked via their department"""
 
     def __init__(
         self,

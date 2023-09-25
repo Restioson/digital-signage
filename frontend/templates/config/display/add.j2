@@ -12,6 +12,9 @@
   {{ css('config/displays/add') }}
 {% endblock %}
 
+<form action="/config/departments" method="get" class="redirect-form">
+  <button type="submit">Back</button>
+</form>
 {%- macro render_property(property) -%}
   {%- if property.type == "string" -%}
     <label

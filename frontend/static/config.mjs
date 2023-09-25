@@ -1,5 +1,6 @@
 import { Root } from './widgets/root.mjs'
 import { ContentStream } from './widgets/free_form_content/content_stream.mjs'
+import { WithRefresh } from './widgets/dynamic/with_refresh.mjs'
 
 export function setupPostForms (createSuccessText) {
   for (const form of document.getElementsByClassName('post-form')) {
@@ -131,17 +132,32 @@ async function deleteUser (event) {
   const animation = new window.Animation(effect, document.timeline)
   animation.play()
 }
+
+export function populateDepartments (departmentDataJson) {
+  const departmentSelect = document.getElementById('department')
+  const departmentData = JSON.parse(departmentDataJson)
+  if (departmentData && Array.isArray(departmentData.departments)) {
+    departmentData.departments.forEach(department => {
+      const option = document.createElement('option')
+      option.value = department.id
+      option.text = department.name
+      departmentSelect.appendChild(option)
+    })
+  } else {
+    console.error('Invalid data format:', departmentData)
+  }
+}
+
 export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
   const userListTable = document
     .getElementById('user-list')
     .querySelector('tbody')
-  const departmentSelect = document.getElementById('department')
   const departmentTable = document
     .getElementById('department-list')
     .querySelector('tbody')
 
-  const userData = JSON.parse(userDataJson) // Parse JSON string to object
-  const departmentData = JSON.parse(departmentDataJson) // Parse JSON string to object
+  const userData = JSON.parse(userDataJson)
+  const departmentData = JSON.parse(departmentDataJson)
 
   if (
     userData &&
@@ -154,8 +170,9 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
     )
 
     userData.departments.forEach(user => {
-      const row = document.createElement('tr')
-      row.innerHTML = `
+      if (user.email !== 'A@ADMIN') {
+        const row = document.createElement('tr')
+        row.innerHTML = `
         <td>${user.email}</td>
         <td>${user.username}</td>
         <td>${departmentMap.get(user.department)}</td>
@@ -167,19 +184,23 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
         </button>
         </td>
       `
-      userListTable.appendChild(row)
+        userListTable.appendChild(row)
+      } else {
+        const row = document.createElement('tr')
+        row.innerHTML = `
+        <td>${user.email}</td>
+        <td>${user.username}</td>
+        <td>${departmentMap.get(user.department)}</td>
+        <td>${user.permissions}</td>
+        <td></td>`
+        userListTable.appendChild(row)
+      }
     })
 
     departmentData.departments.forEach(department => {
-      const option = document.createElement('option')
-      option.value = department.id
-      option.text = department.name
-      departmentSelect.appendChild(option)
-    })
-
-    departmentData.departments.forEach(department => {
-      const row = document.createElement('tr')
-      row.innerHTML = `
+      if (department.id !== 1) {
+        const row = document.createElement('tr')
+        row.innerHTML = `
         <td>${department.name}
         <button type="button" class="delete-department icon-button" 
         data-department_id="${department.id}">
@@ -187,7 +208,14 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
         </button>
         </td>
       `
-      departmentTable.appendChild(row)
+        departmentTable.appendChild(row)
+      } else {
+        const row = document.createElement('tr')
+        row.innerHTML = `
+        <td>${department.name}
+        </td>`
+        departmentTable.appendChild(row)
+      }
     })
 
     for (const button of document.getElementsByClassName(
@@ -205,15 +233,31 @@ export function populateUsersAndDepartments (userDataJson, departmentDataJson) {
   }
 }
 
-export function setupBackButton () {
-  document.getElementById('backButton').addEventListener('click', function () {
-    window.history.back()
-  })
-}
+export function showContent () {
+  const idsSelect = document.getElementById('filter-select')
+  let streams = []
+  let oldStreams = []
+  setupSelectMultiple(idsSelect)
 
-export function showContent (streams) {
   Root.create({
-    child: new ContentStream({ streams, editable: true }),
+    child: new WithRefresh({
+      refresh: () => {
+        streams = []
+        for (const option of idsSelect.options) {
+          if (option.selected) {
+            streams.push(option.value)
+          }
+        }
+
+        const dirty =
+          oldStreams.length !== streams.length ||
+          !oldStreams.every((val, idx) => val === streams[idx])
+        oldStreams = [...streams]
+        return dirty
+      },
+      period: 250,
+      builder: () => new ContentStream({ streams, editable: true })
+    }),
     targetElement: document.getElementById('root'),
     departmentId: 0,
     displayContentStream: 0

@@ -3,6 +3,7 @@ from flask_login import current_user
 from server.config_view import list_departments
 
 blueprint = Blueprint("index", __name__, url_prefix="/")
+"""This is used when connecting to the server"""
 
 
 @blueprint.before_request

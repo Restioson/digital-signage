@@ -6,6 +6,11 @@ import pandas as pd
 
 
 class Person:
+    """A person is a member in a department.
+    This would be any staff or associated people
+    that the department would wish to display
+    when displaying department information"""
+
     def __init__(
         self,
         title: str,
@@ -32,6 +37,8 @@ class Person:
 
     def to_http_json(self) -> dict:
         """Sends data in json format to be posted through http"""
+        # in the event that the mimetype is empty it is changes
+        # to a true and false to help flag that at the front end
         if self.mime_type == "":
             image = "false"
         else:
@@ -77,7 +84,8 @@ class Person:
         )
         email = form["email"] if not pd.isna(form["email"]) else ""
         phone = form["phone"] if not pd.isna(form["phone"]) else ""
-
+        # this handles the image data from the form
+        # and splits it into the data and the mime type
         image_data = files["image_data"].read()
         if image_data:
             image = PIL.Image.open(io.BytesIO(image_data))

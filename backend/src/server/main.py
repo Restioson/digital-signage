@@ -1,5 +1,5 @@
 import time
-
+import os
 from flask import Flask
 from server import (
     config_view,
@@ -52,11 +52,12 @@ def create_app(testing=False):
     # Setup database
     with app.app_context():
         DatabaseController.get().create_db()
+        password = os.environ.get("ADMIN_PASSWORD123") or "PASSWORD"
         if not (DatabaseController.get().user_exists("A@ADMIN")):
             DatabaseController.get().insert_user(
                 "A@ADMIN",
                 "ADMIN",
-                "PASSWORD",
+                password,
                 1,
                 "superuser",
             )
@@ -66,7 +67,7 @@ def create_app(testing=False):
         DatabaseController.teardown()
 
     PageTemplate.register_filters(app)
-
+    # this threading is used to have the repeating daily fetches of the ESP API
     Thread(
         target=repeat_update_loadshedding,
         args=(Loadshedding.interval, app.app_context()),

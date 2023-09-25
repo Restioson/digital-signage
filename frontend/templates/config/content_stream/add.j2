@@ -12,6 +12,9 @@
     setupPostForms();
   </script>
 
+  <form action="/config" method="get" class="redirect-form">
+    <button type="submit">Back</button>
+  </form>
   <form action="/api/content_streams" method="post" class="post-form">
     {% if department %}
       {% set dest = "to " + department.name + " department" %}
