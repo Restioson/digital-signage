@@ -45,7 +45,6 @@ span.button-icon {
   margin-left: 5px;
   vertical-align: middle;
   color: black;
-  outline: 1px solid black;
   border-radius: 3px;
   background: white;
   padding: 0;
@@ -99,4 +98,34 @@ a:hover {
 
 li a:hover {
   color: #c76210;
+}
+
+#root {
+  width: unset;
+  height: unset;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 15px;
+}
+
+.content-stream {
+  display: flex;
+  flex-direction: column;
+}
+
+.deletable-content {
+  display: grid;
+  grid-template:
+    "content delete" auto
+    "content   ...  " 1fr
+    / 1fr auto;
+}
+
+.deletable-content > button {
+  grid-area: delete;
+}
+
+.deletable-content > .free-form-content {
+  grid-area: content;
 }

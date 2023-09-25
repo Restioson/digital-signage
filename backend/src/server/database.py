@@ -127,7 +127,7 @@ class DatabaseController:
                     (stream, content_id),
                 )
 
-        return cursor.lastrowid, post_timestamp
+        return content_id, post_timestamp
 
     def fetch_content_in_streams(
         self, streams: list[int], limit=None, fetch_blob=False

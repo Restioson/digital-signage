@@ -1,6 +1,6 @@
 {% extends "base.j2" %}
 
-{% block title %}Departments{% endblock %}
+{% block title %}Displays{% endblock %}
 {% block head %}
   {{ super() }}
   {{ css('config') }}
@@ -20,7 +20,12 @@
   <div class="column-list">
     {%- for department in departments -%}
       <div>
-        <h3>Displays:</h3>
+        <h3>{{ department.name }} Displays:</h3>
+        {% if current_user.permissions != "posting_user" %}
+          <a href="/config/departments/{{ department.id }}/display/add"
+            >Add display</a
+          >
+        {% endif %}
         {%- if department.displays -%}
           <div class="column-list">
             {%- for display in department.displays -%}
@@ -68,11 +73,6 @@
         {%- else -%}
           <p>This department has no displays.</p>
         {%- endif -%}
-        {% if current_user.permissions != "posting_user" %}
-          <a href="/config/departments/{{ department.id }}/display/add"
-            >Add display</a
-          >
-        {% endif %}
       </div>
     {%- endfor -%}
   </div>
