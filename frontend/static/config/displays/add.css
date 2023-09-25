@@ -26,12 +26,6 @@ form {
   border: 1px solid #808080;
 }
 
-form,
-fieldset,
-.column-list {
-  box-shadow: none;
-}
-
 .tab > * {
   max-width: 600px;
 }

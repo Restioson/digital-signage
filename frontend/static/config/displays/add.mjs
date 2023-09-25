@@ -42,8 +42,7 @@ function setupFormElement (elt, pageNo, properties) {
     variable = variable.substring(0, variable.length - 2)
   }
 
-  console.log('setup')
-  setupSelectMultiple(elt)
+  setupSelectMultiple(elt, false)
 
   const val = properties[variable]
   if (val !== undefined) {
@@ -77,7 +76,6 @@ function addTab (title, element, withDelete) {
       const form = document.getElementById('display-group-form')
       form.dispatchEvent(new Event('change'))
       list.querySelector('*').click()
-      console.log(list.querySelector('*'))
     })
 
     tabHeader.append(deleteButton)

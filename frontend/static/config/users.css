@@ -4,7 +4,6 @@ form.redirect-form {
   width: fit-content;
   padding: 15px 0 0;
   border: none;
-  box-shadow: none;
   margin: 0;
 }
 
@@ -16,7 +15,6 @@ main {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  box-shadow: none;
 }
 
 .data-table th,
@@ -52,7 +50,6 @@ form {
   background-color: #fff;
   padding: 20px;
   border-radius: 5px;
-  box-shadow: none;
   margin-top: 20px;
   margin-left: auto;
   margin-right: auto;

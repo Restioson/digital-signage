@@ -49,8 +49,13 @@
       </label>
 
       <label
-        >Content feed:
-        <select id="content-stream-select" name="content_stream" multiple>
+        >Content feeds:
+        <select
+          id="content-stream-select"
+          name="content_stream"
+          multiple
+          required
+        >
           <optgroup label="Public">
             {%- for stream in content_streams.public -%}
               <option value="{{ stream.id }}">{{ stream.name }}</option>

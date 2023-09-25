@@ -26,7 +26,7 @@
     </header>
     <nav>
       {% if current_user.permissions == "superuser" %}
-        <a href="/register?next={{ next }}">Manage users</a>
+        <a href="/register">Manage users</a>
       {% endif %}
       <a href="/config/departments">Displays</a>
       {% if current_user.permissions == "superuser" %}

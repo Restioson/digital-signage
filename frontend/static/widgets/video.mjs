@@ -16,7 +16,6 @@ export class Video extends DeserializableWidget {
     source.src = this.src
     video.appendChild(source)
 
-    console.log(this.controlsPageTime)
     video.addEventListener('ended', evt => {
       if (this.controlsPageTime) {
         evt.target.getRootNode().host.dataset.done = 'true'
