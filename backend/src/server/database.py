@@ -406,25 +406,51 @@ class DatabaseController:
 
         with self.db:
             cursor = self.db.cursor()
-            cursor.execute(
-                "REPLACE INTO people "
-                "(id, department, title, full_name, mime_type, image_data, position, "
-                "office_hours, office_location, email, phone)"
-                " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (
-                    person.id,
-                    department_id,
-                    person.title,
-                    person.name,
-                    person.mime_type,
-                    person.image_data,
-                    person.position,
-                    person.office_hours,
-                    person.office_location,
-                    person.email,
-                    person.phone,
-                ),
-            )
+            cursor.execute("SELECT COUNT(*) FROM people WHERE id = ?", (person.id,))
+            count = cursor.fetchone()[0]  # Fetch the count result
+            existing_data = count > 0
+            print("test 1")
+            if existing_data and person.mime_type == "":
+                print("test 2")
+                cursor.execute(
+                    "UPDATE people SET "
+                    "title=?, full_name=?, position=?, "
+                    "office_hours=?, office_location=?, email=?, phone=? "
+                    "WHERE id = ?",
+                    (
+                        person.title,
+                        person.name,
+                        person.position,
+                        person.office_hours,
+                        person.office_location,
+                        person.email,
+                        person.phone,
+                        person.id,
+                    ),
+                )
+                return person.id
+            else:
+                print("test 3")
+                cursor.execute(
+                    "REPLACE INTO people "
+                    "(id, department, title, full_name, mime_type, image_data,"
+                    " position, office_hours, office_location, email, phone)"
+                    " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (
+                        person.id,
+                        department_id,
+                        person.title,
+                        person.name,
+                        person.mime_type,
+                        person.image_data,
+                        person.position,
+                        person.office_hours,
+                        person.office_location,
+                        person.email,
+                        person.phone,
+                    ),
+                )
+
         return cursor.lastrowid
 
     def delete_person(self, person_id: int) -> bool:
