@@ -12,7 +12,12 @@ export function setupPostForms (createSuccessText) {
       .querySelector('button[type="submit"]')
       .addEventListener('click', function (evt) {
         evt.preventDefault()
-        submitPost(null, form, createSuccessText)
+
+        if (form.checkValidity()) {
+          submitPost(null, form, createSuccessText)
+        } else {
+          form.reportValidity()
+        }
       })
   }
 }
@@ -63,7 +68,7 @@ async function deleteDepartment (event) {
 }
 
 // Do not require shift/ctrl click to select multiple
-export function setupSelectMultiple (select) {
+export function setupSelectMultiple (select, atLeastOne) {
   for (const option of select.querySelectorAll('option')) {
     console.log(option)
     option.addEventListener('mousedown', evt => {
@@ -77,7 +82,17 @@ export function setupSelectMultiple (select) {
         option.parentElement.scrollTop = scroll
       }, 0)
 
-      select.closest('form').dispatchEvent(new Event('change'))
+      const form = select.closest('form')
+      if (form) {
+        form.dispatchEvent(new Event('change'))
+      }
+
+      if (!Array.from(select.options).some(opt => opt.selected)) {
+        select.setCustomValidity('At least one must be selected')
+        select.reportValidity()
+      } else {
+        select.setCustomValidity('')
+      }
 
       return false
     })
@@ -237,7 +252,7 @@ export function showContent () {
   const idsSelect = document.getElementById('filter-select')
   let streams = []
   let oldStreams = []
-  setupSelectMultiple(idsSelect)
+  setupSelectMultiple(idsSelect, false)
 
   Root.create({
     child: new WithRefresh({

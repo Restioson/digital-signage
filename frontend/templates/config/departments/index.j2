@@ -34,7 +34,7 @@
       <div>
         <h3>{{ department.name }} Displays:</h3>
         <div class="column-list">
-        {%- if department.displays -%}
+          {%- if department.displays -%}
             {%- for display in department.displays -%}
               <div class="display-entry column-list">
                 {%- set link = "display/" + department.id|string + "/" + display.id|string -%}
@@ -76,18 +76,18 @@
                 </div>
               </div>
             {%- endfor -%}
-        {%- else -%}
-          <p>This department has no displays.</p>
-        {%- endif -%}
+          {%- else -%}
+            <p>This department has no displays.</p>
+          {%- endif -%}
 
-        {% if current_user.permissions != "posting_user" %}
-              <a href="/config/departments/{{ department.id }}/display/add">
+          {% if current_user.permissions != "posting_user" %}
+            <a href="/config/departments/{{ department.id }}/display/add">
               <div class="add-page">
-                  <div>Add page</div>
-                  <div class="material-symbols-outlined">add</div>
+                <div>Add page</div>
+                <div class="material-symbols-outlined">add</div>
               </div>
-              </a>
-        {% endif %}
+            </a>
+          {% endif %}
         </div>
       </div>
     {%- endfor -%}

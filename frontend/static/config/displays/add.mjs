@@ -42,8 +42,7 @@ function setupFormElement (elt, pageNo, properties) {
     variable = variable.substring(0, variable.length - 2)
   }
 
-  console.log('setup')
-  setupSelectMultiple(elt)
+  setupSelectMultiple(elt, false)
 
   const val = properties[variable]
   if (val !== undefined) {
