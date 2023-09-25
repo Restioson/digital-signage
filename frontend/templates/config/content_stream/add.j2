@@ -16,16 +16,26 @@
     <button type="submit">Back</button>
   </form>
   <form action="/api/content_streams" method="post" class="post-form">
-    {% if department %}
-      {% set dest = "to " + department.name + " department" %}
-    {% else %}
-      {% set dest = "(public)" %}
-    {% endif %}
+    <h3>Add a content feed</h3>
+    {%- if current_user.permissions == "superuser" -%}
+      <label>
+        Department:
+        <select name="department" required>
+          <option value="">Public</option>
+          <optgroup label="Departments">
+            {% for dept in departments.values() %}
+              {% if department.id == dept.id %}
+                {% set selected = 'selected' %}
+              {% endif %}
 
-    <h3>Add a content feed {{ dest }}</h3>
-    <input type="hidden" name="display" value="{{ display.id }}" />
-
-    <input type="hidden" name="department" value="{{ department.id }}" />
+              <option value="{{ dept.id }}" {{ selected }}>
+                {{ dept.name }}
+              </option>
+            {% endfor %}
+          </optgroup>
+        </select>
+      </label>
+    {%- endif -%}
 
     <label for="name">Name:</label>
     <input type="text" id="name" name="name" />

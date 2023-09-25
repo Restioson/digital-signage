@@ -192,30 +192,19 @@ def add_content_stream():
     if current_user.permissions == "posting_user":
         flask.abort(401)
     db = DatabaseController.get()
-    display = flask.request.args.get("group")
-    department = flask.request.args.get("department")
 
-    if display and department:
-        flask.abort(400)
+    department = db.fetch_department_by_id(int(flask.request.args.get("department")))
 
-    if display:
-        display = db.fetch_display_by_id(int(display))
-        if not display:
-            flask.abort(404)
-        return render_template(
-            "config/content_stream/add.j2", display=display, department=None
-        )
-    elif department:
-        department = db.fetch_department_by_id(int(department))
-        if not department:
-            flask.abort(404)
-        return render_template(
-            "config/content_stream/add.j2", display=None, department=department
-        )
-    else:
-        return render_template(
-            "config/content_stream/add.j2", display=None, department=None
-        )
+    if not department:
+        flask.abort(404)
+
+    return render_template(
+        "config/content_stream/add.j2",
+        department=department,
+        departments=db.fetch_all_departments()
+        if current_user.permissions == "superuser"
+        else None,
+    )
 
 
 @blueprint.route("/departments/<int:department_id>/files")
