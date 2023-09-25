@@ -30,7 +30,7 @@ class Loadshedding:
         if flask.current_app.config["TESTING"]:
             path = Loadshedding.endpoints[0].replace("{area_id}", areaid)
         else:
-            path = Loadshedding.endpoints[0].replace("{area_id}", areaid)
+            path = Loadshedding.endpoints[1].replace("{area_id}", areaid)
             # when doing demos or final product switch the above line to "endpoints[1]"
         token = Loadshedding.key
         conn = http.client.HTTPSConnection(host)
