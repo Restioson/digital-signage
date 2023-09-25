@@ -24,7 +24,7 @@ def add_posts():
     return render_template(
         "config/add_content.j2",
         content_streams=DatabaseController.get().fetch_all_content_streams(
-            permissions="Write"
+            permissions=Permission.WRITE
         ),
         departments=DatabaseController.get().fetch_all_departments(),
     )
@@ -152,7 +152,7 @@ def add_display(department_id: int):
     if not db.fetch_department_by_id(department_id):
         flask.abort(404)
 
-    streams = db.fetch_all_content_streams(permissions="Read")
+    streams = db.fetch_all_content_streams(permissions=Permission.READ)
     streams.filter_to_department(department_id)
 
     return render_template(
@@ -173,7 +173,7 @@ def edit_display(department_id: int, display_id: int):
         flask.abort(404)
     if current_user.permissions == "posting_user":
         flask.abort(401)
-    streams = db.fetch_all_content_streams(permissions="Read")
+    streams = db.fetch_all_content_streams(permissions=Permission.READ)
     streams.filter_to_department(department_id)
 
     return render_template(
@@ -193,14 +193,8 @@ def add_content_stream():
         flask.abort(401)
     db = DatabaseController.get()
 
-    department = db.fetch_department_by_id(int(flask.request.args.get("department")))
-
-    if not department:
-        flask.abort(404)
-
     return render_template(
         "config/content_stream/add.j2",
-        department=department,
         departments=db.fetch_all_departments()
         if current_user.permissions == "superuser"
         else None,

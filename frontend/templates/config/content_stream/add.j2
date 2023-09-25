@@ -17,11 +17,12 @@
     {%- if current_user.permissions == "superuser" -%}
       <label>
         Department:
+        {# <!-- [html-validate-disable-next form-dup-name] --> only one is enabled at a time #}
         <select name="department" required>
           <option value="">Public</option>
           <optgroup label="Departments">
             {% for dept in departments.values() %}
-              {% if department.id == dept.id %}
+              {% if current_user.department == dept.id %}
                 {% set selected = 'selected' %}
               {% endif %}
 
@@ -32,6 +33,12 @@
           </optgroup>
         </select>
       </label>
+    {%- else -%}
+      <input
+        type="hidden"
+        name="department"
+        value="{{ current_user.department }}"
+      />
     {%- endif -%}
 
     <label for="name">Name:</label>
