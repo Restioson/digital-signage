@@ -3,7 +3,7 @@
 {% block title %}Manage your displays{% endblock %}
 {% block head %}
   {{ super() }}
-  {{ css('config') }}
+  {{ css('config/departments/index') }}
 
   <link
     rel="stylesheet"
@@ -33,13 +33,8 @@
     {%- for department in departments -%}
       <div>
         <h3>{{ department.name }} Displays:</h3>
-        {% if current_user.permissions != "posting_user" %}
-          <a href="/config/departments/{{ department.id }}/display/add"
-            >Add display</a
-          >
-        {% endif %}
+        <div class="column-list">
         {%- if department.displays -%}
-          <div class="column-list">
             {%- for display in department.displays -%}
               <div class="display-entry column-list">
                 {%- set link = "display/" + department.id|string + "/" + display.id|string -%}
@@ -81,10 +76,19 @@
                 </div>
               </div>
             {%- endfor -%}
-          </div>
         {%- else -%}
           <p>This department has no displays.</p>
         {%- endif -%}
+
+        {% if current_user.permissions != "posting_user" %}
+              <a href="/config/departments/{{ department.id }}/display/add">
+              <div class="add-page">
+                  <div>Add page</div>
+                  <div class="material-symbols-outlined">add</div>
+              </div>
+              </a>
+        {% endif %}
+        </div>
       </div>
     {%- endfor -%}
   </div>

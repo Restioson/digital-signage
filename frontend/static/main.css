@@ -62,7 +62,6 @@ form {
   max-width: 600px;
   padding: 20px;
   border: 1px solid #ddd;
-  box-shadow: 0 0 10px #e7e5e5;
 }
 
 form,
@@ -72,7 +71,6 @@ fieldset,
   flex-direction: column;
   gap: 16px;
   border-radius: 10px;
-  box-shadow: 0 0 15px 4px #e7e5e5;
 }
 
 *[hidden] {
