@@ -76,7 +76,6 @@ function addTab (title, element, withDelete) {
       const form = document.getElementById('display-group-form')
       form.dispatchEvent(new Event('change'))
       list.querySelector('*').click()
-      console.log(list.querySelector('*'))
     })
 
     tabHeader.append(deleteButton)

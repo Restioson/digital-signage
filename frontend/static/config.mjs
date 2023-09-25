@@ -32,7 +32,6 @@ async function deleteDepartment (event) {
   const row = button.parentElement.parentElement
   const departmentName = row.children[0].innerText
   const departmentid = button.dataset.department_id
-  console.log(button)
 
   try {
     const res = await fetch(`/api/departments/${departmentid}`, {
@@ -70,7 +69,6 @@ async function deleteDepartment (event) {
 // Do not require shift/ctrl click to select multiple
 export function setupSelectMultiple (select, atLeastOne) {
   for (const option of select.querySelectorAll('option')) {
-    console.log(option)
     option.addEventListener('mousedown', evt => {
       const scroll = option.parentElement.scrollTop
 
@@ -113,7 +111,6 @@ async function deleteUser (event) {
   const row = button.parentElement.parentElement
   const username = row.children[0].innerText
   const userEmail = button.dataset.userEmail
-  console.log(button)
 
   try {
     const res = await fetch(`/api/user/${userEmail}`, {
