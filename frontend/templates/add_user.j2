@@ -1,6 +1,6 @@
 {% extends "base.j2" %}
 
-{% block title %}Add users{% endblock %}
+{% block title %}Adding New Users{% endblock %}
 {% block head %}
   {{ super() }}
   {{ css('config/users') }}
@@ -26,6 +26,28 @@
     var departmentData = {{ departmentData | tojson | safe }};
     populateDepartments(departmentData);
   </script>
+  <div class="user-description">
+  <p>
+    Adding a new user is simple and comes with various permission levels:
+  </p>
+  <ul>
+    <li>
+      <strong>Super User:</strong> Reserved for UCT Admin members, super users have
+      unrestricted access to all system features.
+    </li>
+    <li>
+      <strong>Editing User:</strong> Members of specific departments with full access to
+      department-related functions.
+    </li>
+    <li>
+      <strong>Posting User:</strong> Users who can add new posts but lack editing access
+      to department information and displays.
+    </li>
+  </ul>
+  <p>
+    Customize user access levels based on department requirements.
+  </p>
+</div>
       <form
         action="/api/register"
         method="post"
