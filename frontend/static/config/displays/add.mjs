@@ -42,14 +42,13 @@ function setupFormElement (elt, pageNo, properties) {
     variable = variable.substring(0, variable.length - 2)
   }
 
-  setupSelectMultiple(elt, false)
-
   const val = properties[variable]
   if (val !== undefined) {
     if (elt.tagName === 'SELECT' && elt.multiple) {
       for (const option of elt.options) {
         option.selected = val.includes(option.value)
       }
+      setupSelectMultiple(elt, false)
     } else if (elt.tagName === 'INPUT' && elt.type !== 'file') {
       elt.value = val
     }
