@@ -52,7 +52,7 @@ def create_app(testing=False):
     # Setup database
     with app.app_context():
         DatabaseController.get().create_db()
-        password = os.environ.get("ADMIN_PASSWORD123") or "PASSWORD"
+        password = os.environ.get("CAMPUSIGN_ADMIN_PASSWORD") or "PASSWORD"
         if not (DatabaseController.get().user_exists("A@ADMIN")):
             DatabaseController.get().insert_user(
                 "A@ADMIN",
